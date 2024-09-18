@@ -1,3 +1,5 @@
-from django.db import models
+from django.db.models import CharField, Model
 
-# Create your models here.
+class Users(Model):
+    first_name = CharField(max_length=128)
+    last_name = CharField(max_length=128)
