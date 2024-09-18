@@ -16,9 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from viewer.models import Users
+from viewer.models import User
 
-admin.site.register(Users)
+admin.site.register(User)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
