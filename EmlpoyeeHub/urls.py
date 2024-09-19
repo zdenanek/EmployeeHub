@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path
 
 from viewer.models import User, Function, Customer, Product
+from viewer.views import home
 
 admin.site.register(Function)
 admin.site.register(User)
@@ -25,4 +26,5 @@ admin.site.register(Product)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', home, name='home'),
 ]

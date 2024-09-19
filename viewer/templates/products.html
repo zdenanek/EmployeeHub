@@ -1,0 +1,8 @@
+{% block block1 %}
+<h2>Moje projekty</h2>
+<ul>
+    {% for product in products %}
+        <li>{{ product.product_name }} {{ product.created }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}

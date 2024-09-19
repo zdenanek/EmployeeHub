@@ -1,0 +1,127 @@
+{% load static %}
+
+<html {% if LANGUAGE_CODE %}lang="{{ LANGUAGE_CODE }}" {% endif %}>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        /* Simple reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        /* Navigation bar */
+        .navbar {
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+        }
+        .navbar-right {
+            display: flex;
+            align-items: center;
+        }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            color: black;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 10px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        /* Main content grid */
+        .container {
+            margin-top: 70px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+        .block {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="navbar-left">
+            <a href="{% url 'home' %}">Hlavní stránka</a>
+            <a href="{% url 'home' %}">Moje projekty</a>
+            <a href="{% url 'home' %}">Projekty kolegů</a>
+            <a href="{% url 'home' %}">Kalendář dovolené</a>
+        </div>
+        <div class="navbar-right">
+            <div class="dropdown">
+                <span>Můj profil</span>
+                <div class="dropdown-content">
+                    <a href="{% url 'home' %}">Změna hesla</a>
+                    <a href="{% url 'home' %}">Profil zaměstnance</a>
+                    <a href="{% url 'home' %}">Odhlásit se</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+    <div class="block" id="block1">
+        {% include 'products.html' %}
+    </div>
+    <div class="block" id="block2">
+        {% include 'users.html' %}
+    </div>
+    <div class="block" id="block3">
+        {% include 'functions.html' %}
+    </div>
+    <div class="block" id="block4">
+        {% include 'customers.html' %}
+    </div>
+</div>
+
+    {% block scripts %}
+    <!-- Add any additional scripts here -->
+    {% endblock %}
+
+</body>
+</html>

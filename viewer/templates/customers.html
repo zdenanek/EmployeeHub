@@ -1,0 +1,8 @@
+{% block block1 %}
+<h2>Zákazníci</h2>
+<ul>
+    {% for customer in customers %}
+        <li>{{ customer.first_name }} {{ customer.last_name }} {{ customer.created }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}
