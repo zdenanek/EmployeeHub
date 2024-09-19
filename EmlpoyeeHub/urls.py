@@ -16,9 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from viewer.models import User
+from viewer.models import User, Function, Customer, Product
 
+admin.site.register(Function)
 admin.site.register(User)
+admin.site.register(Customer)
+admin.site.register(Product)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
