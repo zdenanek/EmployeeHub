@@ -3,7 +3,7 @@ from django.views.generic import ListView
 from django.views.generic import ListView
 from .models import Product, User, Function, Customer
 
-def home(request):
+def base(request):
     # Načtení dat pro jednotlivé bloky
     users = User.objects.all()
     products = Product.objects.all()
@@ -13,7 +13,7 @@ def home(request):
         'products': products,
         'functions': functions
     }
-    return render(request, 'home.html', context)
+    return render(request, 'base.html', context)
 
 
 
