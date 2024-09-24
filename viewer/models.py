@@ -28,7 +28,7 @@ class Customer(Model):
         return f"Název zákazníka: {self.first_name} {self.last_name}"
 
 
-class Product(Model):
+class Project(Model):
     product_name = CharField(max_length=100)
     created = DateTimeField(auto_now_add=True)
 

@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<h2>Moje projekty</h2>
+<ul>
+    {% for product in products %}
+        <li>{{ product.product_name }} - {{ product.created }} - {{ product.status }}</li>  <!-- detailní informace -->
+    {% empty %}
+        <li>Žádné projekty nejsou dostupné.</li>
+    {% endfor %}
+</ul>

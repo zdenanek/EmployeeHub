@@ -1,12 +1,12 @@
 from django.shortcuts import render
 from django.views.generic import ListView
 from django.views.generic import ListView
-from .models import Product, User, Function, Customer
+from .models import Project, User, Function, Customer
 
 def homepage(request):
     # Načtení dat pro jednotlivé bloky
     users = User.objects.all()
-    products = Product.objects.all()
+    products = Project.objects.all()
     functions = Function.objects.all()
     customers = Customer.objects.all()
     context = {
@@ -20,9 +20,9 @@ def homepage(request):
 
 
 
-class ProductListView(ListView):
-    model = Product
-    template_name = 'products.html'
+class ProjectListView(ListView):
+    model = Project
+    template_name = 'projects.html'
 
 class UserListView(ListView):
     model = User
@@ -35,3 +35,7 @@ class FunctionListView(ListView):
 class CustomerListView(ListView):
     model = Customer
     template_name = 'customers.html'
+
+class MyProjectsListView(ListView):
+    model = Project
+    template_name = 'navbar_list.html'

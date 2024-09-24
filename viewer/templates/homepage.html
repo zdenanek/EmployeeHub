@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Dashboard{% endblock %}</title>
+    <title>{% block title %}SDA employee hub{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
         /* Simple reset */
@@ -88,7 +88,7 @@
     <div class="navbar">
         <div class="navbar-left">
             <a href="{% url 'homepage' %}">Hlavní stránka</a>
-            <a href="{% url 'homepage' %}">Moje projekty</a>
+            <a href="{% url 'navbar_list' %}">Moje projekty</a>
             <a href="{% url 'homepage' %}">Projekty kolegů</a>
             <a href="{% url 'homepage' %}">Kalendář dovolené</a>
         </div>
@@ -106,7 +106,7 @@
 
     <div class="container">
     <div class="block" id="block1">
-        {% include 'products.html' %}
+        {% include 'projects.html' %}
     </div>
     <div class="block" id="block2">
         {% include 'users.html' %}
