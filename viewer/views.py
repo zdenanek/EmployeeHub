@@ -3,17 +3,19 @@ from django.views.generic import ListView
 from django.views.generic import ListView
 from .models import Product, User, Function, Customer
 
-def base(request):
+def homepage(request):
     # Načtení dat pro jednotlivé bloky
     users = User.objects.all()
     products = Product.objects.all()
     functions = Function.objects.all()
+    customers = Customer.objects.all()
     context = {
         'users': users,
         'products': products,
-        'functions': functions
+        'functions': functions,
+        'customers': customers
     }
-    return render(request, 'base.html', context)
+    return render(request, 'homepage.html', context)
 
 
 

@@ -6,7 +6,7 @@ class Function(Model):
     created = DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.job_function}"
+        return f"Pozice: {self.job_function}"
 
 
 class User(Model):
@@ -16,7 +16,7 @@ class User(Model):
 
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"Zaměsnanec: {self.first_name} {self.last_name}"
     
 
 class Customer(Model):
@@ -25,10 +25,12 @@ class Customer(Model):
     created = DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"Název zákazníka: {self.first_name} {self.last_name}"
 
 
 class Product(Model):
     product_name = CharField(max_length=100)
     created = DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"Zakázka: {self.product_name}"
