@@ -34,5 +34,4 @@ urlpatterns = [
 
     path('my_products/', MyProjectsListView.as_view(), name='navbar_list'),
 
-    path('homepage2/', homepage2, name='homepage2')
 ]
