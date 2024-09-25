@@ -23,3 +23,4 @@ Tato aplikace je ideálním řešením pro menší moderní firmy, které chtěj
 - [ ] responzivní design
 - [ ] dokumentace 
 - [ ] finální testování
+- [ ] l
