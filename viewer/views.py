@@ -45,5 +45,4 @@ class MyProjectsListView(ListView):
     template_name = 'navbar_list.html'
 
 
-def homepage2(request):
-    return render(request, 'test.html')
+
