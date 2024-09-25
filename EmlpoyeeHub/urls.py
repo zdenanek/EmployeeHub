@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 
 from viewer.models import User, Function, Customer, Project
-from viewer.views import homepage, UserListView, ProjectListView, FunctionListView, CustomerListView, MyProjectsListView, homepage2
+from viewer.views import homepage, UserListView, ProjectListView, FunctionListView, CustomerListView, MyProjectsListView
 
 admin.site.register(Function)
 admin.site.register(User)
