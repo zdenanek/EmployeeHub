@@ -1,4 +1,5 @@
-from django.db.models import CharField, Model, ForeignKey, DateTimeField, DO_NOTHING
+from django.db.models import CharField, Model, ForeignKey, DateTimeField, DO_NOTHING, ManyToManyField, IntegerField, \
+    EmailField
 
 
 class Function(Model):
@@ -9,28 +10,61 @@ class Function(Model):
         return f"Pozice: {self.job_function}"
 
 
+class Groups(Model):
+    groups_name = CharField(max_length=64)
+    created = DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Skupiny: {self.groups_name}"
+
+
 class User(Model):
     first_name = CharField(max_length=50)
     last_name = CharField(max_length=50)
     user_function = ForeignKey(Function, on_delete=DO_NOTHING, default=1)
-
+    groups = ManyToManyField(Groups)
+    # created = DateTimeField(auto_now_add=True)
+    #TODO
 
     def __str__(self):
-        return f"Zaměsnanec: {self.first_name} {self.last_name}"
+        return f"Zaměstnanec: {self.first_name} {self.last_name}"
     
 
 class Customer(Model):
     first_name = CharField(max_length=50)
     last_name = CharField(max_length=50)
     created = DateTimeField(auto_now_add=True)
+    phone_number = CharField(max_length=16, default="123456789")
+    email_address = EmailField(max_length=128, default="jan@novak.cz")
+
 
     def __str__(self):
         return f"Název zákazníka: {self.first_name} {self.last_name}"
 
 
-class Project(Model):
-    product_name = CharField(max_length=100)
+class Contract(Model):
+    contract_name = CharField(max_length=100)
     created = DateTimeField(auto_now_add=True)
+    user = ForeignKey(User, on_delete=DO_NOTHING, default=1)    #TODO nevyplněno? výchozí user?
+    customer = ForeignKey(Customer, on_delete=DO_NOTHING, default=1)    #TODO
+    status_choices = [("0","V procesu"), ("1","Dokončeno"), ("2","Zrušeno")]
+    status = CharField(max_length=64, choices=status_choices, default=status_choices[0])
 
     def __str__(self):
-        return f"Zakázka: {self.product_name}"
+        return f"Zakázka: {self.contract_name}"
+
+
+class SubContract(Model):
+    subcontract_name = CharField(max_length=128)
+    created = DateTimeField(auto_now_add=True)
+    contract = ForeignKey(Contract, on_delete=DO_NOTHING)
+    status = ForeignKey(User, on_delete=DO_NOTHING, default=1)    #TODO
+
+
+    def __str__(self):
+        return f"Podzakázka: {self.subcontract_name} Primary key: {self.contract.pk}-{self.pk}"
+
+
+
+
+
