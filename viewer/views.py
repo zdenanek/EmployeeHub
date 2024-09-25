@@ -24,18 +24,26 @@ class ProjectListView(ListView):
     model = Project
     template_name = 'projects.html'
 
+
 class UserListView(ListView):
     model = User
     template_name = 'users.html'
+
 
 class FunctionListView(ListView):
     model = Function
     template_name = 'functions.html'
 
+
 class CustomerListView(ListView):
     model = Customer
     template_name = 'customers.html'
 
+
 class MyProjectsListView(ListView):
     model = Project
     template_name = 'navbar_list.html'
+
+
+def homepage2(request):
+    return render(request, 'test.html')

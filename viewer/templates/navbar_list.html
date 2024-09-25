@@ -6,106 +6,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}SDA employee hub{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <style>
-        /* Simple reset */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-        }
-        /* Navigation bar */
-        .navbar {
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-        }
-        .navbar a {
-            color: white;
-            text-decoration: none;
-            margin: 0 15px;
-        }
-        .navbar-right {
-            display: flex;
-            align-items: center;
-        }
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: white;
-            color: black;
-            min-width: 160px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            z-index: 1;
-        }
-        .dropdown-content a {
-            color: black;
-            padding: 10px 16px;
-            text-decoration: none;
-            display: block;
-        }
-        .dropdown-content a:hover {
-            background-color: #ddd;
-        }
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-        /* Main content grid */
-        .container {
-            margin-top: 70px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 1fr 1fr;
-            gap: 20px;
-            padding: 20px;
-        }
-        .block {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
 </head>
 <body>
 
     <!-- Navbar -->
-    <div class="navbar">
-        <div class="navbar-left">
-            <a href="{% url 'homepage' %}">Hlavní stránka</a>
-            <a href="{% url 'navbar_list' %}">Moje projekty</a>
-            <a href="{% url 'homepage' %}">Projekty kolegů</a>
-            <a href="{% url 'homepage' %}">Kalendář dovolené</a>
-        </div>
-        <div class="navbar-right">
-            <div class="dropdown">
-                <span>Můj profil</span>
-                <div class="dropdown-content">
-                    <a href="{% url 'homepage' %}">Změna hesla</a>
-                    <a href="{% url 'homepage' %}">Profil zaměstnance</a>
-                    <a href="{% url 'homepage' %}">Odhlásit se</a>
-                </div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'homepage' %}">Home</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'navbar_list' %}">Moje projekty</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'homepage' %}">Projekty kolegů</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'homepage' %}">Kalendář dovolené</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Můj profil
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'homepage' %}">Změna hesla</a></li>
+                            <li><a class="dropdown-item" href="{% url 'homepage' %}">Profil zaměstnance</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'homepage' %}">Odhlásit se</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
             </div>
         </div>
-    </div>
+    </nav>
 
+<br>
 <div class="container">
     <div class="block" id="block1">
         {% include 'projects_detail.html' with products=object_list %}
     </div>
 </div>
+
+</body>
+</html>
