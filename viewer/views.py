@@ -10,7 +10,7 @@ from .forms import SignUpForm
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
-@login_required
+# @login_required
 def homepage(request):
     # Načtení dat pro jednotlivé bloky
     users = User.objects.all()
