@@ -11,6 +11,8 @@ class Function(Model):
     def __str__(self):
         return f"Pozice: {self.job_function}"
 
+from django.contrib.auth.models import User
+
 
 class Groups(Model):
     groups_name = CharField(max_length=64)

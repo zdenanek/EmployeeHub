@@ -1,7 +1,10 @@
 from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.views.generic import ListView, CreateView
 from django.views.generic import ListView
-from django.views.generic import ListView
+
 from .models import Contract, Function, Customer
+from .forms import SignUpForm
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -54,3 +57,7 @@ class ContractAllListView(ListView):
 
 
 
+class SignUpView(CreateView):
+    template_name = 'form.html'
+    form_class = SignUpForm
+    success_url = reverse_lazy('homepage')
