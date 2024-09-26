@@ -1,8 +1,7 @@
-{% block block1 %}
 <h2>Moje projekty</h2>
 <ul>
-    {% for product in products %}
-        <li>{{ product.product_name }} {{ product.created }}</li>
+    {% for contract in contracts %}
+        <li>{{ contract.contract_name }} {{ contract.created }}</li>
     {% endfor %}
 </ul>
-{% endblock %}
+
