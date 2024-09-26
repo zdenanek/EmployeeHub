@@ -1,0 +1,8 @@
+<h2>Moje projekty</h2>
+<ul>
+    {% for contract in contracts %}
+        <li>{{ contract.contract_name }} - {{ contract.created }} - {{ contract.get_status_display }} - {{ contract.user.first_name }} {{ contract.user.last_name }}</li>  <!-- detailní informace -->
+    {% empty %}
+        <li>Žádné projekty nejsou dostupné.</li>
+    {% endfor %}
+</ul>

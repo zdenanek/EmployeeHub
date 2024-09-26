@@ -6,12 +6,12 @@ from .models import Contract, User, Function, Customer
 def homepage(request):
     # Načtení dat pro jednotlivé bloky
     users = User.objects.all()
-    products = Contract.objects.all()
+    contracts = Contract.objects.all()
     functions = Function.objects.all()
     customers = Customer.objects.all()
     context = {
         'users': users,
-        'products': products,
+        'contracts': contracts,
         'functions': functions,
         'customers': customers
     }
@@ -22,7 +22,7 @@ def homepage(request):
 
 class ProjectListView(ListView):
     model = Contract
-    template_name = 'projects.html'
+    template_name = 'contracts_homepage.html'
 
 
 class UserListView(ListView):
@@ -40,9 +40,14 @@ class CustomerListView(ListView):
     template_name = 'customers.html'
 
 
-class MyProjectsListView(ListView):
+class ContractListView(ListView):
     model = Contract
-    template_name = 'navbar_list.html'
+    template_name = 'navbar_contracts.html'
+
+
+class ContractAllListView(ListView):
+    model = Contract
+    template_name = 'navbar_contracts_all.html'
 
 
 

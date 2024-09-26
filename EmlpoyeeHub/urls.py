@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 
 from viewer.models import User, Function, Customer, Contract, Groups, SubContract
-from viewer.views import homepage, UserListView, ProjectListView, FunctionListView, CustomerListView, MyProjectsListView
+from viewer.views import homepage, UserListView, ProjectListView, FunctionListView, CustomerListView, ContractListView, ContractAllListView
 
 admin.site.register(Function)
 admin.site.register(User)
@@ -34,6 +34,7 @@ urlpatterns = [
     path('functions/', FunctionListView.as_view(), name='function_list'),
     path('customers/', CustomerListView.as_view(), name='customer_list'),
 
-    path('my_products/', MyProjectsListView.as_view(), name='navbar_list'),
+    path('navbar_contracts/', ContractListView.as_view(), name='navbar_contracts'),
+    path('navbar_contracts_all/', ContractAllListView.as_view(), name='navbar_contracts_all')
 
 ]
