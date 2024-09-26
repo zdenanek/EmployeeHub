@@ -1,7 +1,8 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView
-from django.views.generic import ListView
+
 
 from .models import Contract, Function, Customer
 from .forms import SignUpForm
@@ -9,6 +10,7 @@ from .forms import SignUpForm
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
+@login_required
 def homepage(request):
     # Načtení dat pro jednotlivé bloky
     users = User.objects.all()
@@ -61,3 +63,8 @@ class SignUpView(CreateView):
     template_name = 'form.html'
     form_class = SignUpForm
     success_url = reverse_lazy('homepage')
+    
+from django.contrib.auth.views import LoginView
+
+class SubmittableLoginView(LoginView):
+    template_name = 'login.html'
