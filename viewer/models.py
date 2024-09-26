@@ -27,7 +27,7 @@ class User(Model):
     #TODO
 
     def __str__(self):
-        return f"Zaměstnanec: {self.first_name} {self.last_name}"
+        return f"Zaměstnanec: {self.first_name} {self.last_name} - {self.user_function}"
     
 
 class Customer(Model):

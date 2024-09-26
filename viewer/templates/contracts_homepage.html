@@ -1,0 +1,7 @@
+<h2>Moje projekty</h2>
+<ul>
+    {% for contract in contracts %}
+        <li>{{ contract.contract_name }} {{ contract.created }}</li>
+    {% endfor %}
+</ul>
+
