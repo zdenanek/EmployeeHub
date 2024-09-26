@@ -1,7 +1,10 @@
 from django.shortcuts import render
 from django.views.generic import ListView
 from django.views.generic import ListView
-from .models import Contract, User, Function, Customer
+from .models import Contract, Function, Customer
+
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 def homepage(request):
     # Načtení dat pro jednotlivé bloky
