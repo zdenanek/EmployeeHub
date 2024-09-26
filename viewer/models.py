@@ -1,6 +1,8 @@
 from django.db.models import CharField, Model, ForeignKey, DateTimeField, DO_NOTHING, ManyToManyField, IntegerField, \
     EmailField
 
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 class Function(Model):
     job_function = CharField(max_length=50)
@@ -18,18 +20,6 @@ class Groups(Model):
         return f"Skupiny: {self.groups_name}"
 
 
-class User(Model):
-    first_name = CharField(max_length=50)
-    last_name = CharField(max_length=50)
-    user_function = ForeignKey(Function, on_delete=DO_NOTHING, default=1)
-    groups = ManyToManyField(Groups)
-    # created = DateTimeField(auto_now_add=True)
-    #TODO
-
-    def __str__(self):
-        return f"Zaměstnanec: {self.first_name} {self.last_name} - {self.user_function}"
-    
-
 class Customer(Model):
     first_name = CharField(max_length=50)
     last_name = CharField(max_length=50)
@@ -40,6 +30,9 @@ class Customer(Model):
 
     def __str__(self):
         return f"Název zákazníka: {self.first_name} {self.last_name}"
+
+#from EmlpoyeeHub import settings
+#from django.contrib.auth.models import User
 
 
 class Contract(Model):
@@ -58,7 +51,7 @@ class SubContract(Model):
     subcontract_name = CharField(max_length=128)
     created = DateTimeField(auto_now_add=True)
     contract = ForeignKey(Contract, on_delete=DO_NOTHING)
-    status = ForeignKey(User, on_delete=DO_NOTHING, default=1)    #TODO
+    #status = ForeignKey(User, on_delete=DO_NOTHING, default=1)    #TODO
 
 
     def __str__(self):

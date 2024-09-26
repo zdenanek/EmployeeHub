@@ -16,11 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from viewer.models import User, Function, Customer, Contract, Groups, SubContract
+from viewer.models import Function, Customer, Contract, Groups, SubContract
 from viewer.views import homepage, UserListView, ProjectListView, FunctionListView, CustomerListView, ContractListView, ContractAllListView
 
 admin.site.register(Function)
-admin.site.register(User)
+#admin.site.register(User)
 admin.site.register(Customer)
 admin.site.register(Contract)
 admin.site.register(Groups)
