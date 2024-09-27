@@ -1,7 +1,14 @@
 <h2>Moje projekty</h2>
 <ul>
     {% for contract in contracts %}
-        <li>{{ contract.contract_name }} - {{ contract.created }} - {{ contract.get_status_display }} - {{ contract.user.first_name }} {{ contract.user.last_name }}</li>  <!-- detailní informace -->
+        <li>
+            {{ contract.contract_name }} - {{ contract.created }} - {{ contract.get_status_display }} - {{ contract.user.first_name }} {{ contract.user.last_name }} -
+            {% if contract.user.userprofile.position %}  <!-- check if the user has a position -->
+                {{ contract.user.userprofile.position.name }}  <!-- print user's position -->
+            {% else %}
+                Žádná pozice  <!-- Print no position -->
+            {% endif %}
+        </li>
     {% empty %}
         <li>Žádné projekty nejsou dostupné.</li>
     {% endfor %}

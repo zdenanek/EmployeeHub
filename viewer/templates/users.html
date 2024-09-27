@@ -1,7 +1,13 @@
 <h2>Uživatelé</h2>
 <ul>
     {% for user in users %}
-        <li>{{ user.first_name }} {{ user.last_name }} {{ user.user_function }}</li>
+        <li>
+            {{ user.first_name }} {{ user.last_name }} - <!-- print name -->
+            {% if user.userprofile.position %}  <!-- check if have position -->
+                {{ user.userprofile.position.name }}  <!-- print position -->
+            {% else %}
+                Žádná pozice  <!-- Print no position -->
+            {% endif %}
+        </li>
     {% endfor %}
 </ul>
-
