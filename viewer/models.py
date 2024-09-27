@@ -60,6 +60,22 @@ class SubContract(Model):
         return f"Podzakázka: {self.subcontract_name} Primary key: {self.contract.pk}-{self.pk}"
 
 
+from django.db import models
+from django.contrib.auth import get_user_model
+
+
+class Position(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.position.name if self.position else 'No position'}"
 
 
 
