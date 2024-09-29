@@ -18,11 +18,11 @@ from django.contrib.auth.views import LoginView
 from django.urls import path
 
 
-from viewer.models import Function, Customer, Contract, Groups, SubContract
-from viewer.views import homepage, UserListView, ProjectListView, FunctionListView, CustomerListView, ContractListView, ContractAllListView, SignUpView
+from viewer.models import Customer, Contract, Groups, SubContract
+from viewer.views import homepage, UserListView, ProjectListView, PositionListView, CustomerListView, ContractListView, ContractAllListView, SignUpView
 
 
-admin.site.register(Function)
+
 #admin.site.register(User)
 admin.site.register(Customer)
 admin.site.register(Contract)
@@ -34,7 +34,7 @@ urlpatterns = [
     path('', homepage, name='homepage'),
     path('users/', UserListView.as_view(), name='user_list'),
     path('products/', ProjectListView.as_view(), name='product_list'),
-    path('functions/', FunctionListView.as_view(), name='function_list'),
+    path('positions/', PositionListView.as_view(), name='position_list'),
     path('customers/', CustomerListView.as_view(), name='customer_list'),
 
     path('navbar_contracts/', ContractListView.as_view(), name='navbar_contracts'),

@@ -1,0 +1,8 @@
+<h2>Pozice</h2>
+<ul>
+    {% for position in positions %}
+        <li>{{ position.name }}</li>
+    {% empty %}
+        <li>Žádné pozice nenalezeny.</li>
+    {% endfor %}
+</ul>

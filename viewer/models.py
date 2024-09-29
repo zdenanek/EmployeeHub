@@ -4,12 +4,12 @@ from django.db.models import CharField, Model, ForeignKey, DateTimeField, DO_NOT
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
-class Function(Model):
-    job_function = CharField(max_length=50)
-    created = DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Pozice: {self.job_function}"
+# class Function(Model):
+#     job_function = CharField(max_length=50)
+#     created = DateTimeField(auto_now_add=True)
+#
+#     def __str__(self):
+#         return f"Pozice: {self.job_function}"
 
 from django.contrib.auth.models import User
 

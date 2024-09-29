@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView
 
 
-from .models import Contract, Function, Customer
+from .models import Contract, Customer, Position
 from .forms import SignUpForm
 
 from django.contrib.auth import get_user_model
@@ -15,12 +15,12 @@ def homepage(request):
     # Načtení dat pro jednotlivé bloky
     users = User.objects.all()
     contracts = Contract.objects.all()
-    functions = Function.objects.all()
+    positions = Position.objects.all()
     customers = Customer.objects.all()
     context = {
         'users': users,
         'contracts': contracts,
-        'functions': functions,
+        'positions': positions,
         'customers': customers
     }
     return render(request, 'homepage.html', context)
@@ -38,9 +38,9 @@ class UserListView(ListView):
     template_name = 'users.html'
 
 
-class FunctionListView(ListView):
-    model = Function
-    template_name = 'functions.html'
+class PositionListView(ListView):
+    model = Position
+    template_name = 'positions.html'
 
 
 class CustomerListView(ListView):
