@@ -54,7 +54,7 @@ class SubContract(Model):
     created = DateTimeField(auto_now_add=True)
     contract = ForeignKey(Contract, on_delete=DO_NOTHING)
     #status = ForeignKey(User, on_delete=DO_NOTHING, default=1)    #TODO
-    subcontract_number = IntegerField(null=True, blank=True)
+    subcontract_number = IntegerField(null=True, blank=True, default=1)
 
     class Meta:
         constraints = [
@@ -72,7 +72,7 @@ class SubContract(Model):
 
 
     def __str__(self):
-        return f"Podzakázka: {self.subcontract_name} Primary key: {self.contract.pk}-{self.subcontract_number}"
+        return f"Podzakázka: {self.subcontract_name} {self.contract.pk}-{self.subcontract_number}"
 
 
 from django.db import models
