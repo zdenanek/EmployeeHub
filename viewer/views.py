@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView
 
@@ -68,3 +68,8 @@ from django.contrib.auth.views import LoginView
 
 class SubmittableLoginView(LoginView):
     template_name = 'login.html'
+
+
+def contract_detail(request, contract_id):
+    contract = get_object_or_404(Contract, id=contract_id)
+    return render(request, 'detail_contract.html', {'contract': contract})

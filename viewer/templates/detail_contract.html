@@ -48,41 +48,17 @@
             </div>
         </div>
     </nav>
-
-    <div class="container mt-4">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card text-center">
-                    <div class="card-body">
-                        {% include 'contracts_homepage.html' %}
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card text-center">
-                    <div class="card-body">
-                        {% include 'users.html' %}
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <div class="card text-center">
-                    <div class="card-body">
-                        {% include 'positions.html' %}
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card text-center">
-                    <div class="card-body">
-                        {% include 'customers.html' %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<h2>Detail zakázky</h2>
+<p>Název: {{ contract.contract_name }}</p>
+<p>Datum vytvoření: {{ contract.created }}</p>
+<p>Status: {{ contract.get_status_display }}</p>
+<p>Uživatel: {{ contract.user.first_name }} {{ contract.user.last_name }}</p>
+{% if contract.user.userprofile.position %}
+    <p>Pozice: {{ contract.user.userprofile.position.name }}</p>
+{% else %}
+    <p>Pozice: Žádná pozice</p>
+{% endif %}
+<a href="{% url 'homepage' %}" class="btn btn-secondary">Zpět na přehled</a>
 
     <br>
     <br>
@@ -90,7 +66,6 @@
     <br>
     <br>
     <br>
-
     {% block scripts %}
      This website was created by KateK87, Zdenanek, Belys121
     {% endblock %}

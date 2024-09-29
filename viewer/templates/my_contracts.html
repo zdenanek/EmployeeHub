@@ -8,6 +8,8 @@
             {% else %}
                 Žádná pozice  <!-- Print no position -->
             {% endif %}
+            <!-- Tlačítko na detail zakázky -->
+            <a href="{% url 'detail_contract' contract.id %}" class="btn btn-info">Detail zakázky</a>
         </li>
     {% empty %}
         <li>Žádné projekty nejsou dostupné.</li>
