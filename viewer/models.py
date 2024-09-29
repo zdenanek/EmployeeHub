@@ -33,7 +33,7 @@ class Customer(Model):
     def __str__(self):
         return f"Název zákazníka: {self.first_name} {self.last_name}"
 
-#from EmlpoyeeHub import settings
+#from EmployeeHub import settings
 #from django.contrib.auth.models import User
 
 
