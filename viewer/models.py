@@ -1,5 +1,5 @@
 from django.db.models import CharField, Model, ForeignKey, DateTimeField, DO_NOTHING, ManyToManyField, IntegerField, \
-    EmailField
+    EmailField, UniqueConstraint
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -54,10 +54,25 @@ class SubContract(Model):
     created = DateTimeField(auto_now_add=True)
     contract = ForeignKey(Contract, on_delete=DO_NOTHING)
     #status = ForeignKey(User, on_delete=DO_NOTHING, default=1)    #TODO
+    subcontract_number = IntegerField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=["contract", "subcontract_number"], name="unique_subcontract_per_contract")
+        ]
+
+    def save(self, *args, **kwargs):
+        if self.subcontract_number is None:
+            last_subcontract = SubContract.objects.filter(contract=self.contract).order_by("subcontract_number").last()
+            if last_subcontract:
+                self.subcontract_number = last_subcontract.subcontract_number + 1
+            else:
+                self.subcontract_number = 1
+        super().save(*args, **kwargs)
 
 
     def __str__(self):
-        return f"Podzakázka: {self.subcontract_name} Primary key: {self.contract.pk}-{self.pk}"
+        return f"Podzakázka: {self.subcontract_name} Primary key: {self.contract.pk}-{self.subcontract_number}"
 
 
 from django.db import models
@@ -76,6 +91,3 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.position.name if self.position else 'No position'}"
-
-
-
