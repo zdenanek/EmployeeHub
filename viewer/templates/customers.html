@@ -1,4 +1,4 @@
-<h2>Zákazníci</h2>
+<a href="{% url 'customer_list' %}"><h2>Zákazníci</h2></a>
 <ul>
     {% for customer in customers %}
         <li>{{ customer.first_name }} {{ customer.last_name }} {{ customer.created }}</li>

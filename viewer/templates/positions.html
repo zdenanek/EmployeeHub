@@ -1,4 +1,4 @@
-<h2>Pozice</h2>
+<a href="{% url 'position_list' %}"><h2>Pozice</h2></a>
 <ul>
     {% for position in positions %}
         <li>{{ position.name }}</li>
