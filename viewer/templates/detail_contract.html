@@ -48,6 +48,7 @@
             </div>
         </div>
     </nav>
+    <a href="{% url 'contract_update' contract.pk %}" class="btn btn-info">Upravit</a>
 <h2>Detail zakázky č. {{ contract.id }}</h2>
 <p>Název: {{ contract.contract_name }}</p>
 <p>Datum vytvoření: {{ contract.created }}</p>

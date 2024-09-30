@@ -1,11 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView
-
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from .models import Contract, Customer, Position
-from .forms import SignUpForm
+from .forms import SignUpForm, ContractForm
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -31,6 +30,33 @@ def homepage(request):
 class ProjectListView(ListView):
     model = Contract
     template_name = 'contracts_homepage.html'
+
+
+
+# from logging import getLogger
+# LOGGER = getLogger()
+class ContractCreateView(CreateView):
+    template_name = 'form.html'
+    form_class = ContractForm
+    success_url = reverse_lazy('navbar_contracts_all')
+
+    # def form_invalid(self, form):
+    #     LOGGER.warning(f'User provided invalid data. {form.errors}')
+    #     return super().form_invalid(form)
+
+
+class ContractUpdateView(UpdateView):
+    template_name = "form.html"
+    model = Contract
+    form_class = ContractForm
+    success_url = reverse_lazy("homepage")
+
+
+
+class ContractDeleteView(DeleteView):
+    template_name = "form.html"
+    model = Contract
+    success_url = reverse_lazy('navbar_contracts_all')
 
 
 class UserListView(ListView):
@@ -78,3 +104,4 @@ class SubmittablePasswordChangeView(PasswordChangeView):
 def contract_detail(request, contract_id):
     contract = get_object_or_404(Contract, id=contract_id)
     return render(request, 'detail_contract.html', {'contract': contract})
+
