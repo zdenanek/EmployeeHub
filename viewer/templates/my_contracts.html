@@ -29,6 +29,12 @@
             <td>
                 <a href="{% url 'detail_contract' contract.id %}" class="btn btn-info">Detail zakázky</a>
             </td>
+            <td>
+                <a href="{% url 'contract_update' contract.pk %}" class="btn btn-info">Upravit</a>
+            </td>
+            <td>
+                <a href="{% url 'contract_delete' contract.pk %}" class="btn btn-info">Smazat</a>
+            </td>
         </tr>
         {% empty %}
         <tr>

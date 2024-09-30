@@ -19,7 +19,8 @@ from django.urls import path
 
 
 from viewer.models import Customer, Contract, Groups, SubContract
-from viewer.views import homepage, UserListView, ProjectListView, PositionListView, CustomerListView, ContractListView, ContractAllListView, SignUpView, contract_detail
+from viewer.views import homepage, UserListView, ProjectListView, PositionListView, CustomerListView, ContractListView, \
+    ContractAllListView, SignUpView, contract_detail, ContractCreateView, ContractUpdateView, ContractDeleteView
 from viewer.views import SubmittablePasswordChangeView, SubmittableLoginView
 
 
@@ -39,10 +40,15 @@ urlpatterns = [
 
     path('navbar_contracts/', ContractListView.as_view(), name='navbar_contracts'),
     path('navbar_contracts_all/', ContractAllListView.as_view(), name='navbar_contracts_all'),
+
     path('sign-up/', SignUpView.as_view(), name='signup'),
     path('registration/login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('password-change/', SubmittablePasswordChangeView.as_view(),name='password_change'),
 
     path('contract/<int:contract_id>/', contract_detail, name='detail_contract'),
+
+    path('contract/create', ContractCreateView.as_view(), name='contract_create'),
+    path('contract/update/<pk>', ContractUpdateView.as_view(), name='contract_update'),
+    path('contract/delete/<pk>', ContractDeleteView.as_view(), name='contract_delete'),
 ]
