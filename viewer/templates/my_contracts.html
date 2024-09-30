@@ -1,17 +1,39 @@
 <h2>Moje projekty</h2>
-<ul>
-    {% for contract in contracts %}
-        <li>
-            {{ contract.contract_name }} - {{ contract.created }} - {{ contract.get_status_display }} - {{ contract.user.first_name }} {{ contract.user.last_name }} -
-            {% if contract.user.userprofile.position %}  <!-- check if the user has a position -->
-                {{ contract.user.userprofile.position.name }}  <!-- print user's position -->
-            {% else %}
-                Žádná pozice  <!-- Print no position -->
-            {% endif %}
-            <!-- Tlačítko na detail zakázky -->
-            <a href="{% url 'detail_contract' contract.id %}" class="btn btn-info">Detail zakázky</a>
-        </li>
-    {% empty %}
-        <li>Žádné projekty nejsou dostupné.</li>
-    {% endfor %}
-</ul>
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Název projektu</th>
+            <th>Číslo projektu</th>
+            <th>Datum vytvoření</th>
+            <th>Status</th>
+            <th>Uživatel</th>
+            <th>Pozice</th>
+            <th>Detail zakázky</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for contract in contracts %}
+        <tr>
+            <td>{{ contract.contract_name }}</td>
+            <td>{{ contract.id }}</td>
+            <td>{{ contract.created }}</td>
+            <td>{{ contract.get_status_display }}</td>
+            <td>{{ contract.user.first_name }} {{ contract.user.last_name }}</td>
+            <td>
+                {% if contract.user.userprofile.position %}
+                    {{ contract.user.userprofile.position.name }}
+                {% else %}
+                    Žádná pozice
+                {% endif %}
+            </td>
+            <td>
+                <a href="{% url 'detail_contract' contract.id %}" class="btn btn-info">Detail zakázky</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">Žádné projekty nejsou dostupné.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
