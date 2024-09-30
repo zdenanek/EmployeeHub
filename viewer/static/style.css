@@ -38,3 +38,9 @@
     font-size: 1.25rem; /* Velikost písma pro nadpisy karet */
     margin-bottom: 1rem; /* Spodní okraj pro nadpisy karet */
 }
+
+.smaller-input {
+    max-width: 300px; /* Nastav šířku na přibližně 7 cm */
+}
+
+

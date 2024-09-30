@@ -14,13 +14,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
 
 
 from viewer.models import Customer, Contract, Groups, SubContract
 from viewer.views import homepage, UserListView, ProjectListView, PositionListView, CustomerListView, ContractListView, ContractAllListView, SignUpView, contract_detail
-
+from viewer.views import SubmittablePasswordChangeView, SubmittableLoginView
 
 
 #admin.site.register(User)
@@ -41,5 +41,8 @@ urlpatterns = [
     path('navbar_contracts_all/', ContractAllListView.as_view(), name='navbar_contracts_all'),
     path('sign-up/', SignUpView.as_view(), name='signup'),
     path('registration/login/', LoginView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
+    path('password-change/', SubmittablePasswordChangeView.as_view(),name='password_change'),
+
     path('contract/<int:contract_id>/', contract_detail, name='detail_contract'),
 ]

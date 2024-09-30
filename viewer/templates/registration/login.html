@@ -1,6 +1,27 @@
- <h1>Login</h1>
-  <form method="post">
-    {% csrf_token %}
-    <table>{{ form }}</table>
-    <input type="submit" value="Submit" class="btn btn-primary">
-  </form>
+{% extends 'navbar_login.html' %}
+
+{% block title %}Login - SDA Employee Hub{% endblock %}
+
+
+
+{% block content %}
+    <div class="text-start mt-5">
+        <h1>Přihlaste se pro přístup do portálu</h1>
+
+
+        <!-- Formulář pro přihlášení -->
+        <form method="post" action="{% url 'login' %}" class="w-50">
+            {% csrf_token %}
+            <div class="mb-3">
+                <br>
+                <label for="username" class="form-label">Uživatelské jméno</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Heslo</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Přihlásit se</button>
+        </form>
+    </div>
+{% endblock %}

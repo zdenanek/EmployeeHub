@@ -64,10 +64,15 @@ class SignUpView(CreateView):
     form_class = SignUpForm
     success_url = reverse_lazy('homepage')
     
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, PasswordChangeView
 
 class SubmittableLoginView(LoginView):
     template_name = 'login.html'
+
+
+class SubmittablePasswordChangeView(PasswordChangeView):
+  template_name = 'form.html'
+  success_url = reverse_lazy('homepage')
 
 
 def contract_detail(request, contract_id):
