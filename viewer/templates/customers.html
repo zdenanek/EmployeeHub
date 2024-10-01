@@ -2,7 +2,6 @@
 <ul>
     {% for customer in customers %}
         <li>{{ customer.first_name }} {{ customer.last_name }} {{ customer.created }}</li>
-        <a href="{% url 'detail_customer' customer.id %}" class="btn btn-info">Detail zákazníka</a>
         <a href="{% url 'customer_update' customer.pk %}" class="btn btn-info">Upravit</a>
         <a href="{% url 'customer_delete' customer.pk %}" class="btn btn-info">Smazat</a>
 

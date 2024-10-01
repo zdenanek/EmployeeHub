@@ -52,21 +52,27 @@ class ContractUpdateView(UpdateView):
     success_url = reverse_lazy("homepage")
 
 
-
 class ContractDeleteView(DeleteView):
     template_name = "form.html"
     model = Contract
     success_url = reverse_lazy('navbar_contracts_all')
 
 
-class CustomerView(ListView):
+class CustomerListView(ListView):
     model = Customer
     template_name = 'customers.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['customers'] = self.object_list  # Přidej zákazníky do proměnné 'customers'
+        return context
+
 
 class CustomerCreateView(CreateView):
     template_name = 'form.html'
     form_class = CustomerForm
     success_url = reverse_lazy('navbar_customers')
+
 class CustomerUpdateView(UpdateView):
     template_name = 'form.html'
     model = Customer
@@ -99,14 +105,6 @@ class PositionListView(ListView):
         return context
 
 
-class CustomerListView(ListView):
-    model = Customer
-    template_name = 'customers.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['customers'] = self.object_list  # Přidej zákazníky do proměnné 'customers'
-        return context
 
 
 class ContractListView(ListView):
