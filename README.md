@@ -14,7 +14,7 @@ Tato aplikace je ideálním řešením pro menší moderní firmy, které chtěj
 - [ ] uživatelské scénáře
 - [ ] prezentace mockupu
 ## Základ
-- [ ] HTML kostra
+- [x] HTML kostra
 - [ ] klíčové fce (registrace, přilášení, vyhledávání, přiřazování objednávek...)
 - [ ] testování
 ## Plná verze
