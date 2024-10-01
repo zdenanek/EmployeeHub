@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from .models import Contract, Customer, Position
-from .forms import SignUpForm, ContractForm
+from .forms import SignUpForm, ContractForm, CustomerForm
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -57,6 +57,26 @@ class ContractDeleteView(DeleteView):
     template_name = "form.html"
     model = Contract
     success_url = reverse_lazy('navbar_contracts_all')
+
+
+class CustomerView(ListView):
+    model = Customer
+    template_name = 'customers.html'
+
+class CustomerCreateView(CreateView):
+    template_name = 'form.html'
+    form_class = CustomerForm
+    success_url = reverse_lazy('navbar_customers')
+class CustomerUpdateView(UpdateView):
+    template_name = 'form.html'
+    model = Customer
+    form_class = CustomerForm
+    success_url = reverse_lazy('navbar_customers')
+
+class CustomerDeleteView(DeleteView):
+    template_name = 'form.html'
+    model = Customer
+    success_url = reverse_lazy('navbar_customers')
 
 
 class UserListView(ListView):
