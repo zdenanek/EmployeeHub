@@ -1,6 +1,6 @@
 <h2>Zákazníci</h2>
 <ul>
-    {% for customer in customers %}
+    {% for customer in object_list %}
         <li>{{ customer.first_name }} {{ customer.last_name }} {{ customer.created }}</li>
         <a href="{% url 'customer_update' customer.pk %}" class="btn btn-info">Upravit</a>
         <a href="{% url 'customer_delete' customer.pk %}" class="btn btn-info">Smazat</a>

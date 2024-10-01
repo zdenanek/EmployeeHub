@@ -19,12 +19,12 @@ from django.urls import path
 
 
 from viewer.models import Customer, Contract, Groups, SubContract
-from viewer.views import homepage, UserListView, ProjectListView, PositionListView, CustomerListView, ContractListView, \
+from viewer.views import HomepageView, UserListView, ProjectListView, PositionListView, CustomerListView, ContractListView, \
     ContractAllListView, SignUpView, contract_detail, ContractCreateView, ContractUpdateView, ContractDeleteView, CustomerCreateView, CustomerUpdateView, CustomerDeleteView
 from viewer.views import SubmittablePasswordChangeView, SubmittableLoginView
 
 
-#admin.site.register(User)
+
 admin.site.register(Customer)
 admin.site.register(Contract)
 admin.site.register(Groups)
@@ -32,13 +32,9 @@ admin.site.register(SubContract)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', homepage, name='homepage'),
-    # path('users/', UserListView.as_view(), name='user_list'),
-    path("users/", UserListView.as_view(), name="user_list"),    # ve views jsem udělal tu funkci user_list, která generuje ty uživatele
-    # ale nechápu, proč nestačí to nad tím, co jsem zakomentoval, protože na homepage to normálně vykresluje všechny
-    # uživatele, ale když jdeš na detail té stránky, tak už ne; takže je tam i nejspíš zbytečná kopie users.html v podobě user_list.html
-    # je to vidět na Pozicích, co to v tom výchozím stavu dělá, neboli
-    #TODO sjednotit users a user_list a vyladit výpis položek
+    path('', HomepageView.as_view(), name='homepage'),
+    path('users/', UserListView.as_view(), name='user_list'),
+
     path('products/', ProjectListView.as_view(), name='product_list'),
     path('positions/', PositionListView.as_view(), name='position_list'),
     path('customers/', CustomerListView.as_view(), name='navbar_customers'),
