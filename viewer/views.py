@@ -63,15 +63,30 @@ class UserListView(ListView):
     model = User
     template_name = 'users.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['users'] = self.object_list  # Přidej zákazníky do proměnné 'customers'
+        return context
+
 
 class PositionListView(ListView):
     model = Position
     template_name = 'positions.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['positions'] = self.object_list  # Přidej zákazníky do proměnné 'customers'
+        return context
+
 
 class CustomerListView(ListView):
     model = Customer
     template_name = 'customers.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['customers'] = self.object_list  # Přidej zákazníky do proměnné 'customers'
+        return context
 
 
 class ContractListView(ListView):
@@ -104,8 +119,3 @@ class SubmittablePasswordChangeView(PasswordChangeView):
 def contract_detail(request, contract_id):
     contract = get_object_or_404(Contract, id=contract_id)
     return render(request, 'detail_contract.html', {'contract': contract})
-
-
-def user_list(request):
-    users = User.objects.all()
-    return render(request, "user_list.html", {"users": users})
