@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView
 
-from .models import Contract, Customer, Position
+from .models import Contract, Customer, Position, SubContract
 from .forms import SignUpForm, ContractForm, CustomerForm
 
 from django.contrib.auth import get_user_model
@@ -22,10 +22,9 @@ class HomepageView(TemplateView):
         return context
 
 
-class ProjectListView(ListView):
+class ContractListView(ListView):
     model = Contract
     template_name = 'contracts_homepage.html'
-
 
 
 # from logging import getLogger
@@ -47,7 +46,6 @@ class ContractUpdateView(UpdateView):
     success_url = reverse_lazy("homepage")
 
 
-
 class ContractDeleteView(DeleteView):
     template_name = "form.html"
     model = Contract
@@ -58,15 +56,19 @@ class CustomerView(ListView):
     model = Customer
     template_name = 'customers.html'
 
+
 class CustomerCreateView(CreateView):
     template_name = 'form.html'
     form_class = CustomerForm
     success_url = reverse_lazy('navbar_customers')
+
+
 class CustomerUpdateView(UpdateView):
     template_name = 'form.html'
     model = Customer
     form_class = CustomerForm
     success_url = reverse_lazy('navbar_customers')
+
 
 class CustomerDeleteView(DeleteView):
     template_name = 'form.html'
@@ -77,8 +79,6 @@ class CustomerDeleteView(DeleteView):
 class UserListView(ListView):
     model = User
     template_name = 'users.html'
-
-
 
 
 class PositionListView(ListView):
@@ -121,3 +121,8 @@ class SubmittablePasswordChangeView(PasswordChangeView):
 def contract_detail(request, contract_id):
     contract = get_object_or_404(Contract, id=contract_id)
     return render(request, 'detail_contract.html', {'contract': contract})
+
+
+class SubContractView(ListView):
+    model = SubContract
+    template_name = 'subcontract.html'
