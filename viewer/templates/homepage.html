@@ -29,6 +29,9 @@
                         <a class="nav-link" href="{% url 'navbar_contracts_all' %}">Všechny projekty</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{% url 'navbar_customers' %}">Zákazníci</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'homepage' %}">Kalendář dovolené</a>
                     </li>
                     <li class="nav-item dropdown">
@@ -73,7 +76,7 @@
             <div class="col-md-6">
                 <div class="card text-center">
                     <div class="card-body">
-                        {% include 'users.html' %}
+                        {% include 'events_homepage.html' %}
                     </div>
                 </div>
             </div>
@@ -89,7 +92,7 @@
             <div class="col-md-6">
                 <div class="card text-center">
                     <div class="card-body">
-                        {% include 'customers.html' %}
+                        {% include 'comments_homepage.html' %}
                     </div>
                 </div>
             </div>

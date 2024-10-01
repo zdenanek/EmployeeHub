@@ -21,7 +21,7 @@ from django.urls import path
 from viewer.models import Customer, Contract, Groups, SubContract
 from viewer.views import homepage, UserListView, ProjectListView, PositionListView, CustomerListView, ContractListView, \
     ContractAllListView, SignUpView, contract_detail, ContractCreateView, ContractUpdateView, ContractDeleteView, \
-    user_list
+    user_list, CustomerCreateView, CustomerUpdateView, CustomerDeleteView
 from viewer.views import SubmittablePasswordChangeView, SubmittableLoginView
 
 
@@ -42,7 +42,7 @@ urlpatterns = [
     #TODO sjednotit users a user_list a vyladit výpis položek
     path('products/', ProjectListView.as_view(), name='product_list'),
     path('positions/', PositionListView.as_view(), name='position_list'),
-    path('customers/', CustomerListView.as_view(), name='customer_list'),
+
 
     path('navbar_contracts/', ContractListView.as_view(), name='navbar_contracts'),
     path('navbar_contracts_all/', ContractAllListView.as_view(), name='navbar_contracts_all'),
@@ -57,4 +57,9 @@ urlpatterns = [
     path('contract/create/', ContractCreateView.as_view(), name='contract_create'),
     path('contract/update/<pk>', ContractUpdateView.as_view(), name='contract_update'),
     path('contract/delete/<pk>', ContractDeleteView.as_view(), name='contract_delete'),
+
+    path('navbar_customers/', CustomerListView.as_view(), name='navbar_customers'),
+    path('customer/create/', CustomerCreateView.as_view(), name='customer_create'),
+    path('customer/update/<pk>', CustomerUpdateView.as_view(), name='customer_update'),
+    path('customer/delete/<pk>', CustomerDeleteView.as_view(), name='customer_delete'),
 ]
