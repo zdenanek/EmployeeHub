@@ -79,6 +79,7 @@ class Position(models.Model):
     def __str__(self):
         return self.name
 
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True, blank=True)

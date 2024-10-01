@@ -80,12 +80,15 @@
         <tbody>
             {% for subcontract in contract.subcontracts.all %}
             <tr>
-                <td>{{ subcontract.id }}</td>
+                <td>{{ subcontract.subcontract_number }}</td>
                 <td>{{ subcontract.subcontract_name }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    <a href="{% url 'subcontract_create' %}" class="btn btn-info"> Přidat položku </a>
+
 
     <br><br><br><br><br><br>
 
