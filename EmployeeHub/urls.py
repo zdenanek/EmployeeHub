@@ -61,5 +61,5 @@ urlpatterns = [
 
     # path('subcontracts/', SubContractView.as_view(), name='navbar_subcontracts'),
     path('subcontracts/', show_subcontracts, name='navbar_show_subcontracts'),
-    path('subcontract/create/', SubContractCreateView.as_view(), name='subcontract_create')
+    path('subcontract/create/<param>', SubContractCreateView.as_view(), name='subcontract_create')
 ]

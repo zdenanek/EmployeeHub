@@ -48,7 +48,7 @@ class SubContract(Model):
     created = DateTimeField(auto_now_add=True)
     contract = ForeignKey(Contract, related_name='subcontracts', on_delete=DO_NOTHING)
     #status = ForeignKey(User, on_delete=DO_NOTHING, default=1)    #TODO
-    subcontract_number = IntegerField(null=True, blank=True, default=1)
+    # subcontract_number = IntegerField(null=True, blank=True, default=1)
 
     class Meta:
         constraints = [
