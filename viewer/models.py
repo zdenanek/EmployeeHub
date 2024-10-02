@@ -48,7 +48,7 @@ class SubContract(Model):
     created = DateTimeField(auto_now_add=True)
     contract = ForeignKey(Contract, related_name='subcontracts', on_delete=DO_NOTHING)
     #status = ForeignKey(User, on_delete=DO_NOTHING, default=1)    #TODO
-    # subcontract_number = IntegerField(null=True, blank=True, default=1)
+    subcontract_number = IntegerField(null=True, blank=True, default=1)
 
     class Meta:
         constraints = [
@@ -56,12 +56,15 @@ class SubContract(Model):
         ]
 
     def save(self, *args, **kwargs):
+        pass
+        '''
         if self.subcontract_number is None:
             last_subcontract = SubContract.objects.filter(contract=self.contract).order_by("subcontract_number").last()
             if last_subcontract:
                 self.subcontract_number = last_subcontract.subcontract_number + 1
             else:
                 self.subcontract_number = 1
+        '''
         super().save(*args, **kwargs)
 
 

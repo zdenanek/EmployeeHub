@@ -80,7 +80,7 @@
         <tbody>
             {% for subcontract in contract.subcontracts.all %}
             <tr>
-                <td>{{ subcontract.pk }}</td>
+                <td>{{ contract.pk }} _ {{subcontract.subcontract_number }}</td>
                 <td>{{ subcontract.subcontract_name }}</td>
             </tr>
             {% endfor %}

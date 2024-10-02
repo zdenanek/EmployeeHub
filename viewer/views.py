@@ -148,6 +148,8 @@ class SubContractCreateView(FormView):
         #TODO subcontract_number bych smazal z modelu a nahradil ho pomocí .pk, které již má každý model
         #alternativně zde můžete použít toto:
         #new_sub_contract.subcontract_number = 7
+        new_sub_contract.subcontract_number = SubContract.objects.filter(contract=new_sub_contract.contract).count() + 1
+
         new_sub_contract.save()
         #pomocí self.request.user zkontroluji, že jsou práva OK
         return super().form_valid(form)
