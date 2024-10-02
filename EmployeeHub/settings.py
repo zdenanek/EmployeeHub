@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'viewer',
-
 ]
 
 LOGIN_REDIRECT_URL = 'homepage'
