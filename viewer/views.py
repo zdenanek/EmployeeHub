@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, FormView
 
 from .models import Contract, Customer, Position, SubContract
-from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, SubContractFormUpdate
+from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, SubContractFormUpdate, CommentForm
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -128,9 +128,6 @@ class SubmittablePasswordChangeView(PasswordChangeView):
   success_url = reverse_lazy('homepage')
 
 
-
-
-
 class SubContractView(ListView):
     model = SubContract
     template_name = 'subcontract.html'
@@ -166,3 +163,17 @@ class SubContractDeleteView(DeleteView):
     template_name = "form.html"
     model = SubContract
     success_url = reverse_lazy('navbar_contracts')
+
+
+class CommentCreateView(CreateView):
+    template_name = "form.html"
+    form_class = CommentForm
+    success_url = reverse_lazy('detail_contract')
+
+    def form_valid(self, form):
+        new_comment = form.save(commit=False)
+        new_comment.subcontract = SubContract.objects.get(pk=int(self.kwargs["pk"]))
+        new_comment.save()
+        return super().form_valid(form)
+
+    pass

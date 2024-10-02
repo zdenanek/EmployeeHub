@@ -23,7 +23,7 @@ from viewer.views import HomepageView, UserListView, PositionListView, CustomerL
     ContractListView, \
     ContractAllListView, SignUpView, contract_detail, ContractCreateView, ContractUpdateView, ContractDeleteView, \
     CustomerCreateView, CustomerUpdateView, CustomerDeleteView, SubContractView, SubContractCreateView, \
-    SubmittablePasswordChangeView, show_subcontracts, SubContractUpdateView, SubContractDeleteView
+    SubmittablePasswordChangeView, show_subcontracts, SubContractUpdateView, SubContractDeleteView, CommentCreateView
 
 admin.site.register(Customer)
 admin.site.register(Contract)
@@ -63,4 +63,6 @@ urlpatterns = [
     path('subcontract/create/<param>', SubContractCreateView.as_view(), name='subcontract_create'),
     path('subcontract/update/<pk>', SubContractUpdateView.as_view(), name='subcontract_update'),
     path('subcontract/delete/<pk>', SubContractDeleteView.as_view(), name='subcontract_delete'),
+
+    path('comment/create/<pk>', CommentCreateView.as_view(), name='comment_add'),
 ]
