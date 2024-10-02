@@ -9,6 +9,16 @@ from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
+# Funkce, která slouží k zobrazení detailu kontraktu
+def contract_detail(request, contract_id):
+    contract = get_object_or_404(Contract, id=contract_id)
+    return render(request, 'detail_contract.html', {'contract': contract})
+
+# Funkce pro získání všech subcontraktů
+def show_subcontracts(request):
+    subcontracts = SubContract.objects.all()
+    return render(request, 'subcontract.html', {'subcontracts': subcontracts})
+
 
 class HomepageView(TemplateView):
     template_name = 'homepage.html'
@@ -118,9 +128,7 @@ class SubmittablePasswordChangeView(PasswordChangeView):
   success_url = reverse_lazy('homepage')
 
 
-def contract_detail(request, contract_id):
-    contract = get_object_or_404(Contract, id=contract_id)
-    return render(request, 'detail_contract.html', {'contract': contract})
+
 
 
 class SubContractView(ListView):
