@@ -82,6 +82,8 @@
             <tr>
                 <td>{{ contract.pk }} _ {{subcontract.subcontract_number }}</td>
                 <td>{{ subcontract.subcontract_name }}</td>
+                <td><a href="{% url 'subcontract_update' subcontract.pk %}" class="btn btn-info">Upravit</a></td>
+                <td><a href="{% url 'subcontract_delete' subcontract.pk %}" class="btn btn-info">Smazat</a></td>
             </tr>
             {% endfor %}
         </tbody>

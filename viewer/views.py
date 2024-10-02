@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, FormView
 
 from .models import Contract, Customer, Position, SubContract
-from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm
+from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, SubContractFormUpdate
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -153,3 +153,16 @@ class SubContractCreateView(FormView):
         new_sub_contract.save()
         #pomocí self.request.user zkontroluji, že jsou práva OK
         return super().form_valid(form)
+
+
+class SubContractUpdateView(UpdateView):
+    template_name = "form.html"
+    model = SubContract
+    form_class = SubContractForm
+    success_url = reverse_lazy("navbar_contracts")
+
+
+class SubContractDeleteView(DeleteView):
+    template_name = "form.html"
+    model = SubContract
+    success_url = reverse_lazy('navbar_contracts')
