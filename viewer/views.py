@@ -9,15 +9,20 @@ from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, SubC
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
-# Funkce, která slouží k zobrazení detailu kontraktu
-def contract_detail(request, contract_id):
-    contract = get_object_or_404(Contract, id=contract_id)
-    return render(request, 'detail_contract.html', {'contract': contract})
+# Funkce, která slouží k zobrazení konkrétního detailu kontraktu
+def contract_detail(request, contract_id):# Tato funkce přijímá 2 argumenty (request: HTTP požadavek a ontract_id: Parametr, který představuje ID konkrétního kontraktu, který chceme načíst.
+    contract = get_object_or_404(Contract, id=contract_id) # get_object_or_404: Tato funkce se pokusí načíst kontrakt z databáze podle zadaného contract_id
+    return render(request, 'detail_contract.html', {'contract': contract}) # Funkce render kombinuje šablonu s kontextovými daty (contract). Šablona 'detail_contract.html' se použije k zobrazení detailů kontraktu. Objekt contract se předává do šablony pomocí kontextového slovníku {'contract': contract}, aby šablona mohla přistupovat k detailům kontraktu a zobrazit je.
 
 # Funkce pro získání všech subcontraktů
 def show_subcontracts(request):
     subcontracts = SubContract.objects.all()
     return render(request, 'subcontract.html', {'subcontracts': subcontracts})
+
+
+def subcontract_detail(request, subcontract_id):
+    subcontracts = get_object_or_404(SubContract, id=subcontract_id)
+    return render(request, 'detail_subcontract.html', {'subcontracts': subcontracts})
 
 
 class HomepageView(TemplateView):

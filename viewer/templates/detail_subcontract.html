@@ -55,43 +55,20 @@
         </div>
     </nav>
 
-    <a href="{% url 'navbar_contracts_all' %}" class="btn btn-info">Zpět na přehled</a>
-    <a href="{% url 'contract_update' contract.pk %}" class="btn btn-info">Upravit</a>
+    <a href="{% url 'navbar_contracts' %}" class="btn btn-info">Zpět na přehled</a>
 
-<h2>Detail zakázky č. {{ contract.id }}</h2>
-<p>Název: {{ contract.contract_name }}</p>
-<p>Datum vytvoření: {{ contract.created }}</p>
-<p>Status: {{ contract.get_status_display }}</p>
-<p>Uživatel: {{ contract.user.first_name }} {{ contract.user.last_name }}</p>
 
-{% if contract.user.userprofile.position %}
-    <p>Pozice: {{ contract.user.userprofile.position.name }}</p>
-{% else %}
-    <p>Pozice: Žádná pozice</p>
-{% endif %}
+    <p>Číslo: {{ contract.pk }} _ {{subcontract.subcontract_number }}</p>
+    <p>Název: {{ subcontract.subcontract_name }}</p>
+    <p>Datum vytvoření: {{ subcontract.created }}</p>
 
-<table class="table table-striped table-bordered">
-        <thead>
-            <tr>
-                <th>Číslo subcontractu</th>
-                <th>Jméno subcontractu</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for subcontract in contract.subcontracts.all %}
-            <tr>
-                <td>{{ contract.pk }} _ {{subcontract.subcontract_number }}</td>
-                <td>{{ subcontract.subcontract_name }}</td>
-                <td><a href="{% url 'detail_subcontract' subcontract.pk %}" class="btn btn-info"> Detail subkontraktu </a></td>
-                <td><a href="{% url 'subcontract_update' subcontract.pk %}" class="btn btn-info">Upravit</a></td>
-                <td><a href="{% url 'subcontract_delete' subcontract.pk %}" class="btn btn-info">Smazat</a></td>
-            </tr>
-            {% endfor %}
 
-        </tbody>
-    </table>
+    <h4>Komentáře k subkontraktu</h4>
 
-   <a href="{% url 'subcontract_create' contract.pk %}" class="btn btn-info"> Přidat položku </a>
+
+    {% for comment in subcontract.comment_set.all %}
+        <h4 style="color: pink">{{ comment.text }}</h4>
+    {% endfor %}
 
 
     <br><br><br><br><br><br>
