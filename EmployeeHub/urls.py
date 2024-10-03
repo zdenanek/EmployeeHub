@@ -39,18 +39,17 @@ urlpatterns = [
 
     path('positions/', PositionListView.as_view(), name='position_list'),
 
-# path for navbar/homapege
+# path for navbar/homepage
     path('navbar_contracts/', ContractListView.as_view(), name='navbar_contracts'),
     path('navbar_contracts_all/', ContractAllListView.as_view(), name='navbar_contracts_all'),
 
-#path for authetization
+# path for authentication
     path('sign-up/', SignUpView.as_view(), name='signup'),
     path('registration/login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('password-change/', SubmittablePasswordChangeView.as_view(),name='password_change'),
 
 # path for contract
-#     path('contract/<int:contract_id>/', contract_detail, name='detail_contract'),
     path('contract/<int:pk>/', ContractView.as_view(), name='contract_detail'),
     path('contract/create/', ContractCreateView.as_view(), name='contract_create'),
     path('contract/update/<pk>', ContractUpdateView.as_view(), name='contract_update'),
@@ -63,15 +62,13 @@ urlpatterns = [
     path('customer/delete/<pk>', CustomerDeleteView.as_view(), name='customer_delete'),
 
 # path for subcontracts
-    # path('subcontracts/', SubContractView.as_view(), name='navbar_subcontracts'),
     path('subcontracts/', show_subcontracts, name='navbar_show_subcontracts'),
-    # path('subcontract/<subcontract_id>/', subcontract_detail, name='detail_subcontract'),
     path('subcontract/<subcontract_id>/', subcontract_detail, name='detail_subcontract'),
     path('subcontract/create/<param>', SubContractCreateView.as_view(), name='subcontract_create'),
-    # path('subcontract/update/<pk>', SubContractUpdateView.as_view(), name='subcontract_update'),
     path("subcontract/<int:pk>/update/", SubContractUpdateView.as_view(), name="subcontract_update"),
     path('subcontract/delete/<pk>', SubContractDeleteView.as_view(), name='subcontract_delete'),
 
+# paths for comments
     path('comment/create/<pk>', CommentCreateView.as_view(), name='comment_add'),
 
 #path for calendar

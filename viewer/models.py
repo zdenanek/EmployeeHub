@@ -27,9 +27,6 @@ class Customer(Model):
     def __str__(self):
         return f"Název zákazníka: {self.first_name} {self.last_name}"
 
-#from EmployeeHub import settings
-#from django.contrib.auth.models import User
-
 
 class Contract(Model):
     contract_name = CharField(max_length=100)
@@ -73,7 +70,6 @@ class SubContract(Model):
 
 
 from django.db import models
-from django.contrib.auth import get_user_model
 
 
 class Position(models.Model):
