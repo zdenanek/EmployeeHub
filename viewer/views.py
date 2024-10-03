@@ -24,7 +24,7 @@ def show_subcontracts(request):
 
 
 def subcontract_detail(request, subcontract_id):
-    subcontract = get_object_or_404(SubContract, id=subcontract_id)
+    subcontract = get_object_or_404(SubContract, pk=subcontract_id)
     contract = subcontract.contract
     return render(request, 'detail_subcontract.html', {'subcontract': subcontract, 'contract': contract})
 
@@ -188,7 +188,7 @@ class SubContractDeleteView(DeleteView):
 class CommentCreateView(CreateView):
     template_name = "form.html"
     form_class = CommentForm
-    success_url = reverse_lazy('detail_contract')
+    # success_url = reverse_lazy('contract_detail')
 
     def form_valid(self, form):
         new_comment = form.save(commit=False)
@@ -196,6 +196,10 @@ class CommentCreateView(CreateView):
         new_comment.save()
         return super().form_valid(form)
 
+    def get_success_url(self):
+        subcontract = SubContract.objects.get(pk=int(self.kwargs["pk"]))
+        contract_id = subcontract.contract.pk
+        return reverse_lazy('contract_detail', kwargs={'pk': contract_id})
 
 from django.http import JsonResponse
 from .models import Event  # Předpokládejme, že máš model pro události

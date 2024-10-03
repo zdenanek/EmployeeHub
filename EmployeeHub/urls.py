@@ -65,6 +65,7 @@ urlpatterns = [
 # path for subcontracts
     # path('subcontracts/', SubContractView.as_view(), name='navbar_subcontracts'),
     path('subcontracts/', show_subcontracts, name='navbar_show_subcontracts'),
+    # path('subcontract/<subcontract_id>/', subcontract_detail, name='detail_subcontract'),
     path('subcontract/<subcontract_id>/', subcontract_detail, name='detail_subcontract'),
     path('subcontract/create/<param>', SubContractCreateView.as_view(), name='subcontract_create'),
     # path('subcontract/update/<pk>', SubContractUpdateView.as_view(), name='subcontract_update'),
