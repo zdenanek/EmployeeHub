@@ -22,9 +22,14 @@ def show_subcontracts(request):
     return render(request, 'subcontract.html', {'subcontracts': subcontracts})
 
 
+# def subcontract_detail(request, subcontract_id):
+#     subcontracts = get_object_or_404(SubContract, id=subcontract_id)
+#     return render(request, 'detail_subcontract.html', {'subcontracts': subcontracts})
+
+
 def subcontract_detail(request, subcontract_id):
-    subcontracts = get_object_or_404(SubContract, id=subcontract_id)
-    return render(request, 'detail_subcontract.html', {'subcontracts': subcontracts})
+    subcontract = get_object_or_404(SubContract, pk=subcontract_id)
+    return render(request, 'detail_subcontract.html', {'subcontract': subcontract})
 
 
 class HomepageView(TemplateView):

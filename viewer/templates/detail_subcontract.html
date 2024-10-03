@@ -57,18 +57,34 @@
 
     <a href="{% url 'navbar_contracts' %}" class="btn btn-info">Zpět na přehled</a>
 
+    {% if subcontract %}
+        <p>Název: {{ subcontract.subcontract_name }}</p>
+        <p>Datum vytvoření: {{ subcontract.created }}</p>
+    {% else %}
+        <p>Data nejsou k dispozici.</p>
+    {% endif %}
 
-    <p>Číslo: {{ contract.pk }} _ {{subcontract.subcontract_number }}</p>
-    <p>Název: {{ subcontract.subcontract_name }}</p>
-    <p>Datum vytvoření: {{ subcontract.created }}</p>
 
+    <h4>Komentáře</h4>
 
-    <h4>Komentáře k subkontraktu</h4>
-
-
-    {% for comment in subcontract.comment_set.all %}
-        <h4 style="color: pink">{{ comment.text }}</h4>
-    {% endfor %}
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Poř. číslo</th>
+                <th>Komentář</th>
+                <th>Datum</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for comment in subcontract.comment_set.all %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ comment.text }}</td>
+                <td>{{ comment.created_at }}</td> <!-- Pokud máte pole created_at -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
 
     <br><br><br><br><br><br>
