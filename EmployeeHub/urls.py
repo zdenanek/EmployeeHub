@@ -18,12 +18,12 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
 
 
-from viewer.models import Customer, Contract, Groups, SubContract, Comment
+from viewer.models import Customer, Contract, Groups, SubContract, Comment, Event
 from viewer.views import HomepageView, UserListView, PositionListView, CustomerListView, ContractListView, \
     ContractAllListView, SignUpView, contract_detail, ContractCreateView, ContractUpdateView, ContractDeleteView, \
     CustomerCreateView, CustomerUpdateView, CustomerDeleteView, SubContractView, SubContractCreateView, \
     SubmittablePasswordChangeView, show_subcontracts, SubContractUpdateView, SubContractDeleteView, CommentCreateView,\
-    subcontract_detail, events_feed, calendar_view
+    subcontract_detail, events_feed, calendar_view, update_event, create_event
 
 
 admin.site.register(Customer)
@@ -31,7 +31,7 @@ admin.site.register(Contract)
 admin.site.register(Groups)
 admin.site.register(SubContract)
 admin.site.register(Comment)
-
+admin.site.register(Event)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -40,25 +40,29 @@ urlpatterns = [
 
     path('positions/', PositionListView.as_view(), name='position_list'),
 
-
+# path for navbar/homapege
     path('navbar_contracts/', ContractListView.as_view(), name='navbar_contracts'),
     path('navbar_contracts_all/', ContractAllListView.as_view(), name='navbar_contracts_all'),
 
+#path for authetization
     path('sign-up/', SignUpView.as_view(), name='signup'),
     path('registration/login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('password-change/', SubmittablePasswordChangeView.as_view(),name='password_change'),
 
+# path for contract
     path('contract/<int:contract_id>/', contract_detail, name='detail_contract'),
     path('contract/create/', ContractCreateView.as_view(), name='contract_create'),
     path('contract/update/<pk>', ContractUpdateView.as_view(), name='contract_update'),
     path('contract/delete/<pk>', ContractDeleteView.as_view(), name='contract_delete'),
 
+# path fot customers
     path('customers/', CustomerListView.as_view(), name='navbar_customers'),
     path('customer/create/', CustomerCreateView.as_view(), name='customer_create'),
     path('customer/update/<pk>', CustomerUpdateView.as_view(), name='customer_update'),
     path('customer/delete/<pk>', CustomerDeleteView.as_view(), name='customer_delete'),
 
+# path for cubcontracts
     # path('subcontracts/', SubContractView.as_view(), name='navbar_subcontracts'),
     path('subcontracts/', show_subcontracts, name='navbar_show_subcontracts'),
     path('subcontract/<subcontract_id>/', subcontract_detail, name='detail_subcontract'),
@@ -68,6 +72,9 @@ urlpatterns = [
 
     path('comment/create/<pk>', CommentCreateView.as_view(), name='comment_add'),
 
+#path for calendar
     path('events-feed/', events_feed, name='events_feed'),
     path('calendar/', calendar_view, name='calendar'),
+    path('update-event/<int:event_id>/', update_event, name='update_event'),
+    path('create-event/', create_event, name='create_event'),
 ]

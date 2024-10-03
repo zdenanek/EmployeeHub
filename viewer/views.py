@@ -1,6 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
+from django.utils.dateparse import parse_datetime
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, FormView
 
 from .models import Contract, Customer, Position, SubContract
@@ -186,6 +188,7 @@ class CommentCreateView(CreateView):
 
 from django.http import JsonResponse
 from .models import Event  # Předpokládejme, že máš model pro události
+import json
 def events_feed(request):
     events = Event.objects.all()
     events_list = []
@@ -198,5 +201,38 @@ def events_feed(request):
     return JsonResponse(events_list, safe=False)
 
 
+@csrf_exempt
+def create_event(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            title = data.get('title')
+            start = parse_datetime(data.get('start_time'))
+            end = parse_datetime(data.get('end_time'))
+
+            Event.objects.create(
+                name=title,
+                start_time=start,
+                end_time=end
+            )
+            return JsonResponse({'status': 'success'},status=201)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
+
 def calendar_view(request):
     return render(request, 'calendar.html')
+
+def update_event(request, event_id):
+    if request.method == 'POST':
+        try:
+            event = Event.objects.get(pk=event_id)
+            data = json.loads(request.body)
+            event.start_time = data.get('start_time')
+            event.end_time = data.get('end_time')
+            event.save()
+            return JsonResponse({'status': 'success'})
+        except Event.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Event not found'}, status=404)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
