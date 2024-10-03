@@ -1,9 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
+from django.template.base import kwarg_re
 from django.urls import reverse_lazy
 from django.utils.dateparse import parse_datetime
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, FormView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, FormView, DetailView
 
 from .models import Contract, Customer, Position, SubContract
 from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, SubContractFormUpdate, CommentForm
@@ -23,8 +24,9 @@ def show_subcontracts(request):
 
 
 def subcontract_detail(request, subcontract_id):
-    subcontracts = get_object_or_404(SubContract, id=subcontract_id)
-    return render(request, 'detail_subcontract.html', {'subcontracts': subcontracts})
+    subcontract = get_object_or_404(SubContract, id=subcontract_id)
+    contract = subcontract.contract
+    return render(request, 'detail_subcontract.html', {'subcontract': subcontract, 'contract': contract})
 
 
 class HomepageView(TemplateView):
@@ -143,7 +145,7 @@ class SubContractView(ListView):
 class SubContractCreateView(FormView):
     template_name = 'form.html'
     form_class = SubContractForm
-    success_url = reverse_lazy('navbar_contracts_all')
+    # success_url = reverse_lazy('navbar_contracts_all')
 
     def form_valid(self, form):
         new_sub_contract = form.save(commit=False)
@@ -153,23 +155,34 @@ class SubContractCreateView(FormView):
         #alternativně zde můžete použít toto:
         #new_sub_contract.subcontract_number = 7
         new_sub_contract.subcontract_number = SubContract.objects.filter(contract=new_sub_contract.contract).count() + 1
-
         new_sub_contract.save()
         #pomocí self.request.user zkontroluji, že jsou práva OK
         return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('contract_detail', kwargs={'pk': self.kwargs['param']})
+
 
 
 class SubContractUpdateView(UpdateView):
     template_name = "form.html"
     model = SubContract
     form_class = SubContractForm
-    success_url = reverse_lazy("navbar_contracts")
+    # success_url = reverse_lazy("navbar_contracts")
+    def get_success_url(self):
+        subcontract = self.get_object()
+        contract_id = subcontract.contract.pk
+        return reverse_lazy("contract_detail", kwargs={"pk": contract_id})
 
 
 class SubContractDeleteView(DeleteView):
     template_name = "form.html"
     model = SubContract
-    success_url = reverse_lazy('navbar_contracts')
+    # success_url = reverse_lazy('navbar_contracts')
+
+    def get_success_url(self):
+        contract_id = self.object.contract.id
+        return reverse_lazy('contract_detail', kwargs={'pk': contract_id})
 
 
 class CommentCreateView(CreateView):
@@ -182,8 +195,6 @@ class CommentCreateView(CreateView):
         new_comment.subcontract = SubContract.objects.get(pk=int(self.kwargs["pk"]))
         new_comment.save()
         return super().form_valid(form)
-
-    pass
 
 
 from django.http import JsonResponse
@@ -236,3 +247,8 @@ def update_event(request, event_id):
         except Event.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Event not found'}, status=404)
     return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
+
+class ContractView(DetailView):
+    model = Contract
+    template_name = "detail_contract.html"

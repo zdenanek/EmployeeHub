@@ -1,5 +1,5 @@
 from django.db.models import CharField, Model, ForeignKey, DateTimeField, DO_NOTHING, ManyToManyField, IntegerField, \
-    EmailField, UniqueConstraint
+    EmailField, UniqueConstraint, CASCADE
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -93,7 +93,7 @@ class UserProfile(models.Model):
 
 class Comment(Model):
     text = CharField(max_length=200)
-    subcontract = ForeignKey(SubContract, on_delete=DO_NOTHING, default=1)
+    subcontract = ForeignKey(SubContract, on_delete=CASCADE, default=1)
     created = DateTimeField(auto_now_add=True)
 
     def __str__(self):

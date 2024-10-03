@@ -55,8 +55,8 @@
         </div>
     </nav>
 
-    <a href="{% url 'navbar_contracts' %}" class="btn btn-info">Zpět na přehled</a>
-
+<!--    <a href="{% url 'navbar_show_subcontracts' %}" class="btn btn-primary">Zpět na přehled</a>-->
+<a href="{% url 'contract_detail' contract.pk %}" class="btn btn-primary">Zpět na přehled</a>
 
     <p>Číslo: {{ contract.pk }} _ {{subcontract.subcontract_number }}</p>
     <p>Název: {{ subcontract.subcontract_name }}</p>
