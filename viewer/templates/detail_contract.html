@@ -85,6 +85,7 @@
                 <td><a href="{% url 'detail_subcontract' subcontract.pk %}" class="btn btn-info"> Detail subkontraktu </a></td>
                 <td><a href="{% url 'subcontract_update' subcontract.pk %}" class="btn btn-info">Upravit</a></td>
                 <td><a href="{% url 'subcontract_delete' subcontract.pk %}" class="btn btn-info">Smazat</a></td>
+                <td><a href="{% url 'comment_add' subcontract.pk %}" class="btn btn-info"> Přidat komentář </a></td>
             </tr>
             {% endfor %}
 
