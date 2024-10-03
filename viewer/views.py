@@ -180,7 +180,7 @@ class SubContractDeleteView(DeleteView):
 class CommentCreateView(CreateView):
     template_name = "form.html"
     form_class = CommentForm
-    success_url = reverse_lazy('detail_contract')
+    success_url = reverse_lazy('navbar_contracts')
 
     def form_valid(self, form):
         new_comment = form.save(commit=False)

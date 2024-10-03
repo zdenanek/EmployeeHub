@@ -66,6 +66,7 @@
 
 
     <h4>Komentáře</h4>
+    <td><a href="{% url 'comment_add' subcontract.pk %}" class="btn btn-info"> Přidat komentář </a></td>
 
     <table class="table table-bordered table-striped">
         <thead>
@@ -80,7 +81,7 @@
             <tr>
                 <td>{{ forloop.counter }}</td>
                 <td>{{ comment.text }}</td>
-                <td>{{ comment.created_at }}</td> <!-- Pokud máte pole created_at -->
+                <td>{{ comment.created }}</td>
             </tr>
             {% endfor %}
         </tbody>
