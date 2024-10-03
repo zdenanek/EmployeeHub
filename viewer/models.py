@@ -98,3 +98,13 @@ class Comment(Model):
 
     def __str__(self):
         return f"Komentář: {self.text}"
+
+
+
+class Event(models.Model):
+    name = models.CharField(max_length=255)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+
+    def __str__(self):
+        return self.name

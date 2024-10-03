@@ -24,6 +24,7 @@ from viewer.views import HomepageView, UserListView, PositionListView, CustomerL
     ContractAllListView, SignUpView, contract_detail, ContractCreateView, ContractUpdateView, ContractDeleteView, \
     CustomerCreateView, CustomerUpdateView, CustomerDeleteView, SubContractView, SubContractCreateView, \
     SubmittablePasswordChangeView, show_subcontracts, SubContractUpdateView, SubContractDeleteView, CommentCreateView,subcontract_detail
+    SubmittablePasswordChangeView, show_subcontracts, SubContractUpdateView, SubContractDeleteView, events_feed, calendar_view
 
 admin.site.register(Customer)
 admin.site.register(Contract)
@@ -38,6 +39,7 @@ urlpatterns = [
     path('users/', UserListView.as_view(), name='user_list'),
 
     path('positions/', PositionListView.as_view(), name='position_list'),
+
 
     path('navbar_contracts/', ContractListView.as_view(), name='navbar_contracts'),
     path('navbar_contracts_all/', ContractAllListView.as_view(), name='navbar_contracts_all'),
@@ -59,10 +61,12 @@ urlpatterns = [
 
     # path('subcontracts/', SubContractView.as_view(), name='navbar_subcontracts'),
     path('subcontracts/', show_subcontracts, name='navbar_show_subcontracts'),
-    path('subcontract/<subcontract_id>/', subcontract_detail, name='detail_subcontract'),
     path('subcontract/create/<param>', SubContractCreateView.as_view(), name='subcontract_create'),
     path('subcontract/update/<pk>', SubContractUpdateView.as_view(), name='subcontract_update'),
     path('subcontract/delete/<pk>', SubContractDeleteView.as_view(), name='subcontract_delete'),
 
     path('comment/create/<pk>', CommentCreateView.as_view(), name='comment_add'),
+
+    path('events-feed/', events_feed, name='events_feed'),
+    path('calendar/', calendar_view, name='calendar'),
 ]
