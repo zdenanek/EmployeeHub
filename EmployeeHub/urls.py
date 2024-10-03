@@ -18,18 +18,18 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
 
 
-from viewer.models import Customer, Contract, Groups, SubContract
+from viewer.models import Customer, Contract, Groups, SubContract, Comment
 from viewer.views import HomepageView, UserListView, PositionListView, CustomerListView, \
     ContractListView, \
     ContractAllListView, SignUpView, contract_detail, ContractCreateView, ContractUpdateView, ContractDeleteView, \
     CustomerCreateView, CustomerUpdateView, CustomerDeleteView, SubContractView, SubContractCreateView, \
-    SubmittablePasswordChangeView, show_subcontracts, SubContractUpdateView, SubContractDeleteView
+    SubmittablePasswordChangeView, show_subcontracts, SubContractUpdateView, SubContractDeleteView, CommentCreateView
 
 admin.site.register(Customer)
 admin.site.register(Contract)
 admin.site.register(Groups)
 admin.site.register(SubContract)
-
+admin.site.register(Comment)
 
 
 urlpatterns = [
@@ -38,7 +38,6 @@ urlpatterns = [
     path('users/', UserListView.as_view(), name='user_list'),
 
     path('positions/', PositionListView.as_view(), name='position_list'),
-
 
     path('navbar_contracts/', ContractListView.as_view(), name='navbar_contracts'),
     path('navbar_contracts_all/', ContractAllListView.as_view(), name='navbar_contracts_all'),
@@ -63,4 +62,6 @@ urlpatterns = [
     path('subcontract/create/<param>', SubContractCreateView.as_view(), name='subcontract_create'),
     path('subcontract/update/<pk>', SubContractUpdateView.as_view(), name='subcontract_update'),
     path('subcontract/delete/<pk>', SubContractDeleteView.as_view(), name='subcontract_delete'),
+
+    path('comment/create/<pk>', CommentCreateView.as_view(), name='comment_add'),
 ]

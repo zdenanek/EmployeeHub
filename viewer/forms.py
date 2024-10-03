@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import ModelForm
 
-from viewer.models import Contract, Customer, SubContract
+from viewer.models import Contract, Customer, SubContract, Comment
 
 
 class SignUpForm(UserCreationForm):
@@ -36,3 +36,9 @@ class SubContractFormUpdate(ModelForm):
     class Meta:
         model = SubContract
         fields = '__all__'
+
+
+class CommentForm(ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['text']

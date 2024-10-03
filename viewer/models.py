@@ -89,3 +89,12 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.position.name if self.position else 'No position'}"
+
+
+class Comment(Model):
+    text = CharField(max_length=200)
+    subcontract = ForeignKey(SubContract, on_delete=DO_NOTHING, default=1)
+    created = DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Komentář: {self.text}"
