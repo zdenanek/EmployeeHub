@@ -166,3 +166,21 @@ class SubContractDeleteView(DeleteView):
     template_name = "form.html"
     model = SubContract
     success_url = reverse_lazy('navbar_contracts')
+
+
+from django.http import JsonResponse
+from .models import Event  # Předpokládejme, že máš model pro události
+def events_feed(request):
+    events = Event.objects.all()
+    events_list = []
+    for event in events:
+        events_list.append({
+            'title': event.name,
+            'start': event.start_time.strftime("%Y-%m-%dT%H:%M:%S"),
+            'end': event.end_time.strftime("%Y-%m-%dT%H:%M:%S"),
+        })
+    return JsonResponse(events_list, safe=False)
+
+
+def calendar_view(request):
+    return render(request, 'calendar.html')
