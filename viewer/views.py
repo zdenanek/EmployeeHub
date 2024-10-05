@@ -54,7 +54,7 @@ class ContractUpdateView(UpdateView):
     template_name = "form.html"
     model = Contract
     form_class = ContractForm
-    success_url = reverse_lazy("homepage")
+    success_url = reverse_lazy("navbar_contracts_all")
 
 
 class ContractDeleteView(DeleteView):
@@ -153,10 +153,14 @@ class SubContractUpdateView(UpdateView):
     template_name = "form.html"
     model = SubContract
     form_class = SubContractForm
+
+    def get_object(self):
+        contract_pk = self.kwargs.get("contract_pk")
+        subcontract_number = self.kwargs.get("subcontract_number")
+        return SubContract.objects.get(contract__pk=contract_pk, subcontract_number=subcontract_number)
+
     def get_success_url(self):
-        subcontract = self.get_object()
-        contract_id = subcontract.contract.pk
-        return reverse_lazy("contract_detail", kwargs={"pk": contract_id})
+        return reverse_lazy('contract_detail', kwargs={'pk': self.kwargs['contract_pk']})
 
 
 class SubContractDeleteView(DeleteView):
@@ -236,3 +240,13 @@ def update_event(request, event_id):
 class ContractView(DetailView):
     model = Contract
     template_name = "detail_contract.html"
+
+
+class SubContractDetailView(DetailView):
+    template_name = "detail_subcontract.html"
+    model = SubContract
+
+    def get_object(self):
+        contract_pk = self.kwargs.get("contract_pk")
+        subcontract_number = self.kwargs.get("subcontract_number")
+        return SubContract.objects.get(contract__pk=contract_pk, subcontract_number=subcontract_number)

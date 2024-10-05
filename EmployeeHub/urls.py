@@ -23,7 +23,7 @@ from viewer.views import HomepageView, UserListView, PositionListView, CustomerL
     ContractAllListView, SignUpView, contract_detail, ContractCreateView, ContractUpdateView, ContractDeleteView, \
     CustomerCreateView, CustomerUpdateView, CustomerDeleteView, SubContractView, SubContractCreateView, \
     SubmittablePasswordChangeView, show_subcontracts, SubContractUpdateView, SubContractDeleteView, CommentCreateView, \
-    subcontract_detail, events_feed, calendar_view, update_event, create_event, ContractView
+    subcontract_detail, events_feed, calendar_view, update_event, create_event, ContractView, SubContractDetailView
 
 admin.site.register(Customer)
 admin.site.register(Contract)
@@ -63,9 +63,12 @@ urlpatterns = [
 
 # path for subcontracts
     path('subcontracts/', show_subcontracts, name='navbar_show_subcontracts'),
+    path('subcontract/<int:contract_pk>/<int:subcontract_number>/', SubContractDetailView.as_view(),
+         name='subcontract_detail'),
     path('subcontract/<subcontract_id>/', subcontract_detail, name='detail_subcontract'),
     path('subcontract/create/<param>', SubContractCreateView.as_view(), name='subcontract_create'),
-    path("subcontract/<int:pk>/update/", SubContractUpdateView.as_view(), name="subcontract_update"),
+    # path("subcontract/<int:pk>/update/", SubContractUpdateView.as_view(), name="subcontract_update"),
+    path("subcontract/<int:contract_pk>/<int:subcontract_number>/update/", SubContractUpdateView.as_view(), name="subcontract_update"),
     path('subcontract/delete/<pk>', SubContractDeleteView.as_view(), name='subcontract_delete'),
 
 # paths for comments

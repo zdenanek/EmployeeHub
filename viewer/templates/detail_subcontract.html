@@ -56,11 +56,13 @@
     </nav>
 
 <!--    <a href="{% url 'navbar_show_subcontracts' %}" class="btn btn-primary">Zpět na přehled</a>-->
-<a href="{% url 'contract_detail' contract.pk %}" class="btn btn-primary">Zpět na přehled</a>
+<a href="{% url 'contract_detail' subcontract.contract.pk %}" class="btn btn-primary">Zpět na přehled</a>
 
-    <p>Číslo: {{ contract.pk }} _ {{subcontract.subcontract_number }}</p>
-    <p>Název: {{ subcontract.subcontract_name }}</p>
-    <p>Datum vytvoření: {{ subcontract.created }}</p>
+    <h2>Detail podzakázky</h2>
+    <p>Zakázka: {{ subcontract.contract.contract_name }}</p>
+    <p>Číslo podzakázky: {{ subcontract.subcontract_number }}</p>
+    <p>Podzakázka: {{ subcontract.subcontract_name }}</p>
+    <p>Vytvořeno: {{ subcontract.created }}</p>
 
 
     <h4>Komentáře k subkontraktu</h4>
