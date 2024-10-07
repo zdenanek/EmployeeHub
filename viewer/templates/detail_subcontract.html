@@ -58,6 +58,12 @@
 <!--    <a href="{% url 'navbar_show_subcontracts' %}" class="btn btn-primary">Zpět na přehled</a>-->
 <a href="{% url 'contract_detail' subcontract.contract.pk %}" class="btn btn-primary">Zpět na přehled</a>
 
+    {% if subcontract %}
+        <p>Název: {{ subcontract.subcontract_name }}</p>
+        <p>Datum vytvoření: {{ subcontract.created }}</p>
+    {% else %}
+        <p>Data nejsou k dispozici.</p>
+    {% endif %}
     <h2>Detail podzakázky</h2>
     <p>Zakázka: {{ subcontract.contract.contract_name }}</p>
     <p>Číslo podzakázky: {{ subcontract.subcontract_number }}</p>
@@ -65,12 +71,27 @@
     <p>Vytvořeno: {{ subcontract.created }}</p>
 
 
-    <h4>Komentáře k subkontraktu</h4>
+    <h4>Komentáře</h4>
+    <td><a href="{% url 'comment_add' subcontract.pk %}" class="btn btn-info"> Přidat komentář </a></td>
 
-
-    {% for comment in subcontract.comment_set.all %}
-        <h4 style="color: pink">{{ comment.text }}</h4>
-    {% endfor %}
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Poř. číslo</th>
+                <th>Komentář</th>
+                <th>Datum</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for comment in subcontract.comment_set.all %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ comment.text }}</td>
+                <td>{{ comment.created }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
 
     <br><br><br><br><br><br>
