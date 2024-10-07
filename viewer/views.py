@@ -185,7 +185,7 @@ class CommentCreateView(CreateView):
     def get_success_url(self):
         subcontract = SubContract.objects.get(pk=int(self.kwargs["pk"]))
         contract_id = subcontract.contract.pk
-        return reverse_lazy('contract_detail', kwargs={'pk': contract_id})
+        return reverse_lazy('subcontract_detail', kwargs={'contract_pk': contract_id, "subcontract_number": subcontract.subcontract_number })
 
 
 from django.http import JsonResponse
