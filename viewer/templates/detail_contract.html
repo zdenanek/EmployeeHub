@@ -75,6 +75,8 @@
             <tr>
                 <th>Číslo subcontractu</th>
                 <th>Jméno subcontractu</th>
+                <th>Uživatel</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
@@ -82,6 +84,8 @@
             <tr>
                 <td>{{ contract.pk }} _ {{subcontract.subcontract_number }}</td>
                 <td>{{ subcontract.subcontract_name }}</td>
+                <td>{{ subcontract.user }}</td>
+                <td>{{ subcontract.get_status_display }}</td>
                 <td><a href="{% url 'subcontract_detail' contract_pk=subcontract.contract.pk subcontract_number=subcontract.subcontract_number %}" class="btn btn-info">Detail Subkontraktu</a></td>
                 {% if subcontract.subcontract_number %}
                 <td><a href="{% url 'subcontract_update' contract_pk=subcontract.contract.pk subcontract_number=subcontract.subcontract_number %}" class="btn btn-info">Upravit</a></td>

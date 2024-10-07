@@ -31,8 +31,8 @@ class Customer(Model):
 class Contract(Model):
     contract_name = CharField(max_length=100)
     created = DateTimeField(auto_now_add=True)
-    user = ForeignKey(User, on_delete=DO_NOTHING, default=1)    #TODO nevyplněno? výchozí user?
-    customer = ForeignKey(Customer, on_delete=DO_NOTHING, default=1)    #TODO
+    user = ForeignKey(User, on_delete=DO_NOTHING, default=1)
+    customer = ForeignKey(Customer, on_delete=DO_NOTHING, default=1)
     status_choices = [("0","V procesu"), ("1","Dokončeno"), ("2","Zrušeno")]
     status = CharField(max_length=64, choices=status_choices, default=status_choices[0])
 
@@ -43,9 +43,12 @@ class Contract(Model):
 class SubContract(Model):
     subcontract_name = CharField(max_length=128)
     created = DateTimeField(auto_now_add=True)
+    user = ForeignKey(User, on_delete=DO_NOTHING, default=1)
     contract = ForeignKey(Contract, related_name='subcontracts', on_delete=DO_NOTHING)
     #status = ForeignKey(User, on_delete=DO_NOTHING, default=1)    #TODO
     subcontract_number = IntegerField(null=True, blank=True, default=1)
+    status_choices = [("0","V procesu"), ("1","Dokončeno"), ("2","Zrušeno")]
+    status = CharField(max_length=64, choices=status_choices, default=status_choices[0])
 
     class Meta:
         constraints = [

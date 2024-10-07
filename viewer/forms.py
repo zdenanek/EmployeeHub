@@ -28,7 +28,7 @@ class CustomerForm(ModelForm):
 class SubContractForm(ModelForm):
     class Meta:
         model = SubContract
-        fields = ['subcontract_name']
+        fields = ['subcontract_name', 'user', 'status']
         # fields = '__all__'
 
 
