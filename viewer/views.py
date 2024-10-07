@@ -188,6 +188,15 @@ class CommentCreateView(CreateView):
         return reverse_lazy('contract_detail', kwargs={'pk': contract_id})
 
 
+from django.http import JsonResponse
+from .models import Event # Předpokládejme, že máš model pro události
+import json
+from datetime import datetime
+from django.contrib.auth.models import Group
+
+
+def calendar_view(request):
+    return render(request, 'calendar.html')
 def events_feed(request):
     events = Event.objects.all()
     events_list = []
@@ -203,38 +212,69 @@ def events_feed(request):
 @csrf_exempt
 def create_event(request):
     if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            title = data.get('title')
-            start = parse_datetime(data.get('start_time'))
-            end = parse_datetime(data.get('end_time'))
+        data = json.loads(request.body)
+        title = data.get('title')
+        start_time = data.get('start_time')
+        end_time = data.get('end_time')
+        group_name = data.get('group')
 
-            Event.objects.create(
-                name=title,
-                start_time=start,
-                end_time=end
+        group = Group.objects.filter(name=group_name).first()
+        if group:
+            event = Event.objects.create(
+                title=title,
+                start_time=datetime.strptime(start_time, '%Y-%m-%dT%H:%M'),
+                end_time=datetime.strptime(end_time, '%Y-%m-%dT%H:%M'),
+                group=group
             )
-            return JsonResponse({'status': 'success'},status=201)
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
-    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+            return JsonResponse({'status': 'success'})
+        else:
+            return JsonResponse({'status': 'error', 'message': 'Group not found'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
 
-def calendar_view(request):
-    return render(request, 'calendar.html')
+def events_feed(request):
+    events = Event.objects.all()
+    events_data = [
+        {
+            'title': getattr(event, 'title', 'Untitled Event'),
+            'start': event.start_time.isoformat(),
+            'end': event.end_time.isoformat(),
+            'group': getattr(event.group, 'name', 'No Group')
+        } for event in events
+    ]
+    return JsonResponse(events_data, safe=False)
 
-def update_event(request, event_id):
-    if request.method == 'POST':
+def get_groups(request):
+    groups = Group.objects.all()
+    groups_data = [{'name': group.name} for group in groups]
+    return JsonResponse(groups_data, safe=False)
+
+def delete_event(request, event_id):
+    if request.method == 'DELETE':
         try:
             event = Event.objects.get(pk=event_id)
-            data = json.loads(request.body)
-            event.start_time = data.get('start_time')
-            event.end_time = data.get('end_time')
+            event.delete()
+            return JsonResponse({'status': 'success'})
+        except Event.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Event not found'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+
+
+@csrf_exempt
+def update_event(request, event_id):
+    if request.method == 'PUT':
+        data = json.loads(request.body)
+        try:
+            event = Event.objects.get(pk=event_id)
+            event.title = data.get('title', event.title)
+            event.start_time = datetime.strptime(data['start_time'], '%Y-%m-%dT%H:%M')
+            event.end_time = datetime.strptime(data['end_time'], '%Y-%m-%dT%H:%M')
             event.save()
             return JsonResponse({'status': 'success'})
         except Event.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': 'Event not found'}, status=404)
-    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+            return JsonResponse({'status': 'error', 'message': 'Event not found'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
 
 class ContractView(DetailView):

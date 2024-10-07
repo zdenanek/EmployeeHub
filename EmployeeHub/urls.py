@@ -24,6 +24,9 @@ from viewer.views import HomepageView, UserListView, PositionListView, CustomerL
     CustomerCreateView, CustomerUpdateView, CustomerDeleteView, SubContractView, SubContractCreateView, \
     SubmittablePasswordChangeView, show_subcontracts, SubContractUpdateView, SubContractDeleteView, CommentCreateView, \
     subcontract_detail, events_feed, calendar_view, update_event, create_event, ContractView, SubContractDetailView
+    SubmittablePasswordChangeView, show_subcontracts, SubContractUpdateView, SubContractDeleteView, CommentCreateView,\
+    subcontract_detail, events_feed, calendar_view, update_event, create_event,get_groups, delete_event
+
 
 admin.site.register(Customer)
 admin.site.register(Contract)
@@ -75,8 +78,10 @@ urlpatterns = [
     path('comment/create/<pk>', CommentCreateView.as_view(), name='comment_add'),
 
 #path for calendar
-    path('events-feed/', events_feed, name='events_feed'),
     path('calendar/', calendar_view, name='calendar'),
-    path('update-event/<int:event_id>/', update_event, name='update_event'),
+    path('events-feed/', events_feed, name='events_feed'),
     path('create-event/', create_event, name='create_event'),
+    path('get-groups/', get_groups, name='get_groups'),
+    path('update-event/<int:event_id>/', update_event, name='update_event'),
+    path('delete-event/<int:event_id>/', delete_event, name='delete_event'),
 ]

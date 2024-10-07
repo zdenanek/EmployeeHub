@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 
 class Groups(Model):
@@ -98,9 +98,10 @@ class Comment(Model):
 
 
 class Event(models.Model):
-    name = models.CharField(max_length=255)
+    title = models.CharField(max_length=200)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='events')
 
     def __str__(self):
-        return self.name
+        return self.title
