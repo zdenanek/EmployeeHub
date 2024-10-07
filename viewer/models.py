@@ -40,7 +40,7 @@ class Contract(Model):
     deadline = DateTimeField(default=datetime.now() + timedelta(days=30))
 
     def delta(self):
-        return self.deadline - self.created
+        return (self.deadline - self.created).days
 
     def __str__(self):
         return f"Zakázka: {self.contract_name}"
