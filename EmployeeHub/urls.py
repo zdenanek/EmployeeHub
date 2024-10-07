@@ -23,7 +23,7 @@ from viewer.views import HomepageView, UserListView, PositionListView, CustomerL
     ContractAllListView, SignUpView, contract_detail, ContractCreateView, ContractUpdateView, ContractDeleteView, \
     CustomerCreateView, CustomerUpdateView, CustomerDeleteView, SubContractView, SubContractCreateView, \
     SubmittablePasswordChangeView, show_subcontracts, SubContractUpdateView, SubContractDeleteView, CommentCreateView, \
-    subcontract_detail, events_feed, calendar_view, update_event, create_event, ContractView, SubContractDetailView
+    subcontract_detail, events_feed, calendar_view, update_event, create_event, ContractView, SubContractDetailView, \
     SubmittablePasswordChangeView, show_subcontracts, SubContractUpdateView, SubContractDeleteView, CommentCreateView,\
     subcontract_detail, events_feed, calendar_view, update_event, create_event,get_groups, delete_event
 
