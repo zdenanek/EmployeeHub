@@ -10,8 +10,8 @@
             <th>Status</th>
             <th>Uživatel</th>
             <th>Pozice</th>
-            <th>Počet subkontraktů</th>
-            <th>Detail zakázky</th>
+            <th>Počet podprojektů</th>
+            <th>Detail projektu</th>
         </tr>
     </thead>
     <tbody>
@@ -33,7 +33,7 @@
             </td>
             <td align="center">{{ contract.subcontracts.count }}</td>
             <td>
-                <a href="{% url 'contract_detail' contract.id %}" class="btn btn-info">Detail zakázky</a>
+                <a href="{% url 'contract_detail' contract.id %}" class="btn btn-info">Detail projektu</a>
             </td>
             <td>
                 <a href="{% url 'contract_update' contract.pk %}" class="btn btn-info">Upravit</a>

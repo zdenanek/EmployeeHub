@@ -9,7 +9,7 @@ from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, FormView, DetailView
 
-from .models import Contract, Customer, Position, SubContract, Event
+from .models import Contract, Customer, Position, SubContract, Event, Comment
 from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, SubContractFormUpdate, CommentForm
 
 from django.contrib.auth import get_user_model
@@ -37,10 +37,10 @@ class HomepageView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['customers'] = Customer.objects.all()
+        context['comments'] = Comment.objects.all()
         context['users'] = User.objects.all()
-        context['subcontracts'] = SubContract.objects.all()
-        contracts = Contract.objects.all()
+        context['subcontracts'] = SubContract.objects.filter(user=self.request.user)
+        contracts = Contract.objects.filter(user=self.request.user)
         sorted_contracts = sorted(contracts, key=lambda contract: contract.delta())
         context['contracts'] = sorted_contracts
         return context
@@ -195,6 +195,12 @@ class CommentCreateView(CreateView):
         subcontract = SubContract.objects.get(pk=int(self.kwargs["pk"]))
         contract_id = subcontract.contract.pk
         return reverse_lazy('subcontract_detail', kwargs={'contract_pk': contract_id, "subcontract_number": subcontract.subcontract_number })
+
+
+class CommentListView(ListView):
+    model = Comment
+    template_name = "comments_homepage.html"
+
 
 
 from django.http import JsonResponse

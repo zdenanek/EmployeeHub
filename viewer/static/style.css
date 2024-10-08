@@ -15,6 +15,7 @@
     background-color: #343a40; /* Tmavé pozadí pro dropdown */
 }
 
+
 .dropdown-item {
     color: #ffffff; /* Bílý text pro položky dropdown */
 }
@@ -42,5 +43,4 @@
 .smaller-input {
     max-width: 300px; /* Nastav šířku na přibližně 7 cm */
 }
-
 
