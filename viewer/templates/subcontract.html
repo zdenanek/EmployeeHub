@@ -66,19 +66,25 @@
 
 <h2>Moje statusy</h2>
 
+
 {% if subcontracts %} <!--Podmínka k ověření, jestli jsou nějaká data v subcontracts-->
 <table class="table table-striped table-bordered">
     <thead>
         <tr>
             <th>Číslo subcontractu</th>
+            <th>Název projektu</th>
             <th>Název subcontractu</th>
+            <th>Počet dnů do ukončení</th>
         </tr>
     </thead>
     <tbody>
         {% for subcontract in subcontracts %}
         <tr>
-            <td>{{ subcontract.pk }}</td>
+            <td>{{ subcontract.contract.pk}} - {{ subcontract.subcontract_number }}</td>
+            <td>{{ subcontract.contract.contract_name }}</td>
             <td>{{ subcontract.subcontract_name }}</td>
+            <td>{{ subcontract.contract.delta }}</td>
+            <td><a href="{% url 'subcontract_detail' contract_pk=subcontract.contract.pk subcontract_number=subcontract.subcontract_number %}" class="btn btn-info">Detail Subkontraktu</a></td>
         </tr>
         {% endfor %}
     </tbody>

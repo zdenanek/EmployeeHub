@@ -22,7 +22,7 @@ def contract_detail(request, contract_id):
 
 
 def show_subcontracts(request):
-    subcontracts = SubContract.objects.all()
+    subcontracts = SubContract.objects.filter(user=request.user)
     return render(request, 'subcontract.html', {'subcontracts': subcontracts})
 
 
@@ -104,7 +104,10 @@ class ContractListView(ListView):
     template_name = 'navbar_contracts.html'
 
     def get_queryset(self):
-        contracts = Contract.objects.all()
+        if self.request.user.is_authenticated:
+            contracts = Contract.objects.filter(user=self.request.user)
+        else:
+            contracts = Contract.objects.none()
         return sorted(contracts, key=lambda contract: contract.delta())
 
 

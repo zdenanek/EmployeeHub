@@ -10,12 +10,13 @@
             <th>Status</th>
             <th>Uživatel</th>
             <th>Pozice</th>
+            <th>Počet subkontraktů</th>
             <th>Detail zakázky</th>
         </tr>
     </thead>
     <tbody>
         {% for contract in contracts %}
-        <tr>
+        <tr class="{% if contract.delta <= 0 %}table-danger{% elif contract.delta <= 7 %}table-warning{% endif %}">
             <td>{{ contract.contract_name }}</td>
             <td align="center">{{ contract.id }}</td>
             <td>{{ contract.created|date:"Y M d" }}</td>
@@ -30,6 +31,7 @@
                     Žádná pozice
                 {% endif %}
             </td>
+            <td align="center">{{ contract.subcontracts.count }}</td>
             <td>
                 <a href="{% url 'contract_detail' contract.id %}" class="btn btn-info">Detail zakázky</a>
             </td>

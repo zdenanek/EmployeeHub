@@ -14,6 +14,7 @@
             <th>Status</th>
             <th>Uživatel</th>
             <th>Pozice</th>
+            <th>Počet subkontraktů</th>
             <th>Detail projektu</th>
         </tr>
     </thead>
@@ -34,6 +35,7 @@
                     Žádná pozice
                 {% endif %}
             </td>
+            <td align="center">{{ contract.subcontracts.count }}</td>
             <td>
                 <a href="{% url 'contract_detail' contract.id %}" class="btn btn-info">Detail projektu</a>
             </td>
