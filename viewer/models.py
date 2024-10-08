@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from django.db.models import CharField, Model, ForeignKey, DateTimeField, DO_NOTHING, ManyToManyField, IntegerField, \
     EmailField, UniqueConstraint, CASCADE
 
@@ -31,10 +33,14 @@ class Customer(Model):
 class Contract(Model):
     contract_name = CharField(max_length=100)
     created = DateTimeField(auto_now_add=True)
-    user = ForeignKey(User, on_delete=DO_NOTHING, default=1)    #TODO nevyplněno? výchozí user?
-    customer = ForeignKey(Customer, on_delete=DO_NOTHING, default=1)    #TODO
+    user = ForeignKey(User, on_delete=DO_NOTHING, default=1)
+    customer = ForeignKey(Customer, on_delete=DO_NOTHING, default=1)
     status_choices = [("0","V procesu"), ("1","Dokončeno"), ("2","Zrušeno")]
     status = CharField(max_length=64, choices=status_choices, default=status_choices[0])
+    deadline = DateTimeField(default=datetime.now() + timedelta(days=30))
+
+    def delta(self):
+        return (self.deadline - self.created).days
 
     def __str__(self):
         return f"Zakázka: {self.contract_name}"
@@ -43,9 +49,12 @@ class Contract(Model):
 class SubContract(Model):
     subcontract_name = CharField(max_length=128)
     created = DateTimeField(auto_now_add=True)
+    user = ForeignKey(User, on_delete=DO_NOTHING, default=1)
     contract = ForeignKey(Contract, related_name='subcontracts', on_delete=DO_NOTHING)
     #status = ForeignKey(User, on_delete=DO_NOTHING, default=1)    #TODO
     subcontract_number = IntegerField(null=True, blank=True, default=1)
+    status_choices = [("0","V procesu"), ("1","Dokončeno"), ("2","Zrušeno")]
+    status = CharField(max_length=64, choices=status_choices, default=status_choices[0])
 
     class Meta:
         constraints = [

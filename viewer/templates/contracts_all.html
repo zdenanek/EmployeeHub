@@ -9,6 +9,8 @@
             <th>Název projektu</th>
             <th>Číslo projektu</th>
             <th>Datum vytvoření</th>
+            <th>Deadline</th>
+            <th>Zbývá dní</th>
             <th>Status</th>
             <th>Uživatel</th>
             <th>Pozice</th>
@@ -19,8 +21,10 @@
         {% for contract in contracts %}
         <tr>
             <td>{{ contract.contract_name }}</td>
-            <td>{{ contract.id }}</td>
-            <td>{{ contract.created }}</td>
+            <td align="center">{{ contract.id }}</td>
+            <td>{{ contract.created|date:"Y M d" }}</td>
+            <td>{{ contract.deadline|date:"Y M d" }}</td>
+            <td align="center">{{ contract.delta }}</td>
             <td>{{ contract.get_status_display }}</td>
             <td>{{ contract.user.first_name }} {{ contract.user.last_name }}</td>
             <td>

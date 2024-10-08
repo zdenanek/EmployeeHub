@@ -1,6 +1,7 @@
 import json
 
 from django.contrib.auth.decorators import login_required
+from django.db.models import Max
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.template.base import kwarg_re
@@ -38,8 +39,10 @@ class HomepageView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['customers'] = Customer.objects.all()
         context['users'] = User.objects.all()
-        context['contracts'] = Contract.objects.all()
         context['subcontracts'] = SubContract.objects.all()
+        contracts = Contract.objects.all()
+        sorted_contracts = sorted(contracts, key=lambda contract: contract.delta())
+        context['contracts'] = sorted_contracts
         return context
 
 
@@ -100,10 +103,18 @@ class ContractListView(ListView):
     model = Contract
     template_name = 'navbar_contracts.html'
 
+    def get_queryset(self):
+        contracts = Contract.objects.all()
+        return sorted(contracts, key=lambda contract: contract.delta())
+
 
 class ContractAllListView(ListView):
     model = Contract
     template_name = 'navbar_contracts_all.html'
+
+    def get_queryset(self):
+        contracts = Contract.objects.all()
+        return sorted(contracts, key=lambda contract: contract.delta())
 
 
 class SignUpView(CreateView):
@@ -135,7 +146,8 @@ class SubContractCreateView(FormView):
     def form_valid(self, form):
         new_sub_contract = form.save(commit=False)
         new_sub_contract.contract = Contract.objects.get(pk=int(self.kwargs["param"]))
-        new_sub_contract.subcontract_number = SubContract.objects.filter(contract=new_sub_contract.contract).count() + 1
+        max_subcontract_number = SubContract.objects.filter(contract=new_sub_contract.contract).aggregate(Max('subcontract_number'))['subcontract_number__max']
+        new_sub_contract.subcontract_number = (max_subcontract_number or 0) + 1
         new_sub_contract.save()
         return super().form_valid(form)
 
