@@ -1,0 +1,8 @@
+<a href="{% url 'navbar_show_subcontracts' %}"><h2>Podzakázky</h2></a>
+<ul>
+    {% for subcontract in subcontracts %}
+        <li>{{ subcontract.subcontract_name }}</li>
+    {% empty %}
+        <li>Žádné podzakázky nenalezeny.</li>
+    {% endfor %}
+</ul>

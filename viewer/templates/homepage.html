@@ -50,14 +50,11 @@
                     </li>
                 </ul>
                 <ul class="navbar-nav mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">Login</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">Logout</a>
-                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link">Vítejte, {{ user.username }}!</a>
+                        </li>
+                    {% endif %}
                 </ul>
                 <form class="d-flex" role="search">
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
@@ -88,7 +85,7 @@
             <div class="col-md-6">
                 <div class="card text-center">
                     <div class="card-body">
-                        {% include 'positions.html' with object_list=positions %}
+                        {% include 'subcontracts_homepage.html'  %}
                     </div>
                 </div>
             </div>

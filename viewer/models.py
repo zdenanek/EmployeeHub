@@ -96,7 +96,7 @@ class Comment(Model):
         return f"Komentář: {self.text}"
 
 
-
+# for calendar
 class Event(models.Model):
     title = models.CharField(max_length=200)
     start_time = models.DateTimeField()

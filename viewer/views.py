@@ -5,7 +5,6 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.template.base import kwarg_re
 from django.urls import reverse_lazy
-from django.utils.dateparse import parse_datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, FormView, DetailView
 
@@ -40,7 +39,7 @@ class HomepageView(TemplateView):
         context['customers'] = Customer.objects.all()
         context['users'] = User.objects.all()
         context['contracts'] = Contract.objects.all()
-        context['positions'] = Position.objects.all()
+        context['subcontracts'] = SubContract.objects.all()
         return context
 
 
@@ -92,11 +91,6 @@ class UserListView(ListView):
     template_name = 'users.html'
 
 
-class PositionListView(ListView):
-    model = Position
-    template_name = 'positions.html'
-
-
 class CustomerListView(ListView):
     model = Customer
     template_name = 'customers.html'
@@ -131,7 +125,7 @@ class SubmittablePasswordChangeView(PasswordChangeView):
 
 class SubContractView(ListView):
     model = SubContract
-    template_name = 'subcontract.html'
+    template_name = 'subcontracts_homepage.html'
 
 
 class SubContractCreateView(FormView):
