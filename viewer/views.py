@@ -199,14 +199,19 @@ def calendar_view(request):
     return render(request, 'calendar.html')
 def events_feed(request):
     events = Event.objects.all()
-    events_list = []
-    for event in events:
-        events_list.append({
-            'title': event.name,
-            'start': event.start_time.strftime("%Y-%m-%dT%H:%M:%S"),
-            'end': event.end_time.strftime("%Y-%m-%dT%H:%M:%S"),
-        })
-    return JsonResponse(events_list, safe=False)
+    events_data = [
+        {
+            'id': event.id,
+            'title': event.title,
+            'start': event.start_time.isoformat(),
+            'end': event.end_time.isoformat(),
+            'extendedProps': {
+                'group': event.group.name if event.group else 'No Group'
+            }
+        } for event in events
+    ]
+    return JsonResponse(events_data, safe=False)
+
 
 
 @csrf_exempt
@@ -231,18 +236,6 @@ def create_event(request):
             return JsonResponse({'status': 'error', 'message': 'Group not found'})
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
-
-def events_feed(request):
-    events = Event.objects.all()
-    events_data = [
-        {
-            'title': getattr(event, 'title', 'Untitled Event'),
-            'start': event.start_time.isoformat(),
-            'end': event.end_time.isoformat(),
-            'group': getattr(event.group, 'name', 'No Group')
-        } for event in events
-    ]
-    return JsonResponse(events_data, safe=False)
 
 def get_groups(request):
     groups = Group.objects.all()
@@ -270,6 +263,11 @@ def update_event(request, event_id):
             event.title = data.get('title', event.title)
             event.start_time = datetime.strptime(data['start_time'], '%Y-%m-%dT%H:%M')
             event.end_time = datetime.strptime(data['end_time'], '%Y-%m-%dT%H:%M')
+            group_name = data.get('group')
+            if group_name:
+                group = Group.objects.filter(name=group_name).first()
+                if group:
+                    event.group = group
             event.save()
             return JsonResponse({'status': 'success'})
         except Event.DoesNotExist:
