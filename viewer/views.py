@@ -40,8 +40,10 @@ class HomepageView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['customers'] = Customer.objects.all()
         context['users'] = User.objects.all()
-        context['contracts'] = Contract.objects.all()
         context['positions'] = Position.objects.all()
+        contracts = Contract.objects.all()
+        sorted_contracts = sorted(contracts, key=lambda contract: contract.delta())
+        context['contracts'] = sorted_contracts
         return context
 
 
@@ -107,10 +109,18 @@ class ContractListView(ListView):
     model = Contract
     template_name = 'navbar_contracts.html'
 
+    def get_queryset(self):
+        contracts = Contract.objects.all()
+        return sorted(contracts, key=lambda contract: contract.delta())
+
 
 class ContractAllListView(ListView):
     model = Contract
     template_name = 'navbar_contracts_all.html'
+
+    def get_queryset(self):
+        contracts = Contract.objects.all()
+        return sorted(contracts, key=lambda contract: contract.delta())
 
 
 class SignUpView(CreateView):

@@ -1,7 +1,7 @@
 <a href="{% url 'navbar_contracts' %}"><h2>Moje projekty</h2></a>
 <ul>
     {% for contract in contracts %}
-        <li>{{ contract.contract_name }} {{ contract.created }}</li>
+        <li>{{ contract.contract_name }} - {{ contract.delta }} dní do konce</li>
     {% endfor %}
 </ul>
 

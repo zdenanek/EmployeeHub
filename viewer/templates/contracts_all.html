@@ -21,10 +21,10 @@
         {% for contract in contracts %}
         <tr>
             <td>{{ contract.contract_name }}</td>
-            <td>{{ contract.id }}</td>
+            <td align="center">{{ contract.id }}</td>
             <td>{{ contract.created|date:"Y M d" }}</td>
             <td>{{ contract.deadline|date:"Y M d" }}</td>
-            <td>{{ contract.delta }}</td>
+            <td align="center">{{ contract.delta }}</td>
             <td>{{ contract.get_status_display }}</td>
             <td>{{ contract.user.first_name }} {{ contract.user.last_name }}</td>
             <td>
