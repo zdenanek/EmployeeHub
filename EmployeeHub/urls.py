@@ -48,6 +48,7 @@ urlpatterns = [
 # path for authentication
     path('sign-up/', SignUpView.as_view(), name='signup'),
     path('registration/login/', LoginView.as_view(), name='login'),
+    path('accounts/login/', LoginView.as_view(), name='login2'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('password-change/', SubmittablePasswordChangeView.as_view(),name='password_change'),
 
@@ -84,4 +85,6 @@ urlpatterns = [
     path('get-groups/', get_groups, name='get_groups'),
     path('update-event/<int:event_id>/', update_event, name='update_event'),
     path('delete-event/<int:event_id>/', delete_event, name='delete_event'),
+
+    # path('employee_profile/', employee_profileView.as_view(), name='employee_profile')
 ]
