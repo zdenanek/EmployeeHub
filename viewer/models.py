@@ -75,7 +75,7 @@ class SubContract(Model):
 
 
     def __str__(self):
-        return f"Podzakázka: {self.subcontract_name} {self.contract.pk}-{self.subcontract_number}"
+        return f"Podprojekt: {self.subcontract_name} {self.contract.pk}-{self.subcontract_number}"
 
 
 from django.db import models

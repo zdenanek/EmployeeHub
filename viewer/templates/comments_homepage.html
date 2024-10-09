@@ -3,14 +3,14 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Poř. číslo</th>
+            <th>Číslo podprojektu</th>
             <th>Text</th>
         </tr>
     </thead>
     <tbody class="table-group-divider">
         {% for comment in comments %}
         <tr>
-            <td>{{ forloop.counter }}</td>
+            <td>{{ comment.subcontract.contract.pk}} - {{ comment.subcontract.subcontract_number }}</td>
             <td>{{ comment.text }}</td>
             <td><a href="{% url 'subcontract_detail' contract_pk=comment.subcontract.contract.pk subcontract_number=comment.subcontract.subcontract_number %}" class="btn btn-info">Detail podprojektu</a></td>
         </tr>
