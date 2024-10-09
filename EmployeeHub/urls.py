@@ -86,5 +86,7 @@ urlpatterns = [
     path('update-event/<int:event_id>/', update_event, name='update_event'),
     path('delete-event/<int:event_id>/', delete_event, name='delete_event'),
 
+    path('employees/', UserListView.as_view(), name='employees'),
+
     # path('employee_profile/', employee_profileView.as_view(), name='employee_profile')
 ]
