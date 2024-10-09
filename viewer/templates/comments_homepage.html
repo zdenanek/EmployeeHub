@@ -12,6 +12,7 @@
         <tr>
             <td>{{ forloop.counter }}</td>
             <td>{{ comment.text }}</td>
+            <td><a href="{% url 'subcontract_detail' contract_pk=comment.subcontract.contract.pk subcontract_number=comment.subcontract.subcontract_number %}" class="btn btn-info">Detail podprojektu</a></td>
         </tr>
         {% endfor %}
     </tbody>
