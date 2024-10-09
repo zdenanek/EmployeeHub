@@ -1,7 +1,23 @@
 <a href="{% url 'navbar_contracts' %}"><h2>Moje projekty</h2></a>
-<ul>
-    {% for contract in contracts %}
-        <li>{{ contract.contract_name }} - {{ contract.delta }} dní do konce</li>
-    {% endfor %}
-</ul>
 
+<table class="table">
+    <thead>
+        <tr>
+            <th>Název</th>
+            <th>Číslo projektu</th>
+            <th>Počet dní do ukončení</th>
+        </tr>
+    </thead>
+    <tbody class="table-group-divider">
+        {% for contract in contracts %}
+        <tr>
+            <td>{{ contract.contract_name }}</td>
+            <td align="center">{{ contract.id }}</td>
+            <td align="center">{{ contract.delta }}</td>
+            <td>
+                <a href="{% url 'contract_detail' contract.id %}" class="btn btn-info">Detail projektu</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

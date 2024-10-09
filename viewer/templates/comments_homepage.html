@@ -1,7 +1,18 @@
 <h2>Komentáře</h2>
 
-<ul>
-    {% for comment in comments %}
-        <li>{{ comment.text }}</li>
-    {% endfor %}
-</ul>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Poř. číslo</th>
+            <th>Text</th>
+        </tr>
+    </thead>
+    <tbody class="table-group-divider">
+        {% for comment in comments %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ comment.text }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
