@@ -11,11 +11,11 @@ Tato aplikace je ideálním řešením pro menší moderní firmy, které chtěj
 - [x] GIT
 - [x] vytvoření wireframe
 - [ ] design UI prvků
-- [ ] uživatelské scénáře
+- [x] uživatelské scénáře
 - [ ] prezentace mockupu
 ## Základ
 - [x] HTML kostra
-- [ ] klíčové fce (registrace, přilášení, vyhledávání, přiřazování objednávek...)
+- [x] klíčové fce (registrace, přilášení, vyhledávání, přiřazování objednávek...)
 - [ ] testování
 ## Plná verze
 - [ ] pokročilé funkce
