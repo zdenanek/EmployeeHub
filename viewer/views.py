@@ -12,6 +12,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, T
 from .models import Contract, Customer, Position, SubContract, Event, Comment
 from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, SubContractFormUpdate, CommentForm
 
+from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 User = get_user_model()
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -98,7 +99,8 @@ class CustomerDeleteView(LoginRequiredMixin, DeleteView):
 
 class UserListView(LoginRequiredMixin, ListView):
     model = User
-    template_name = 'users.html'
+    template_name = 'employees.html'
+    context_object_name = "employees"
 
 
 class CustomerListView(LoginRequiredMixin, ListView):

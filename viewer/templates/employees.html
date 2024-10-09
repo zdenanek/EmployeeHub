@@ -67,23 +67,26 @@
         </div>
     </nav>
 
-<h2>Zákazníci</h2>
+<h2>Zaměstnanci</h2>
 
 {% if object_list %}
 <table class="table table-striped table-bordered">
     <thead>
     <tr>
-        <th>Název zákazníka</th>
-        <th>Datum objednání projektu</th>
+        <th>Jméno</th>
+        <th>Pozice</th>
     </tr>
     </thead>
     <tbody>
-        {% for customer in object_list %}
+        {% for employee in employees %}
         <tr>
-            <td>{{ customer.first_name }} {{ customer.last_name }}</td>
-            <td>{{ customer.created }}</td>
-            <td><a href="{% url 'customer_update' customer.pk %}" class="btn btn-info">Upravit</a></td>
-            <td><a href="{% url 'customer_delete' customer.pk %}" class="btn btn-info">Smazat</a></td>
+            <td>{{ employee.get_full_name }}</td>
+            <td>{% if employee.userprofile.position %}
+                    {{ employee.userprofile.position.name }}
+                {% else %}
+                Žádná pozice
+                {% endif %}
+            </td>
         </tr>
     </tbody>
 
