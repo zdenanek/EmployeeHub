@@ -18,7 +18,7 @@
             <td>{{ subcontract.contract.pk}} - {{ subcontract.subcontract_number }}</td>
             <td>{{ subcontract.contract.deadline }}</td>
             <td>{{ subcontract.contract.delta }}</td>
-            <td><a href="{% url 'subcontract_detail' contract_pk=subcontract.contract.pk subcontract_number=subcontract.subcontract_number %}" class="btn bn-info">Detail podprojektu</a></td>
+            <td><a href="{% url 'subcontract_detail' contract_pk=subcontract.contract.pk subcontract_number=subcontract.subcontract_number %}" class="btn btn-info">Detail podprojektu</a></td>
         </tr>
         {% empty %}
             Žádné podprojekty nenalezeny.

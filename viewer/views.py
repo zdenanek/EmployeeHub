@@ -14,25 +14,26 @@ from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, SubC
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-
+@login_required
 def contract_detail(request, contract_id):
     contract = get_object_or_404(Contract, id=contract_id)
     return render(request, 'detail_contract.html', {'contract': contract})
 
-
+@login_required
 def show_subcontracts(request):
     subcontracts = SubContract.objects.filter(user=request.user)
     return render(request, 'subcontract.html', {'subcontracts': subcontracts})
 
-
+@login_required
 def subcontract_detail(request, subcontract_id):
     subcontract = get_object_or_404(SubContract, pk=subcontract_id)
     contract = subcontract.contract
     return render(request, 'detail_subcontract.html', {'subcontract': subcontract, 'contract': contract})
 
 
-class HomepageView(TemplateView):
+class HomepageView(LoginRequiredMixin, TemplateView):
     template_name = 'homepage.html'
 
     def get_context_data(self, **kwargs):
@@ -52,60 +53,60 @@ class HomepageView(TemplateView):
         return context
 
 
-class ContractCreateView(CreateView):
+class ContractCreateView(LoginRequiredMixin, CreateView):
     template_name = 'form.html'
     form_class = ContractForm
     success_url = reverse_lazy('navbar_contracts_all')
 
 
-class ContractUpdateView(UpdateView):
+class ContractUpdateView(LoginRequiredMixin, UpdateView):
     template_name = "form.html"
     model = Contract
     form_class = ContractForm
     success_url = reverse_lazy("navbar_contracts_all")
 
 
-class ContractDeleteView(DeleteView):
+class ContractDeleteView(LoginRequiredMixin, DeleteView):
     template_name = "form.html"
     model = Contract
     success_url = reverse_lazy('navbar_contracts_all')
 
 
-class CustomerView(ListView):
+class CustomerView(LoginRequiredMixin, ListView):
     model = Customer
     template_name = 'customers.html'
 
 
-class CustomerCreateView(CreateView):
+class CustomerCreateView(LoginRequiredMixin, CreateView):
     template_name = 'form.html'
     form_class = CustomerForm
     success_url = reverse_lazy('navbar_customers')
 
 
-class CustomerUpdateView(UpdateView):
+class CustomerUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'form.html'
     model = Customer
     form_class = CustomerForm
     success_url = reverse_lazy('navbar_customers')
 
 
-class CustomerDeleteView(DeleteView):
+class CustomerDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'form.html'
     model = Customer
     success_url = reverse_lazy('navbar_customers')
 
 
-class UserListView(ListView):
+class UserListView(LoginRequiredMixin, ListView):
     model = User
     template_name = 'users.html'
 
 
-class CustomerListView(ListView):
+class CustomerListView(LoginRequiredMixin, ListView):
     model = Customer
     template_name = 'customers.html'
 
 
-class ContractListView(ListView):
+class ContractListView(LoginRequiredMixin, ListView):
     model = Contract
     template_name = 'navbar_contracts.html'
 
@@ -117,7 +118,7 @@ class ContractListView(ListView):
         return sorted(contracts, key=lambda contract: contract.delta())
 
 
-class ContractAllListView(ListView):
+class ContractAllListView(LoginRequiredMixin, ListView):
     model = Contract
     template_name = 'navbar_contracts_all.html'
 
@@ -126,7 +127,7 @@ class ContractAllListView(ListView):
         return sorted(contracts, key=lambda contract: contract.delta())
 
 
-class SignUpView(CreateView):
+class SignUpView(LoginRequiredMixin, CreateView):
     template_name = 'form.html'
     form_class = SignUpForm
     success_url = reverse_lazy('homepage')
@@ -138,17 +139,17 @@ class SubmittableLoginView(LoginView):
     template_name = 'login.html'
 
 
-class SubmittablePasswordChangeView(PasswordChangeView):
+class SubmittablePasswordChangeView(LoginRequiredMixin, PasswordChangeView):
   template_name = 'form.html'
   success_url = reverse_lazy('homepage')
 
 
-class SubContractView(ListView):
+class SubContractView(LoginRequiredMixin, ListView):
     model = SubContract
     template_name = 'subcontracts_homepage.html'
 
 
-class SubContractCreateView(FormView):
+class SubContractCreateView(LoginRequiredMixin, FormView):
     template_name = 'form.html'
     form_class = SubContractForm
 
@@ -164,7 +165,7 @@ class SubContractCreateView(FormView):
         return reverse_lazy('contract_detail', kwargs={'pk': self.kwargs['param']})
 
 
-class SubContractUpdateView(UpdateView):
+class SubContractUpdateView(LoginRequiredMixin, UpdateView):
     template_name = "form.html"
     model = SubContract
     form_class = SubContractForm
@@ -178,7 +179,7 @@ class SubContractUpdateView(UpdateView):
         return reverse_lazy('contract_detail', kwargs={'pk': self.kwargs['contract_pk']})
 
 
-class SubContractDeleteView(DeleteView):
+class SubContractDeleteView(LoginRequiredMixin, DeleteView):
     template_name = "form.html"
     model = SubContract
 
@@ -187,7 +188,7 @@ class SubContractDeleteView(DeleteView):
         return reverse_lazy('contract_detail', kwargs={'pk': contract_id})
 
 
-class CommentCreateView(CreateView):
+class CommentCreateView(LoginRequiredMixin, CreateView):
     template_name = "form.html"
     form_class = CommentForm
 
@@ -203,7 +204,7 @@ class CommentCreateView(CreateView):
         return reverse_lazy('subcontract_detail', kwargs={'contract_pk': contract_id, "subcontract_number": subcontract.subcontract_number })
 
 
-class CommentListView(ListView):
+class CommentListView(LoginRequiredMixin, ListView):
     model = Comment
     template_name = "comments_homepage.html"
 
@@ -216,8 +217,12 @@ from datetime import datetime, date
 from django.contrib.auth.models import Group
 
 
+@login_required
 def calendar_view(request):
     return render(request, 'calendar.html')
+
+
+@login_required
 def events_feed(request):
     events = Event.objects.all()
     events_data = [
@@ -234,7 +239,7 @@ def events_feed(request):
     return JsonResponse(events_data, safe=False)
 
 
-
+@login_required
 @csrf_exempt
 def create_event(request):
     if request.method == 'POST':
@@ -258,11 +263,14 @@ def create_event(request):
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
 
+@login_required
 def get_groups(request):
     groups = Group.objects.all()
     groups_data = [{'name': group.name} for group in groups]
     return JsonResponse(groups_data, safe=False)
 
+
+@login_required
 def delete_event(request, event_id):
     if request.method == 'DELETE':
         try:
@@ -274,7 +282,7 @@ def delete_event(request, event_id):
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
 
-
+@login_required
 @csrf_exempt
 def update_event(request, event_id):
     if request.method == 'PUT':
@@ -296,12 +304,12 @@ def update_event(request, event_id):
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
 
-class ContractView(DetailView):
+class ContractView(LoginRequiredMixin, DetailView):
     model = Contract
     template_name = "detail_contract.html"
 
 
-class SubContractDetailView(DetailView):
+class SubContractDetailView(LoginRequiredMixin, DetailView):
     template_name = "detail_subcontract.html"
     model = SubContract
 
