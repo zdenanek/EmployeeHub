@@ -91,9 +91,13 @@ class Position(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True, blank=True)
+    phone_number = models.CharField(max_length=15, null=True, blank=True, default="123456789")
+
+    def get_email(self):
+        return self.user.email
 
     def __str__(self):
-        return f"{self.user.username} - {self.position.name if self.position else 'No position'}"
+        return f"{self.user.username} - {self.position.name if self.position else 'No position'} - {self.phone_number}"
 
 
 class Comment(Model):
