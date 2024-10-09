@@ -8,9 +8,11 @@ from django.template.base import kwarg_re
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, FormView, DetailView
+from matplotlib.style import context
 
 from .models import Contract, Customer, Position, SubContract, Event, Comment
-from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, SubContractFormUpdate, CommentForm
+from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, SubContractFormUpdate, CommentForm, \
+    SearchForm
 
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
@@ -101,6 +103,22 @@ class UserListView(LoginRequiredMixin, ListView):
     model = User
     template_name = 'employees.html'
     context_object_name = "employees"
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.GET.get("query")
+        if query:
+            queryset = queryset.filter(
+                Q(first_name__icontains=query) |
+                Q(last_name__icontains=query) |
+                Q(username__icontains=query)
+            )
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search_form"] = SearchForm()
+        return context
 
 
 class CustomerListView(LoginRequiredMixin, ListView):

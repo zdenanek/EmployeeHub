@@ -59,13 +59,16 @@
                         </li>
                     {% endif %}
                 </ul>
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <form method="GET" action="{% url 'employees' %}" class="d-flex" role="search">
+                    {{ search_form.query.label_tag }}
+                    {{ search_form.query }}
                     <button class="btn btn-outline-success" type="submit">Search</button>
+                    <a href="{% url 'employees' %}" class="btn btn-outline-danger ms-2">Clear</a>
                 </form>
             </div>
         </div>
     </nav>
+
 
 <h2>Zaměstnanci</h2>
 

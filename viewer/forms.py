@@ -1,5 +1,8 @@
 from django.contrib.auth.forms import UserCreationForm
-from django.forms import ModelForm
+from django.db.models import CharField
+from django.forms import ModelForm, Form, CharField
+from django import forms
+
 
 from viewer.models import Contract, Customer, SubContract, Comment
 
@@ -42,3 +45,7 @@ class CommentForm(ModelForm):
     class Meta:
         model = Comment
         fields = ['text']
+
+
+class SearchForm(forms.Form):
+    query = forms.CharField(label="Search", max_length=256)
