@@ -1,7 +1,7 @@
 import json
 
 from django.contrib.auth.decorators import login_required
-from django.db.models import Max
+from django.db.models import Max, Q
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.template.base import kwarg_re
@@ -43,6 +43,12 @@ class HomepageView(TemplateView):
         contracts = Contract.objects.filter(user=self.request.user)
         sorted_contracts = sorted(contracts, key=lambda contract: contract.delta())
         context['contracts'] = sorted_contracts
+        today = date.today()
+        context['events'] = Event.objects.filter(
+            Q(start_time__date=today) |
+            Q(end_time__date=today) |
+            Q(start_time__date__lt=today, end_time__date__gt=today)
+        ).order_by('start_time')
         return context
 
 
@@ -206,7 +212,7 @@ class CommentListView(ListView):
 from django.http import JsonResponse
 from .models import Event # Předpokládejme, že máš model pro události
 import json
-from datetime import datetime
+from datetime import datetime, date
 from django.contrib.auth.models import Group
 
 

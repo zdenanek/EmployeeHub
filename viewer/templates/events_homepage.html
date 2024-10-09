@@ -1,1 +1,24 @@
-<h2>Události</h2>
+<a href="{% url 'calendar' %}"><h2>Události</h2></a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Událost</th>
+            <th>Čas</th>
+            <th>Datum</th>
+            <th>Skupina</th>
+        </tr>
+    </thead>
+    <tbody class="table-group-divider">
+        {% for event in events %}
+            <tr>
+                <td>{{ event.title }}</td>
+                <td> {{ event.start_time|date:"H:i" }} - {{ event.end_time|date:"H:i" }}</td>
+                <td> {{ event.start_time|date:"d.m." }} - {{ event.end_time|date:"d.m." }}</td>
+                <td>{{ event.group }}</td>
+            </tr>
+        {% empty %}
+            Žádné události nenalezeny!
+        {% endfor %}
+    </tbody>
+</table>
