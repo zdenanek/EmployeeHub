@@ -1,5 +1,6 @@
 import json
 
+from django.contrib.admin.templatetags.admin_list import search_form
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max, Q
 from django.http import JsonResponse
@@ -8,6 +9,7 @@ from django.template.base import kwarg_re
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, FormView, DetailView
+from sympy.polys.polyconfig import query
 
 from .models import Contract, Customer, Position, SubContract, Event, Comment
 from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, SubContractFormUpdate, CommentForm, \
@@ -25,8 +27,20 @@ def contract_detail(request, contract_id):
 
 @login_required
 def show_subcontracts(request):
+    query = request.GET.get("query", "")
     subcontracts = SubContract.objects.filter(user=request.user)
-    return render(request, 'subcontract.html', {'subcontracts': subcontracts})
+    if query:
+        subcontracts = subcontracts.filter(
+            Q(subcontract_name__icontains=query)
+        )
+    search_form = SearchForm(initial={'query': query})
+    search_url = 'navbar_show_subcontracts'
+
+    return render(request, 'subcontract.html', {
+        'subcontracts': subcontracts,
+        'search_form': search_form,
+        'search_url': search_url,
+    })
 
 @login_required
 def subcontract_detail(request, subcontract_id):
