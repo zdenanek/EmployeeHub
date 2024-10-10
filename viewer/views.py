@@ -8,7 +8,6 @@ from django.template.base import kwarg_re
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, FormView, DetailView
-from matplotlib.style import context
 
 from .models import Contract, Customer, Position, SubContract, Event, Comment
 from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, SubContractFormUpdate, CommentForm, \
