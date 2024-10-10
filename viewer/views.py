@@ -137,7 +137,21 @@ class UserListView(LoginRequiredMixin, ListView):
 
 class CustomerListView(LoginRequiredMixin, ListView):
     model = Customer
-    template_name = 'customers.html'
+    template_name = 'navbar_customers.html'
+    context_object_name = "customers"
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.GET.get("query")
+        if query:
+            queryset = queryset.filter(contract_name__icontains=query)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search_form"] = SearchForm()
+        context["search_url"] = "navbar_customers"
+        return context
 
 
 class ContractListView(LoginRequiredMixin, ListView):
@@ -152,7 +166,7 @@ class ContractListView(LoginRequiredMixin, ListView):
             if query:
                 queryset = queryset.filter(contract_name__icontains=query)
             return sorted(queryset, key=lambda contract: contract.delta())
-        return Contract.onjects.none()  # nebo all?
+        return Contract.objects.none()  #TODO nebo all?
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
