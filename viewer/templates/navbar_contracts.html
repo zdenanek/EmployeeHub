@@ -59,7 +59,9 @@
                         </li>
                     {% endif %}
                 </ul>
-                {% include "includes/search_form.html" with search_url=search_url %}
+                {% if show_search %}
+                    {% include "includes/search_form.html" with search_url=search_url %}
+                {% endif %}
             </div>
         </div>
     </nav>

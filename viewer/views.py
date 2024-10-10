@@ -35,11 +35,13 @@ def show_subcontracts(request):
         )
     search_form = SearchForm(initial={'query': query})
     search_url = 'navbar_show_subcontracts'
+    show_search = True
 
     return render(request, 'subcontract.html', {
         'subcontracts': subcontracts,
         'search_form': search_form,
         'search_url': search_url,
+        'show_search': show_search,
     })
 
 @login_required
@@ -132,6 +134,7 @@ class UserListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["search_form"] = SearchForm()
         context["search_url"] = "employees"
+        context["show_search"] = True
         return context
 
 
@@ -154,6 +157,7 @@ class CustomerListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["search_form"] = SearchForm()
         context["search_url"] = "navbar_customers"
+        context["show_search"] = True
         return context
 
 
@@ -175,6 +179,7 @@ class ContractListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["search_form"] = SearchForm()
         context["search_url"] = "navbar_contracts"
+        context["show_search"] = True
         return context
 
 class ContractAllListView(LoginRequiredMixin, ListView):
@@ -193,6 +198,7 @@ class ContractAllListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["search_form"] = SearchForm(self.request.GET or None)
         context["search_url"] = "navbar_contracts_all"
+        context["show_search"] = True
         return context
 
 
