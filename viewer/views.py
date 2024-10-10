@@ -129,14 +129,22 @@ class CustomerListView(LoginRequiredMixin, ListView):
 class ContractListView(LoginRequiredMixin, ListView):
     model = Contract
     template_name = 'navbar_contracts.html'
+    context_object_name = "contracts"
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            contracts = Contract.objects.filter(user=self.request.user)
-        else:
-            contracts = Contract.objects.none()
-        return sorted(contracts, key=lambda contract: contract.delta())
+            queryset = Contract.objects.filter(user=self.request.user)
+            query = self.request.GET.get("query")
+            if query:
+                queryset = queryset.filter(contract_name__icontains=query)
+            return sorted(queryset, key=lambda contract: contract.delta())
+        return Contract.onjects.none()  # nebo all?
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search_form"] = SearchForm()
+        context["search_url"] = "navbar_contracts"
+        return context
 
 class ContractAllListView(LoginRequiredMixin, ListView):
     model = Contract
