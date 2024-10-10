@@ -59,12 +59,7 @@
                         </li>
                     {% endif %}
                 </ul>
-                <form method="GET" action="{% url 'employees' %}" class="d-flex" role="search">
-                    {{ search_form.query.label_tag }}
-                    {{ search_form.query }}
-                    <button class="btn btn-outline-success" type="submit">Search</button>
-                    <a href="{% url 'employees' %}" class="btn btn-outline-danger ms-2">Clear</a>
-                </form>
+                    {% include "includes/search_form.html" with search_url=search_url %}
             </div>
         </div>
     </nav>

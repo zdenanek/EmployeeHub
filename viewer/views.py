@@ -117,6 +117,7 @@ class UserListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["search_form"] = SearchForm()
+        context["search_url"] = "employees"
         return context
 
 
@@ -140,10 +141,20 @@ class ContractListView(LoginRequiredMixin, ListView):
 class ContractAllListView(LoginRequiredMixin, ListView):
     model = Contract
     template_name = 'navbar_contracts_all.html'
+    context_object_name = "contracts"
 
     def get_queryset(self):
-        contracts = Contract.objects.all()
-        return sorted(contracts, key=lambda contract: contract.delta())
+        queryset = Contract.objects.all()
+        query = self.request.GET.get("query")
+        if query:
+            queryset = queryset.filter(contract_name__icontains=query)
+        return sorted(queryset, key=lambda contract: contract.delta())
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search_form"] = SearchForm(self.request.GET or None)
+        context["search_url"] = "navbar_contracts_all"
+        return context
 
 
 class SignUpView(LoginRequiredMixin, CreateView):
