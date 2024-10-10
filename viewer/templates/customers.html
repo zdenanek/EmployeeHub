@@ -13,57 +13,6 @@
 </head>
 <body>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'homepage' %}">Home</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'navbar_contracts_all' %}">Všechny projekty</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'navbar_contracts' %}">Moje projekty</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'navbar_show_subcontracts' %}">Moje podprojekty</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'navbar_customers' %}">Zákazníci</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'employees' %}">Zaměstnanci</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'calendar' %}">Kalendář dovolené</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Můj profil
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'password_change' %}">Změna hesla</a></li>
-                            <li><a class="dropdown-item" href="{% url 'homepage' %}">Profil zaměstnance</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'logout' %}">Odhlásit se</a></li>
-                        </ul>
-                    </li>
-                </ul>
-                <ul class="navbar-nav mb-2 mb-lg-0">
-                    {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link">Vítejte, {{ user.username }}!</a>
-                        </li>
-                    {% endif %}
-                </ul>
-                {% include "includes/search_form.html" with search_url=search_url %}
-            </div>
-        </div>
-    </nav>
-
 <h2>Zákazníci</h2>
 
 {% if object_list %}

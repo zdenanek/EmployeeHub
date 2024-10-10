@@ -144,7 +144,10 @@ class CustomerListView(LoginRequiredMixin, ListView):
         queryset = super().get_queryset()
         query = self.request.GET.get("query")
         if query:
-            queryset = queryset.filter(contract_name__icontains=query)
+            queryset = queryset.filter(
+                Q(first_name__icontains=query) |
+                Q(last_name__icontains=query)
+            )
         return queryset
 
     def get_context_data(self, **kwargs):
