@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <!--    Bootstrap CSS-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'buttons.css' %}">
 </head>
 <body>
 
@@ -46,7 +47,7 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'password_change' %}">Změna hesla</a></li>
-                            <li><a class="dropdown-item" href="{% url 'homepage' %}">Profil zaměstnance</a></li>
+                            <li><a class="dropdown-item" href="{% url 'employee_profile' %}">Profil zaměstnance</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{% url 'logout' %}">Odhlásit se</a></li>
                         </ul>
@@ -86,7 +87,7 @@
             <td>{{ subcontract.contract.contract_name }}</td>
             <td>{{ subcontract.subcontract_name }}</td>
             <td>{{ subcontract.contract.delta }}</td>
-            <td><a href="{% url 'subcontract_detail' contract_pk=subcontract.contract.pk subcontract_number=subcontract.subcontract_number %}" class="btn bn-info">Detail podprojektu</a></td>
+            <td><a href="{% url 'subcontract_detail' contract_pk=subcontract.contract.pk subcontract_number=subcontract.subcontract_number %}" class="btn btn-custom">Detail podprojektu</a></td>
         </tr>
         {% endfor %}
     </tbody>
@@ -94,3 +95,7 @@
 {% else %}
     <p>Žádné podprojekty k zobrazení</p>
 {% endif %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

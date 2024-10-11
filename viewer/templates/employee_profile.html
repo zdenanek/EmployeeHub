@@ -1,10 +1,242 @@
-<!DOCTYPE html>
-<html lang="en">
+{% load static %}
+
+<html {% if LANGUAGE_CODE %}lang="{{ LANGUAGE_CODE }}" {% endif %}>
+
 <head>
     <meta charset="UTF-8">
-    <title>Karta zaměstnance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SDA employee hub{% endblock %}</title>
+    <!--    custom CSS-->
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <!--    Bootstrap CSS-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'buttons.css' %}">
 </head>
 <body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'homepage' %}">Home</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'navbar_contracts_all' %}">Všechny projekty</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'navbar_contracts' %}">Moje projekty</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'navbar_show_subcontracts' %}">Moje podprojekty</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'navbar_customers' %}">Zákazníci</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'employees' %}">Zaměstnanci</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'calendar' %}">Kalendář dovolené</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Můj profil
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'password_change' %}">Změna hesla</a></li>
+                            <li><a class="dropdown-item" href="{% url 'employee_profile' %}">Profil zaměstnance</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Odhlásit se</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link">Vítejte, {{ user.username }}!</a>
+                        </li>
+                    {% endif %}
+                </ul>
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+<h2>Profil zaměstnance</h2>
+
+<!-- Block 1: Employee Information -->
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Informace o zaměstnanci</h3>
+            <p><strong>Celé jméno:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+            {% if employee_information and employee_information.start_employee_contract %}
+                <p><strong>Datum nástupu:</strong> {{ employee_information.start_employee_contract|date:"d.m.Y" }}</p>
+                <p><strong>Počet dní ve firmě:</strong> {{ employee_information.duration_of_employment }} dní</p>
+            {% else %}
+                <p><strong>Datum nástupu:</strong> Není k dispozici</p>
+                <p><strong>Počet dní ve firmě:</strong> Není k dispozici</p>
+            {% endif %}
+
+            {% if employee_information_form %}
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ employee_information_form.as_p }}
+                    <button type="submit" name="employee_information_submit" class="btn btn-custom">Uložit</button>
+                </form>
+            {% else %}
+                <!-- Read-only mode -->
+                {% if employee_information %}
+                    <p><strong>Adresa:</strong> {{ employee_information.permament_address }}</p>
+                    <p><strong>Číslo popisné:</strong> {{ employee_information.permament_descriptive_number }}</p>
+                    <p><strong>PSČ:</strong> {{ employee_information.permament_postal_code }}</p>
+                    <p><strong>Telefonní číslo:</strong> {{ employee_information.phone_number }}</p>
+                    <p><strong>Datum narození:</strong> {{ employee_information.birth_day|date:"d.m.Y" }}</p>
+                    <p><strong>Typ smlouvy:</strong> {{ employee_information.contract_type }}</p>
+                {% else %}
+                    <p>Informace o zaměstnanci nejsou k dispozici.</p>
+                {% endif %}
+                <a href="?edit=information" class="btn btn-custom">Upravit informace</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Block 2: Bank Account -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Bankovní účet</h3>
+            {% if bank_account_form %}
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ bank_account_form.as_p }}
+                    <button type="submit" name="bank_account_submit" class="btn btn-custom">Uložit</button>
+                </form>
+            {% else %}
+                {% if bank_account %}
+                    <p><strong>Číslo účtu:</strong> {{ bank_account.account_number }}</p>
+                    <p><strong>Kód banky:</strong> {{ bank_account.bank_code }}</p>
+                    <p><strong>Název banky:</strong> {{ bank_account.bank_name }}</p>
+                    <p><strong>IBAN:</strong> {{ bank_account.iban }}</p>
+                    <p><strong>SWIFT/BIC:</strong> {{ bank_account.swift_bic }}</p>
+                {% else %}
+                    <p>Informace o bankovním účtu nejsou k dispozici.</p>
+                {% endif %}
+                <a href="?edit=account" class="btn btn-custom">Upravit účet</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Block 3: Emergency Contacts -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Kontaktní osoby</h3>
+            {% if emergency_contact_formset %}
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ emergency_contact_formset.management_form }}
+                    <div id="formset-container">
+                        {% for form in emergency_contact_formset.forms %}
+                            <div class="emergency-contact-form">
+                                {% if forloop.counter == 1 %}
+                                    <h4>První osoba</h4>
+                                {% elif forloop.counter == 2 %}
+                                    <h4>Druhá osoba</h4>
+                                {% endif %}
+                                {{ form.as_p }}
+                            </div>
+                            <br>
+                        {% endfor %}
+                    </div>
+                    <!-- Button to add a new contact if less than 2 contacts exist -->
+                    {% if emergency_contact_formset.total_form_count < 2 %}
+                        <button type="button" id="add-contact-btn" class="btn btn-custom">Přidat další osobu</button>
+                    {% endif %}
+                    <button type="submit" name="emergency_contact_submit" class="btn btn-custom">Uložit</button>
+                </form>
+                <!-- Hidden empty form template -->
+                <div id="empty-form" style="display:none;">
+                    <div class="emergency-contact-form">
+                        <h4>Nová osoba</h4>
+                        {{ emergency_contact_formset.empty_form.as_p }}
+                    </div>
+                    <br>
+                </div>
+            {% else %}
+                {% if user_profile.emergency_contacts.exists %}
+                    {% for contact in user_profile.emergency_contacts.all %}
+                        <p><strong>Jméno:</strong> {{ contact.name }}</p>
+                        <p><strong>Adresa:</strong> {{ contact.address }}</p>
+                        <p><strong>Číslo popisné:</strong> {{ contact.descriptive_number }}</p>
+                        <p><strong>Město:</strong> {{ contact.city }}</p>
+                        <p><strong>PSČ:</strong> {{ contact.postal_code }}</p>
+                        <p><strong>Telefon:</strong> {{ contact.phone_number }}</p>
+                        <hr>
+                    {% endfor %}
+                {% else %}
+                    <p>Nevyplnili jste žádnou kontaktní osobu.</p>
+                {% endif %}
+                <a href="?edit=emergency_contacts" class="btn btn-custom">Upravit kontaktní osoby</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Include JavaScript only if editing emergency contacts -->
+{% if emergency_contact_formset %}
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('JavaScript code is executing');
+        var addButton = document.getElementById('add-contact-btn');
+        var formContainer = document.getElementById('formset-container');
+        var prefix = '{{ emergency_contact_formset.prefix }}';
+        console.log('Formset prefix:', prefix);
+
+        var totalForms = document.getElementById('id_' + prefix + '-TOTAL_FORMS');
+        var maxForms = parseInt(document.getElementById('id_' + prefix + '-MAX_NUM_FORMS').value);
+        var formNum = parseInt(totalForms.value);
+
+        if (addButton) {
+            addButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (formNum < maxForms) {
+                    // Clone the empty form template
+                    var emptyFormDiv = document.getElementById('empty-form').firstElementChild.cloneNode(true);
+                    var newForm = document.createElement('div');
+                    newForm.innerHTML = emptyFormDiv.innerHTML;
+                    newForm.classList.add('emergency-contact-form');
+
+                    // Update form index
+                    var formRegex = new RegExp('__prefix__', 'g');
+                    newForm.innerHTML = newForm.innerHTML.replace(formRegex, formNum);
+
+                    // Update labels
+                    if (formNum == 1) {
+                        newForm.querySelector('h4').innerText = 'Druhá osoba';
+                    }
+
+                    formContainer.appendChild(newForm);
+
+                    formNum++;
+                    totalForms.value = formNum;
+
+                    // Hide the add button if we've reached max forms
+                    if (formNum >= maxForms) {
+                        addButton.style.display = 'none';
+                    }
+                }
+            });
+        } else {
+            console.log('Add contact button not found');
+        }
+    });
+</script>
+{% endif %}
 
 </body>
 </html>

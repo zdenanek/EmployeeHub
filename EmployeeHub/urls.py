@@ -24,16 +24,10 @@ from viewer.views import HomepageView, UserListView, CustomerListView, ContractL
     CustomerCreateView, CustomerUpdateView, CustomerDeleteView, SubContractCreateView, \
     SubmittablePasswordChangeView, show_subcontracts, SubContractUpdateView, SubContractDeleteView, CommentCreateView, \
     subcontract_detail, events_feed, calendar_view, update_event, create_event, ContractView, SubContractDetailView, \
-    SubmittablePasswordChangeView, show_subcontracts, SubContractUpdateView, SubContractDeleteView, CommentCreateView,\
-    subcontract_detail, events_feed, calendar_view, update_event, create_event,get_groups, delete_event
+    SubmittablePasswordChangeView, show_subcontracts, SubContractUpdateView, SubContractDeleteView, CommentCreateView, \
+    subcontract_detail, events_feed, calendar_view, update_event, create_event, get_groups, delete_event, \
+    employee_profile
 
-
-admin.site.register(Customer)
-admin.site.register(Contract)
-admin.site.register(Groups)
-admin.site.register(SubContract)
-admin.site.register(Comment)
-admin.site.register(Event)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -88,5 +82,5 @@ urlpatterns = [
 
     path('employees/', UserListView.as_view(), name='employees'),
 
-    # path('employee_profile/', employee_profileView.as_view(), name='employee_profile')
+    path('employee-profile/', employee_profile, name='employee_profile'),
 ]

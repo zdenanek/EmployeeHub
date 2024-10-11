@@ -1,3 +1,9 @@
+{% load static %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'buttons.css' %}">
+</head>
+
 <h2>Komentáře</h2>
 
 <table class="table">
@@ -12,7 +18,7 @@
         <tr>
             <td>{{ comment.subcontract.contract.pk}} - {{ comment.subcontract.subcontract_number }}</td>
             <td>{{ comment.text }}</td>
-            <td><a href="{% url 'subcontract_detail' contract_pk=comment.subcontract.contract.pk subcontract_number=comment.subcontract.subcontract_number %}" class="btn btn-info">Detail podprojektu</a></td>
+            <td><a href="{% url 'subcontract_detail' contract_pk=comment.subcontract.contract.pk subcontract_number=comment.subcontract.subcontract_number %}" class="btn btn-custom">Detail podprojektu</a></td>
         </tr>
         {% endfor %}
     </tbody>

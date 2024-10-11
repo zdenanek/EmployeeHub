@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta,date
 
 from django.db.models import CharField, Model, ForeignKey, DateTimeField, DO_NOTHING, ManyToManyField, IntegerField, \
     EmailField, UniqueConstraint, CASCADE
@@ -93,6 +93,7 @@ class UserProfile(models.Model):
     position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True, blank=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True, default="123456789")
 
+
     def get_email(self):
         return self.user.email
 
@@ -118,3 +119,64 @@ class Event(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class BankAccount(models.Model):
+    user_profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
+    account_prefix = models.CharField(max_length=6, default="000000", null=True, blank=True)
+    account_number = models.CharField(max_length=20, null=True, blank=True)
+    bank_code = models.CharField(max_length=4, null=True, blank=True)
+    bank_name = models.CharField(max_length=50, null=True, blank=True)
+    iban = models.CharField(max_length=34, null=True, blank=True)
+    swift_bic = models.CharField(max_length=11, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.bank_name}, {self.account_prefix} - {self.account_number}/{self.bank_code}"
+
+
+class EmergencyContact(models.Model):
+    user_profile = models.ForeignKey(
+        UserProfile,
+        on_delete=models.CASCADE,
+        related_name='emergency_contacts'
+    )
+    name = models.CharField(max_length=128)
+    address = models.CharField(max_length=128)
+    descriptive_number = models.CharField(max_length=10)
+    postal_code = models.CharField(max_length=10)
+    city = models.CharField(max_length=128)
+    phone_number = models.CharField(max_length=15)
+
+    def __str__(self):
+        return f"{self.name} - {self.phone_number}"
+
+
+
+class EmployeeInformation(models.Model):
+    user_profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
+    permament_address = models.CharField(max_length=128, null=True, blank=True)
+    permament_descriptive_number = models.CharField(max_length=10, null=True, blank=True)
+    permament_postal_code = models.CharField(max_length=5, null=True, blank=True)
+    city = models.CharField(max_length=128)
+    phone_number = models.CharField(max_length=15, null=True, blank=True)
+    start_employee_contract = models.DateField(null=True, blank=True)
+    birth_day = models.DateField(null=True, blank=True)
+    contract_type = models.CharField(max_length=128, null=True, blank=True)
+
+    def duration_of_employment(self):
+        if self.start_employee_contract:
+            today = date.today()
+            delta_days = (today - self.start_employee_contract).days
+            return max(delta_days, 0)
+        return None
+
+
+    # or years and days
+    # def duration_of_employment(self):
+    #     if self.start_employee_contract:
+    #         today = date.today()
+    #         delta = today - self.start_employee_contract
+    #         years = delta.days // 365
+    #         days = delta.days % 365
+    #         return f"{years} let, {days} dní" if years else f"{days} dní"
+    #     return None

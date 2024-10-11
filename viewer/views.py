@@ -1,12 +1,19 @@
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max, Q
 from django.shortcuts import render, get_object_or_404
+from django.forms import inlineformset_factory
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, FormView, DetailView
 
 from .models import Contract, Customer, SubContract, Comment
 from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, CommentForm, SearchForm
+from .models import Contract, Customer, Position, SubContract, Event, Comment, UserProfile, BankAccount, \
+    EmployeeInformation, EmergencyContact
+from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, CommentForm, \
+    SearchForm, EmployeeInformationForm, BankAccountForm, EmergencyContactFormSet, BaseEmergencyContactFormSet, \
+    EmergencyContactForm
 
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
@@ -385,3 +392,113 @@ class SubContractDetailView(LoginRequiredMixin, DetailView):
         contract_pk = self.kwargs.get("contract_pk")
         subcontract_number = self.kwargs.get("subcontract_number")
         return SubContract.objects.get(contract__pk=contract_pk, subcontract_number=subcontract_number)
+
+
+@login_required
+def employee_profile(request):
+    user = request.user
+    user_profile, created = UserProfile.objects.get_or_create(user=user)
+
+    edit_section = request.GET.get('edit')
+
+    # Initialize variables
+    bank_account_form = None
+    employee_information_form = None
+    emergency_contact_formset = None
+
+    # Handle POST requests
+    if request.method == 'POST':
+        if 'employee_information_submit' in request.POST:
+            # Process Employee Information form
+            try:
+                employee_information = user_profile.employeeinformation
+            except EmployeeInformation.DoesNotExist:
+                employee_information = None
+
+            employee_information_form = EmployeeInformationForm(request.POST, instance=employee_information)
+            if employee_information_form.is_valid():
+                employee_information = employee_information_form.save(commit=False)
+                employee_information.user_profile = user_profile
+                employee_information.save()
+                return redirect('employee_profile')
+        elif 'bank_account_submit' in request.POST:
+            # Process Bank Account form
+            try:
+                bank_account = user_profile.bankaccount
+            except BankAccount.DoesNotExist:
+                bank_account = None
+
+            bank_account_form = BankAccountForm(request.POST, instance=bank_account)
+            if bank_account_form.is_valid():
+                bank_account = bank_account_form.save(commit=False)
+                bank_account.user_profile = user_profile
+                bank_account.save()
+                return redirect('employee_profile')
+        elif 'emergency_contact_submit' in request.POST:
+            # Process Emergency Contact formset
+            EmergencyContactFormSetAdjusted = inlineformset_factory(
+                UserProfile,
+                EmergencyContact,
+                form=EmergencyContactForm,
+                formset=BaseEmergencyContactFormSet,
+                extra=1,
+                max_num=2,
+                can_delete=True,
+            )
+            emergency_contact_formset = EmergencyContactFormSetAdjusted(request.POST, instance=user_profile)
+            if emergency_contact_formset.is_valid():
+                emergency_contact_formset.save()
+                return redirect('employee_profile')
+
+    else:
+        # Handle GET requests
+        if edit_section == 'information':
+            # Initialize Employee Information form
+            try:
+                employee_information = user_profile.employeeinformation
+            except EmployeeInformation.DoesNotExist:
+                employee_information = None
+            employee_information_form = EmployeeInformationForm(instance=employee_information)
+        elif edit_section == 'account':
+            # Initialize Bank Account form
+            try:
+                bank_account = user_profile.bankaccount
+            except BankAccount.DoesNotExist:
+                bank_account = None
+            bank_account_form = BankAccountForm(instance=bank_account)
+        elif edit_section == 'emergency_contacts':
+            # Initialize Emergency Contact formset
+            EmergencyContactFormSetAdjusted = inlineformset_factory(
+                UserProfile,
+                EmergencyContact,
+                form=EmergencyContactForm,
+                formset=BaseEmergencyContactFormSet,
+                extra=1 if user_profile.emergency_contacts.count() == 0 else 0,
+                max_num=2,
+                can_delete=True,
+            )
+            emergency_contact_formset = EmergencyContactFormSetAdjusted(instance=user_profile)
+        # Else, do nothing special for GET request
+
+    # Retrieve data to display in read-only mode
+    try:
+        employee_information = user_profile.employeeinformation
+    except EmployeeInformation.DoesNotExist:
+        employee_information = None
+
+    try:
+        bank_account = user_profile.bankaccount
+    except BankAccount.DoesNotExist:
+        bank_account = None
+
+    context = {
+        'user': user,
+        'user_profile': user_profile,
+        'employee_information_form': employee_information_form,
+        'bank_account_form': bank_account_form,
+        'emergency_contact_formset': emergency_contact_formset,
+        'employee_information': employee_information,
+        'bank_account': bank_account,
+    }
+    return render(request, 'employee_profile.html', context)
+
