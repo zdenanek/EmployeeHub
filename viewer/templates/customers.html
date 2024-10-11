@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <!--    Bootstrap CSS-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'buttons.css' %}">
 </head>
 <body>
 
@@ -46,7 +47,7 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'password_change' %}">Změna hesla</a></li>
-                            <li><a class="dropdown-item" href="{% url 'homepage' %}">Profil zaměstnance</a></li>
+                            <li><a class="dropdown-item" href="{% url 'employee_profile' %}">Profil zaměstnance</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{% url 'logout' %}">Odhlásit se</a></li>
                         </ul>
@@ -82,8 +83,8 @@
         <tr>
             <td>{{ customer.first_name }} {{ customer.last_name }}</td>
             <td>{{ customer.created }}</td>
-            <td><a href="{% url 'customer_update' customer.pk %}" class="btn btn-info">Upravit</a></td>
-            <td><a href="{% url 'customer_delete' customer.pk %}" class="btn btn-info">Smazat</a></td>
+            <td><a href="{% url 'customer_update' customer.pk %}" class="btn btn-custom">Upravit</a></td>
+            <td><a href="{% url 'customer_delete' customer.pk %}" class="btn btn-custom">Smazat</a></td>
         </tr>
     </tbody>
 
@@ -95,3 +96,7 @@
 {% else %}
     <p>Žádné projekty k zobrazení</p>
 {% endif %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

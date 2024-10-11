@@ -34,6 +34,9 @@
                         <a class="nav-link" href="{% url 'navbar_customers' %}">Zákazníci</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{% url 'employees' %}">Zaměstnanci</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'calendar' %}">Kalendář dovolené</a>
                     </li>
                     <li class="nav-item dropdown">
@@ -42,7 +45,7 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'password_change' %}">Změna hesla</a></li>
-                            <li><a class="dropdown-item" href="{% url 'homepage' %}">Profil zaměstnance</a></li>
+                            <li><a class="dropdown-item" href="{% url 'employee_profile' %}">Profil zaměstnance</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{% url 'logout' %}">Odhlásit se</a></li>
                         </ul>

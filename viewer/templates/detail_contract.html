@@ -8,6 +8,7 @@
     <title>{% block title %}SDA employee hub{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'buttons.css' %}">
 </head>
 
 <body>
@@ -33,6 +34,9 @@
                         <a class="nav-link" href="{% url 'navbar_customers' %}">Zákazníci</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{% url 'employees' %}">Zaměstnanci</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'calendar' %}">Kalendář dovolené</a>
                     </li>
                     <li class="nav-item dropdown">
@@ -40,10 +44,10 @@
                             Můj profil
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'homepage' %}">Změna hesla</a></li>
-                            <li><a class="dropdown-item" href="{% url 'homepage' %}">Profil zaměstnance</a></li>
+                            <li><a class="dropdown-item" href="{% url 'password_change' %}">Změna hesla</a></li>
+                            <li><a class="dropdown-item" href="{% url 'employee_profile' %}">Profil zaměstnance</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'homepage' %}">Odhlásit se</a></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Odhlásit se</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -62,8 +66,8 @@
         </div>
     </nav>
 
-    <a href="{% url 'navbar_contracts_all' %}" class="btn btn-info">Zpět na přehled</a>
-    <a href="{% url 'contract_update' contract.pk %}" class="btn btn-info">Upravit</a>
+    <a href="{% url 'navbar_contracts_all' %}" class="btn btn-custom">Zpět na přehled</a>
+    <a href="{% url 'contract_update' contract.pk %}" class="btn btn-custom">Upravit</a>
 
 <h2>Detail projektu č. {{ contract.id }}</h2>
 <p>Název: {{ contract.contract_name }}</p>
@@ -93,13 +97,13 @@
                 <td>{{ subcontract.subcontract_name }}</td>
                 <td>{{ subcontract.user }}</td>
                 <td>{{ subcontract.get_status_display }}</td>
-                <td><a href="{% url 'subcontract_detail' contract_pk=subcontract.contract.pk subcontract_number=subcontract.subcontract_number %}" class="btn btn-info">Detail podprojektu</a></td>
+                <td><a href="{% url 'subcontract_detail' contract_pk=subcontract.contract.pk subcontract_number=subcontract.subcontract_number %}" class="btn btn-custom">Detail podprojektu</a></td>
                 {% if subcontract.subcontract_number %}
-                <td><a href="{% url 'subcontract_update' contract_pk=subcontract.contract.pk subcontract_number=subcontract.subcontract_number %}" class="btn btn-info">Upravit</a></td>
+                <td><a href="{% url 'subcontract_update' contract_pk=subcontract.contract.pk subcontract_number=subcontract.subcontract_number %}" class="btn btn-custom">Upravit</a></td>
                 {% else %}
                 <td><span class="text-danger">Missing subcontract number</span></td>
                 {% endif %}
-                <td><a href="{% url 'subcontract_delete' subcontract.pk %}" class="btn btn-info">Smazat</a></td>
+                <td><a href="{% url 'subcontract_delete' subcontract.pk %}" class="btn btn-custom">Smazat</a></td>
 
             </tr>
             {% endfor %}
@@ -107,7 +111,7 @@
         </tbody>
     </table>
 
-   <a href="{% url 'subcontract_create' contract.pk %}" class="btn btn-info"> Přidat položku </a>
+   <a href="{% url 'subcontract_create' contract.pk %}" class="btn btn-custom"> Přidat položku </a>
 
 
     <br><br><br><br><br><br>
