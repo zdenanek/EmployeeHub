@@ -59,13 +59,13 @@
                         </li>
                     {% endif %}
                 </ul>
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
-                </form>
+                {% if show_search %}
+                    {% include "includes/search_form.html" with search_url=search_url %}
+                {% endif %}
             </div>
         </div>
     </nav>
+
 
 <h2>Zaměstnanci</h2>
 
@@ -75,6 +75,8 @@
     <tr>
         <th>Jméno</th>
         <th>Pozice</th>
+        <th>Telefonní číslo</th>
+        <th>E-mail</th>
     </tr>
     </thead>
     <tbody>
@@ -87,6 +89,8 @@
                 Žádná pozice
                 {% endif %}
             </td>
+            <td>{{ employee.userprofile.phone_number }}</td>
+            <td>{{ employee.email }}</td>
         </tr>
     </tbody>
 

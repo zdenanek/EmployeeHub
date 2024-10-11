@@ -1,16 +1,12 @@
-import json
-
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max, Q
-from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
-from django.template.base import kwarg_re
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, FormView, DetailView
 
-from .models import Contract, Customer, Position, SubContract, Event, Comment
-from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, SubContractFormUpdate, CommentForm
+from .models import Contract, Customer, SubContract, Comment
+from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, CommentForm, SearchForm
 
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
@@ -24,8 +20,22 @@ def contract_detail(request, contract_id):
 
 @login_required
 def show_subcontracts(request):
+    query = request.GET.get("query", "")
     subcontracts = SubContract.objects.filter(user=request.user)
-    return render(request, 'subcontract.html', {'subcontracts': subcontracts})
+    if query:
+        subcontracts = subcontracts.filter(
+            Q(subcontract_name__icontains=query)
+        )
+    search_form = SearchForm(initial={'query': query})
+    search_url = 'navbar_show_subcontracts'
+    show_search = True
+
+    return render(request, 'subcontract.html', {
+        'subcontracts': subcontracts,
+        'search_form': search_form,
+        'search_url': search_url,
+        'show_search': show_search,
+    })
 
 @login_required
 def subcontract_detail(request, subcontract_id):
@@ -102,31 +112,87 @@ class UserListView(LoginRequiredMixin, ListView):
     template_name = 'employees.html'
     context_object_name = "employees"
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.GET.get("query")
+        if query:
+            queryset = queryset.filter(
+                Q(first_name__icontains=query) |
+                Q(last_name__icontains=query) |
+                Q(username__icontains=query)
+            )
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search_form"] = SearchForm()
+        context["search_url"] = "employees"
+        context["show_search"] = True
+        return context
+
 
 class CustomerListView(LoginRequiredMixin, ListView):
     model = Customer
-    template_name = 'customers.html'
+    template_name = 'navbar_customers.html'
+    context_object_name = "customers"
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.GET.get("query")
+        if query:
+            queryset = queryset.filter(
+                Q(first_name__icontains=query) |
+                Q(last_name__icontains=query)
+            )
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search_form"] = SearchForm()
+        context["search_url"] = "navbar_customers"
+        context["show_search"] = True
+        return context
 
 
 class ContractListView(LoginRequiredMixin, ListView):
     model = Contract
     template_name = 'navbar_contracts.html'
+    context_object_name = "contracts"
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            contracts = Contract.objects.filter(user=self.request.user)
-        else:
-            contracts = Contract.objects.none()
-        return sorted(contracts, key=lambda contract: contract.delta())
+            queryset = Contract.objects.filter(user=self.request.user)
+            query = self.request.GET.get("query")
+            if query:
+                queryset = queryset.filter(contract_name__icontains=query)
+            return sorted(queryset, key=lambda contract: contract.delta())
+        return Contract.objects.none()  #TODO nebo all?
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search_form"] = SearchForm()
+        context["search_url"] = "navbar_contracts"
+        context["show_search"] = True
+        return context
 
 class ContractAllListView(LoginRequiredMixin, ListView):
     model = Contract
     template_name = 'navbar_contracts_all.html'
+    context_object_name = "contracts"
 
     def get_queryset(self):
-        contracts = Contract.objects.all()
-        return sorted(contracts, key=lambda contract: contract.delta())
+        queryset = Contract.objects.all()
+        query = self.request.GET.get("query")
+        if query:
+            queryset = queryset.filter(contract_name__icontains=query)
+        return sorted(queryset, key=lambda contract: contract.delta())
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search_form"] = SearchForm(self.request.GET or None)
+        context["search_url"] = "navbar_contracts_all"
+        context["show_search"] = True
+        return context
 
 
 class SignUpView(LoginRequiredMixin, CreateView):
