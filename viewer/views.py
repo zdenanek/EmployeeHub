@@ -1,19 +1,12 @@
-import json
-
-from django.contrib.admin.templatetags.admin_list import search_form
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max, Q
-from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
-from django.template.base import kwarg_re
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, FormView, DetailView
-from sympy.polys.polyconfig import query
 
-from .models import Contract, Customer, Position, SubContract, Event, Comment
-from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, SubContractFormUpdate, CommentForm, \
-    SearchForm
+from .models import Contract, Customer, SubContract, Comment
+from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, CommentForm, SearchForm
 
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
