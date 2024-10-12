@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max, Q
 from django.shortcuts import render, get_object_or_404
@@ -88,6 +89,13 @@ class ContractDeleteView(LoginRequiredMixin, DeleteView):
     template_name = "form.html"
     model = Contract
     success_url = reverse_lazy('navbar_contracts_all')
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.object.subcontracts.exists():
+            messages.warning(request, "You can't delete this contract because it has active subcontracts.")
+            return redirect('navbar_contracts_all')
+        return super().post(request, *args, **kwargs)
 
 
 class CustomerView(LoginRequiredMixin, ListView):

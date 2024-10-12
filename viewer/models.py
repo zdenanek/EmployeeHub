@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta,date
 
 from django.db.models import CharField, Model, ForeignKey, DateTimeField, DO_NOTHING, ManyToManyField, IntegerField, \
-    EmailField, UniqueConstraint, CASCADE
+    EmailField, UniqueConstraint, CASCADE, PROTECT
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -50,7 +50,7 @@ class SubContract(Model):
     subcontract_name = CharField(max_length=128)
     created = DateTimeField(auto_now_add=True)
     user = ForeignKey(User, on_delete=DO_NOTHING, default=1)
-    contract = ForeignKey(Contract, related_name='subcontracts', on_delete=DO_NOTHING)
+    contract = ForeignKey(Contract, related_name='subcontracts', on_delete=PROTECT)
     #status = ForeignKey(User, on_delete=DO_NOTHING, default=1)    #TODO
     subcontract_number = IntegerField(null=True, blank=True, default=1)
     status_choices = [("0","V procesu"), ("1","Dokončeno"), ("2","Zrušeno")]
