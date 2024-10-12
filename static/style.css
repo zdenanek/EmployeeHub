@@ -1,0 +1,46 @@
+/* Přizpůsobení stylů pro navigační lištu */
+.navbar {
+    background-color: #343a40; /* Tmavé pozadí */
+}
+
+.navbar-brand, .nav-link {
+    color: #ffffff !important; /* Bílý text */
+}
+
+.nav-link:hover {
+    color: #d4d4d4 !important; /* Světlejší text při najetí myší */
+}
+
+.dropdown-menu {
+    background-color: #343a40; /* Tmavé pozadí pro dropdown */
+}
+
+
+.dropdown-item {
+    color: #ffffff; /* Bílý text pro položky dropdown */
+}
+
+.dropdown-item:hover {
+    background-color: #495057; /* Tmavší pozadí při najetí myší */
+}
+
+/* Přizpůsobení stylů pro bloky */
+.container .row .col-md-3 {
+    margin-bottom: 20px;
+}
+
+.card {
+    background-color: #f8f9fa; /* Světlé pozadí pro karty */
+    border: 1px solid #dee2e6; /* Světle šedý okraj */
+    border-radius: 0.25rem; /* Zaoblené rohy */
+}
+
+.card-title {
+    font-size: 1.25rem; /* Velikost písma pro nadpisy karet */
+    margin-bottom: 1rem; /* Spodní okraj pro nadpisy karet */
+}
+
+.smaller-input {
+    max-width: 300px; /* Nastav šířku na přibližně 7 cm */
+}
+
