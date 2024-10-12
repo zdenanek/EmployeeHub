@@ -85,7 +85,5 @@ urlpatterns = [
     path('employees/', UserListView.as_view(), name='employees'),
 
     path('employee-profile/', employee_profile, name='employee_profile'),
-]
 
-    # path('employee_profile/', employee_profileView.as_view(), name='employee_profile')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
