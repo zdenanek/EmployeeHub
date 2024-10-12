@@ -5,8 +5,30 @@
 {% endblock %}
 
 {% block content %}
-<br>
-<div class="container">
-        {% include 'customers.html' %}
+<div class="container mt-4">
+    <h2 class="mb-4">Zákazníci</h2>
+
+    {% if object_list %}
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th>Název zákazníka</th>
+            <th>Datum objednání projektu</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for customer in object_list %}
+            <tr>
+                <td>{{ customer.first_name }} {{ customer.last_name }}</td>
+                <td>{{ customer.created }}</td>
+                <td><a href="{% url 'customer_update' customer.pk %}" class="btn btn-custom">Upravit</a></td>
+                <td><a href="{% url 'customer_delete' customer.pk %}" class="btn btn-custom">Smazat</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>Žádné projekty k zobrazení</p>
+    {% endif %}
 </div>
 {% endblock %}
