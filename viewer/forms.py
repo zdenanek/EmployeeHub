@@ -1,4 +1,7 @@
+import re
+
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import ValidationError
 from django.db.models import CharField
 from django.forms import ModelForm, Form, CharField, inlineformset_factory, BaseInlineFormSet
 from django import forms
@@ -148,6 +151,12 @@ class SecurityQuestionForm(forms.ModelForm):
 
 
 class SecurityAnswerForm(forms.Form):
+    security_question = forms.ModelChoiceField(
+        queryset=SecurityQuestion.objects.all(),
+        label='Bezpečnostní otázka',
+        required=True,
+        empty_label=None
+    )
     security_answer = forms.CharField(
         widget=forms.PasswordInput,
         label='Odpověď',
@@ -166,3 +175,5 @@ class SetNewPasswordForm(forms.Form):
         label='Potvrzení nového hesla',
         required=True
     )
+
+

@@ -551,7 +551,7 @@ def password_reset_step_2(request):
             if profile.check_security_answer(security_answer):
                 return redirect('password_reset_step_3')
             else:
-                error = 'Nesprávná odpověď'
+                error = 'Nesprávná odpověď nebo špatná otázka'
                 return render(request, 'password_reset_step_2.html', {'form': form, 'error': error, 'security_question': profile.security_question})
     else:
         form = SecurityAnswerForm()
