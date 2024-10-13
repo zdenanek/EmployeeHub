@@ -3,7 +3,7 @@ from django.db.models import CharField
 from django.forms import ModelForm, Form, CharField, inlineformset_factory, BaseInlineFormSet
 from django import forms
 from django.core.validators import RegexValidator
-from .models import UserProfile, BankAccount, EmployeeInformation, EmergencyContact
+from .models import UserProfile, BankAccount, EmployeeInformation, EmergencyContact, SecurityQuestion
 
 from viewer.models import Contract, Customer, SubContract, Comment
 
@@ -120,3 +120,49 @@ class EmployeeInformationForm(forms.ModelForm):
             'city',
             'phone_number',
         ]
+
+
+class SecurityQuestionForm(forms.ModelForm):
+    security_question = forms.ModelChoiceField(
+        queryset=SecurityQuestion.objects.all(),
+        label='Bezpečnostní otázka',
+        required=True,
+        empty_label=None
+    )
+    security_answer = forms.CharField(
+        widget=forms.PasswordInput,
+        label='Odpověď',
+        required=True
+    )
+
+    class Meta:
+        model = UserProfile
+        fields = ['security_question', 'security_answer']
+
+    def save(self, commit=True):
+        user_profile = super().save(commit=False)
+        user_profile.set_security_answer(self.cleaned_data['security_answer'])
+        if commit:
+            user_profile.save()
+        return user_profile
+
+
+class SecurityAnswerForm(forms.Form):
+    security_answer = forms.CharField(
+        widget=forms.PasswordInput,
+        label='Odpověď',
+        required=True
+    )
+
+
+class SetNewPasswordForm(forms.Form):
+    new_password = forms.CharField(
+        widget=forms.PasswordInput,
+        label='Nové heslo',
+        required=True
+    )
+    new_password_confirm = forms.CharField(
+        widget=forms.PasswordInput,
+        label='Potvrzení nového hesla',
+        required=True
+    )

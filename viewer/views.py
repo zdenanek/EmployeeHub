@@ -9,7 +9,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, FormView, DetailView
 
 from .models import Contract, Customer, SubContract, Comment
-from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, CommentForm, SearchForm
+from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, CommentForm, SearchForm, \
+    SecurityQuestionForm, SecurityAnswerForm, SetNewPasswordForm
 from .models import Contract, Customer, Position, SubContract, Event, Comment, UserProfile, BankAccount, \
     EmployeeInformation, EmergencyContact
 from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, CommentForm, \
@@ -509,4 +510,75 @@ def employee_profile(request):
         'bank_account': bank_account,
     }
     return render(request, 'employee_profile.html', context)
+
+@login_required
+def change_security_question_view(request):
+    user_profile = request.user.userprofile
+    if request.method == 'POST':
+        form = SecurityQuestionForm(request.POST, instance=user_profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Bezpečnostní otázka a odpověď byly úspěšně změněny.')
+            return redirect('employee_profile')
+    else:
+        form = SecurityQuestionForm(instance=user_profile)
+    return render(request, 'form.html', {'form': form})
+
+
+def password_reset_step_1(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        try:
+            user = User.objects.get(username=username)
+            request.session['reset_user_id'] = user.id
+            return redirect('password_reset_step_2')
+        except User.DoesNotExist:
+            return render(request, 'password_reset_step_1.html', {'error': 'Uživatel nebyl nalezen'})
+    return render(request, 'password_reset_step_1.html')
+
+
+def password_reset_step_2(request):
+    user_id = request.session.get('reset_user_id')
+    if not user_id:
+        return redirect('password_reset_step_1')
+    user = get_object_or_404(User, id=user_id)
+    profile = user.userprofile
+
+    if request.method == 'POST':
+        form = SecurityAnswerForm(request.POST)
+        if form.is_valid():
+            security_answer = form.cleaned_data['security_answer']
+            if profile.check_security_answer(security_answer):
+                return redirect('password_reset_step_3')
+            else:
+                error = 'Nesprávná odpověď'
+                return render(request, 'password_reset_step_2.html', {'form': form, 'error': error, 'security_question': profile.security_question})
+    else:
+        form = SecurityAnswerForm()
+    return render(request, 'password_reset_step_2.html', {'form': form, 'security_question': profile.security_question})
+
+
+def password_reset_step_3(request):
+    user_id = request.session.get('reset_user_id')
+    if not user_id:
+        return redirect('password_reset_step_1')
+    user = get_object_or_404(User, id=user_id)
+
+    if request.method == 'POST':
+        form = SetNewPasswordForm(request.POST)
+        if form.is_valid():
+            new_password = form.cleaned_data['new_password']
+            new_password_confirm = form.cleaned_data['new_password_confirm']
+            if new_password == new_password_confirm:
+                user.set_password(new_password)
+                user.save()
+                messages.success(request, 'Vaše heslo bylo úspěšně změněno.')
+                del request.session['reset_user_id']
+                return redirect('login')
+            else:
+                form.add_error(None, 'Hesla se neshodují')
+    else:
+        form = SetNewPasswordForm()
+    return render(request, 'password_reset_step_3.html', {'form': form})
+
 

@@ -118,6 +118,16 @@
             {% endif %}
         </div>
     </div>
+
+    <!-- Block 4: Security question, security answer -->
+    <div class="card mb-4">
+         <div class="card-body">
+            <h3>Heslo</h3>
+            <p><strong>Bezpečnostní otázka:</strong> {{ user_profile.security_question }}</p>
+            <p><strong>Bezpečnostní odpověď:</strong> {{ user_profile.security_answer }}</p>
+            <a href="{% url 'change_security_question' %}" class="btn btn-custom">Upravit</a>
+         </div>
+    </div>
 </div>
 
 <!-- Include JavaScript only if editing emergency contacts -->
@@ -170,7 +180,6 @@
     });
 </script>
 {% endif %}
-
 
 </body>
 </html>

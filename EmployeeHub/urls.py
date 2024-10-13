@@ -28,8 +28,7 @@ from viewer.views import HomepageView, UserListView, CustomerListView, ContractL
     subcontract_detail, events_feed, calendar_view, update_event, create_event, ContractView, SubContractDetailView, \
     SubmittablePasswordChangeView, show_subcontracts, SubContractUpdateView, SubContractDeleteView, CommentCreateView, \
     subcontract_detail, events_feed, calendar_view, update_event, create_event, get_groups, delete_event, \
-    employee_profile
-
+    employee_profile, change_security_question_view, password_reset_step_1, password_reset_step_2, password_reset_step_3
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -47,6 +46,7 @@ urlpatterns = [
     path('accounts/login/', LoginView.as_view(), name='login2'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('password-change/', SubmittablePasswordChangeView.as_view(),name='password_change'),
+
 
 # path for contract
     path('contract/<int:pk>/', ContractView.as_view(), name='contract_detail'),
@@ -87,5 +87,9 @@ urlpatterns = [
 #path for employee profile
     path('employee-profile/', employee_profile, name='employee_profile'),
 
+    path('change-security-question/', change_security_question_view, name='change_security_question'),
+    path('password-reset/step-1/', password_reset_step_1, name='password_reset_step_1'),
+    path('password-reset/step-2/', password_reset_step_2, name='password_reset_step_2'),
+    path('password-reset/step-3/', password_reset_step_3, name='password_reset_step_3'),
 
 ]

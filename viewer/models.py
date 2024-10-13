@@ -1,9 +1,12 @@
 from datetime import datetime, timedelta,date
 
+from django.contrib.auth.hashers import make_password, check_password
 from django.db.models import CharField, Model, ForeignKey, DateTimeField, DO_NOTHING, ManyToManyField, IntegerField, \
     EmailField, UniqueConstraint, CASCADE, PROTECT
 
 from django.contrib.auth import get_user_model
+from django.forms import Form, PasswordInput
+
 User = get_user_model()
 
 
@@ -88,17 +91,32 @@ class Position(models.Model):
         return self.name
 
 
+class SecurityQuestion(Model):
+    question_text = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.question_text}"
+
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True, blank=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True, default="123456789")
+    security_question = models.ForeignKey(SecurityQuestion, on_delete=models.SET_NULL, null=True, blank=True)
+    security_answer = models.CharField(max_length=255, blank=True)  # Allow blank answers
 
+    def set_security_answer(self, raw_answer):
+        self.security_answer = make_password(raw_answer)
 
-    def get_email(self):
-        return self.user.email
+    def check_security_answer(self, raw_answer):
+        return check_password(raw_answer, self.security_answer)
 
     def __str__(self):
         return f"{self.user.username} - {self.position.name if self.position else 'No position'} - {self.phone_number}"
+
+
+
+
 
 
 class Comment(Model):
