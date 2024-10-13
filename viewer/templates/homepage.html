@@ -12,7 +12,7 @@
         <div class="col-md-6">
             <div class="card text-center">
                 <div class="card-body">
-                    {% include 'contracts_homepage.html' %}
+                    {% include 'contracts_homepage.html' with contracts=contracts limit=5 %}
                 </div>
             </div>
         </div>
