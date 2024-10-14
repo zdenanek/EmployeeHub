@@ -54,7 +54,6 @@ class SubContract(Model):
     created = DateTimeField(auto_now_add=True)
     user = ForeignKey(User, on_delete=DO_NOTHING, default=1)
     contract = ForeignKey(Contract, related_name='subcontracts', on_delete=PROTECT)
-    #status = ForeignKey(User, on_delete=DO_NOTHING, default=1)    #TODO
     subcontract_number = IntegerField(null=True, blank=True, default=1)
     status_choices = [("0","V procesu"), ("1","Dokončeno"), ("2","Zrušeno")]
     status = CharField(max_length=64, choices=status_choices, default=status_choices[0])
@@ -63,6 +62,9 @@ class SubContract(Model):
         constraints = [
             UniqueConstraint(fields=["contract", "subcontract_number"], name="unique_subcontract_per_contract")
         ]
+
+    def delta(self):
+        return (self.contract.deadline - self.created).days
 
     def save(self, *args, **kwargs):
         pass

@@ -35,12 +35,13 @@ def show_subcontracts(request):
         subcontracts = subcontracts.filter(
             Q(subcontract_name__icontains=query)
         )
+    sorted_subcontracts = sorted(subcontracts, key=lambda subcontract: subcontract.delta())
     search_form = SearchForm(initial={'query': query})
     search_url = 'navbar_show_subcontracts'
     show_search = True
 
     return render(request, 'subcontract.html', {
-        'subcontracts': subcontracts,
+        'subcontracts': sorted_subcontracts,
         'search_form': search_form,
         'search_url': search_url,
         'show_search': show_search,
@@ -60,10 +61,18 @@ class HomepageView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context['comments'] = Comment.objects.all()
         context['users'] = User.objects.all()
-        context['subcontracts'] = SubContract.objects.filter(user=self.request.user)
+
+        # context['subcontracts'] = SubContract.objects.filter(user=self.request.user)
         contracts = Contract.objects.filter(user=self.request.user)
+        subcontracts = SubContract.objects.filter(user=self.request.user)
         sorted_contracts = sorted(contracts, key=lambda contract: contract.delta())
+        sorted_subcontracts = sorted(subcontracts, key=lambda subcontract: subcontract.delta())
+
+        limited_subcontracts = sorted_subcontracts[:5]
+
         context['contracts'] = sorted_contracts
+        context['subcontracts'] = limited_subcontracts
+
         today = date.today()
         context['events'] = Event.objects.filter(
             Q(start_time__date=today) |
@@ -182,7 +191,7 @@ class ContractListView(LoginRequiredMixin, ListView):
             if query:
                 queryset = queryset.filter(contract_name__icontains=query)
             return sorted(queryset, key=lambda contract: contract.delta())
-        return Contract.objects.none()  #TODO nebo all?
+        return Contract.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
