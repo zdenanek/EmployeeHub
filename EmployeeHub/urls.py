@@ -28,7 +28,8 @@ from viewer.views import HomepageView, UserListView, CustomerListView, ContractL
     subcontract_detail, events_feed, calendar_view, update_event, create_event, ContractView, SubContractDetailView, \
     SubmittablePasswordChangeView, show_subcontracts, SubContractUpdateView, SubContractDeleteView, CommentCreateView, \
     subcontract_detail, events_feed, calendar_view, update_event, create_event, get_groups, delete_event, \
-    employee_profile, change_security_question_view, password_reset_step_1, password_reset_step_2, password_reset_step_3
+    employee_profile, change_security_question_view, password_reset_step_1, password_reset_step_2, \
+    password_reset_step_3, SubContractAllListView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -61,6 +62,7 @@ urlpatterns = [
     path('customer/delete/<pk>', CustomerDeleteView.as_view(), name='customer_delete'),
 
 # path for subcontracts
+    path('navbar_subcontracts/', SubContractAllListView.as_view(), name='navbar_subcontracts'),
     path('subcontracts/', show_subcontracts, name='navbar_show_subcontracts'),
     path('subcontract/<int:contract_pk>/<int:subcontract_number>/', SubContractDetailView.as_view(),
          name='subcontract_detail'),

@@ -236,6 +236,11 @@ class SubmittablePasswordChangeView(LoginRequiredMixin, PasswordChangeView):
   template_name = 'form.html'
   success_url = reverse_lazy('homepage')
 
+class SubContractAllListView(LoginRequiredMixin, ListView):
+    model = SubContract
+    template_name = 'navbar_subcontracts.html'
+    context_object_name = 'subcontracts'
+
 
 class SubContractView(LoginRequiredMixin, ListView):
     model = SubContract
