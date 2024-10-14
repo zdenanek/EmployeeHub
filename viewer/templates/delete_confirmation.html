@@ -11,6 +11,7 @@
             <div class="card text-center">
                 <div class="card-body">
                     <h4>Opravdu chcete smazat tento záznam?</h4>
+                    <p>{{ object }}</p>
                     <form method="post">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger mt-3">Smazat</button>

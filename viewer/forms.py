@@ -58,17 +58,31 @@ class SearchForm(forms.Form):
 class BankAccountForm(forms.ModelForm):
     account_number = forms.CharField(
         max_length=20,
-        validators=[RegexValidator(r'^\d+$', 'Pole musí obsahovat pouze číslice')]
+        validators=[RegexValidator(r'^\d+$', 'Pole musí obsahovat pouze číslice')],
+        required=True
     )
     account_prefix = forms.CharField(
         max_length=6,
-        validators=[RegexValidator(r'^\d+$', 'Pole musí obsahovat pouze číslice')]
+        initial="000000",
+        required=False
     )
     bank_code = forms.CharField(
-        max_length = 4,
-        validators = [RegexValidator(r'^\d+$', 'Pole musí obsahovat pouze číslice')]
-
-)
+        max_length=4,
+        validators=[RegexValidator(r'^\d+$', 'Pole musí obsahovat pouze číslice')],
+        required=True
+    )
+    bank_name = forms.CharField(
+        max_length=50,
+        required=True
+    )
+    iban = forms.CharField(
+        max_length=34,
+        required=False
+    )
+    swift_bic = forms.CharField(
+        max_length=11,
+        required=False
+    )
 
     class Meta:
         model = BankAccount
@@ -76,6 +90,36 @@ class BankAccountForm(forms.ModelForm):
 
 
 class EmergencyContactForm(forms.ModelForm):
+    class EmergencyContactForm(forms.ModelForm):
+        name = forms.CharField(
+            max_length=128,
+            required=True
+        )
+        address = forms.CharField(
+            max_length=128,
+            required=True
+        )
+        descriptive_number = forms.CharField(
+            max_length=10,
+            required=True
+        )
+        postal_code = forms.CharField(
+            max_length=10,
+            required=True
+        )
+        city = forms.CharField(
+            max_length=128,
+            required=True
+        )
+        phone_number = forms.CharField(
+            max_length=15,
+            required=True
+        )
+
+        class Meta:
+            model = EmergencyContact
+            exclude = ('user_profile',)
+
     class Meta:
         model = EmergencyContact
         exclude = ('user_profile',)
@@ -107,12 +151,28 @@ EmergencyContactFormSet = inlineformset_factory(
 class EmployeeInformationForm(forms.ModelForm):
     permament_postal_code = forms.CharField(
         max_length=5,
-        validators=[RegexValidator(r'^\d+$', 'Pole musí obsahovat pouze číslice')]
+        validators=[RegexValidator(r'^\d+$', 'Pole musí obsahovat pouze číslice')],
+        required=True
     )
     phone_number = forms.CharField(
         max_length=15,
-        validators=[RegexValidator(r'^\d+$', 'Pole musí obsahovat pouze číslice')]
+        validators=[RegexValidator(r'^\d+$', 'Pole musí obsahovat pouze číslice')],
+        required=True
     )
+    permament_address = forms.CharField(
+        max_length=128,
+        required=True
+    )
+    permament_descriptive_number = forms.CharField(
+        max_length=10,
+        required=True
+    )
+    city = forms.CharField(
+        max_length=128,
+        required=True
+    )
+
+
     class Meta:
         model = EmployeeInformation
         # exclude = ('user_profile',)
@@ -176,4 +236,30 @@ class SetNewPasswordForm(forms.Form):
         required=True
     )
 
+    # Validation password conditions on beckend
+    def clean_new_password(self):
+        password = self.cleaned_data.get('new_password')
 
+
+        if len(password) < 8:
+            raise ValidationError('Heslo musí mít alespoň 8 znaků.')
+        if not any(char.isupper() for char in password):
+            raise ValidationError('Heslo musí obsahovat alespoň jedno velké písmeno.')
+        if not any(char.islower() for char in password):
+            raise ValidationError('Heslo musí obsahovat alespoň jedno malé písmeno.')
+        if not any(char.isdigit() for char in password):
+            raise ValidationError('Heslo musí obsahovat alespoň jednu číslici.')
+
+        return password
+
+
+    # validation password match on beckend
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get('new_password')
+        new_password_confirm = cleaned_data.get('new_password_confirm')
+
+        if new_password and new_password_confirm and new_password != new_password_confirm:
+            self.add_error('new_password_confirm', 'Hesla se neshodují')
+
+        return cleaned_data
