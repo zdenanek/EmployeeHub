@@ -96,7 +96,7 @@ class ContractUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class ContractDeleteView(LoginRequiredMixin, DeleteView):
-    template_name = "form.html"
+    template_name = "delete_confirmation.html"
     model = Contract
     success_url = reverse_lazy('navbar_contracts_all')
 
@@ -127,7 +127,7 @@ class CustomerUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class CustomerDeleteView(LoginRequiredMixin, DeleteView):
-    template_name = 'form.html'
+    template_name = 'delete_confirmation.html'
     model = Customer
     success_url = reverse_lazy('navbar_customers')
 
@@ -273,7 +273,7 @@ class SubContractUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class SubContractDeleteView(LoginRequiredMixin, DeleteView):
-    template_name = "form.html"
+    template_name = "delete_confirmation.html"
     model = SubContract
 
     def get_success_url(self):
