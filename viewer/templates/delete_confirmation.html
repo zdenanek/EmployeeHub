@@ -15,7 +15,7 @@
                     <form method="post">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger mt-3">Smazat</button>
-                        <a href="{% url 'navbar_customers' %}" class="btn btn-secondary mt-3">Zrušit</a>
+                        <a href="{{ request.META.HTTP_REFERER|default:'/' }}" class="btn btn-secondary mt-3">Zrušit</a>
                     </form>
                 </div>
             </div>
