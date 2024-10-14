@@ -107,6 +107,11 @@ class ContractDeleteView(LoginRequiredMixin, DeleteView):
             return redirect('navbar_contracts_all')
         return super().post(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['request'] = self.request
+        return context
+
 
 class CustomerView(LoginRequiredMixin, ListView):
     model = Customer
@@ -130,6 +135,11 @@ class CustomerDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'delete_confirmation.html'
     model = Customer
     success_url = reverse_lazy('navbar_customers')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['request'] = self.request
+        return context
 
 
 class UserListView(LoginRequiredMixin, ListView):
@@ -279,6 +289,11 @@ class SubContractDeleteView(LoginRequiredMixin, DeleteView):
     def get_success_url(self):
         contract_id = self.object.contract.id
         return reverse_lazy('contract_detail', kwargs={'pk': contract_id})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['request'] = self.request
+        return context
 
 
 class CommentCreateView(LoginRequiredMixin, CreateView):
