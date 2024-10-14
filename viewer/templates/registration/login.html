@@ -2,11 +2,17 @@
 
 {% block title %}Login - SDA Employee Hub{% endblock %}
 
-
 {% block content %}
     <div class="text-start mt-5">
-        <h1>Přihlaste se pro přístup do portálu</h1>
+        {% if messages %}
+        <div class="alert alert-success">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </div>
+        {% endif %}
 
+        <h1>Přihlaste se pro přístup do portálu</h1>
 
         <!-- Formulář pro přihlášení -->
         <form method="post" action="{% url 'login' %}" class="w-50">
@@ -23,9 +29,9 @@
             <button type="submit" class="btn btn-custom">Přihlásit se</button>
         </form>
 
-    <!-- Odkaz na resetování hesla -->
-    <p class="mt-3">
-        <a href="{% url 'password_reset_step_1' %}">Zapomněli jste heslo?</a>
-    </p>
+        <!-- Odkaz na resetování hesla -->
+        <p class="mt-3">
+            <a href="{% url 'password_reset_step_1' %}">Zapomněli jste heslo?</a>
+        </p>
     </div>
 {% endblock %}
