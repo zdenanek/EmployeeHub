@@ -6,10 +6,20 @@
 
 {% block content %}
 
-<form method="post">
-    {% csrf_token %}
-    <table>{{ form }}</table>
-    <input type="submit" value="Uložit" class="btn btn-custom">
-</form>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card text-center">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <table>{{ form }}</table>
+                        <input type="submit" value="Uložit" class="btn btn-custom mt-4">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 

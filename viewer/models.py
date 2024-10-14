@@ -118,9 +118,6 @@ class UserProfile(models.Model):
 
 
 
-
-
-
 class Comment(Model):
     text = CharField(max_length=200)
     subcontract = ForeignKey(SubContract, on_delete=CASCADE, default=1)
