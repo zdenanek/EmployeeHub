@@ -7,30 +7,29 @@
 {% block content %}
 <div class="container mt-4">
     <h2 class="mb-4">Všechny projekty</h2>
-    <a href="{% url 'homepage' %}" class="btn btn-custom">Zpět na homepage</a>
     <a href="{% url 'contract_create' %}" class="btn btn-custom"> Nový projekt </a>
+
     <div class="mt-4">
 
         <table class="table table-striped table-bordered">
             <thead>
                 <tr>
-                    <th>Název projektu</th>
-                    <th>Číslo projektu</th>
-                    <th>Datum vytvoření</th>
-                    <th>Deadline</th>
-                    <th>Zbývá dní</th>
-                    <th>Status</th>
-                    <th>Uživatel</th>
-                    <th>Pozice</th>
-                    <th>Počet podprojektů</th>
-                    <th>Detail projektu</th>
+                    <th class="text-center align-middle">Číslo projektu</th>
+                    <th class="text-center align-middle">Název projektu</th>
+                    <th class="text-center align-middle">Datum vytvoření</th>
+                    <th class="text-center align-middle">Deadline</th>
+                    <th class="text-center align-middle">Zbývá dní</th>
+                    <th class="text-center align-middle">Status</th>
+                    <th class="text-center align-middle">Uživatel</th>
+                    <th class="text-center align-middle">Pozice</th>
+                    <th class="text-center align-middle">Počet podprojektů</th>
                 </tr>
             </thead>
             <tbody>
                 {% for contract in contracts %}
                 <tr>
-                    <td>{{ contract.contract_name }}</td>
                     <td align="center">{{ contract.id }}</td>
+                    <td>{{ contract.contract_name }}</td>
                     <td>{{ contract.created|date:"Y M d" }}</td>
                     <td>{{ contract.deadline|date:"Y M d" }}</td>
                     <td align="center">{{ contract.delta }}</td>
