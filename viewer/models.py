@@ -171,11 +171,11 @@ class EmergencyContact(models.Model):
 
 class EmployeeInformation(models.Model):
     user_profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
-    permament_address = models.CharField(max_length=128, null=True, blank=True)
-    permament_descriptive_number = models.CharField(max_length=10, null=True, blank=True)
-    permament_postal_code = models.CharField(max_length=5, null=True, blank=True)
+    permament_address = models.CharField(max_length=128)
+    permament_descriptive_number = models.CharField(max_length=10)
+    permament_postal_code = models.CharField(max_length=5)
     city = models.CharField(max_length=128)
-    phone_number = models.CharField(max_length=15, null=True, blank=True)
+    phone_number = models.CharField(max_length=15)
     start_employee_contract = models.DateField(null=True, blank=True)
     birth_day = models.DateField(null=True, blank=True)
     contract_type = models.CharField(max_length=128, null=True, blank=True)

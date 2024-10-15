@@ -58,29 +58,35 @@ class SearchForm(forms.Form):
 class BankAccountForm(forms.ModelForm):
     account_number = forms.CharField(
         max_length=20,
+        label='Číslo účtu',
         validators=[RegexValidator(r'^\d+$', 'Pole musí obsahovat pouze číslice')],
         required=True
     )
     account_prefix = forms.CharField(
         max_length=6,
+        label='Předčíslí účtu',
         initial="000000",
         required=False
     )
     bank_code = forms.CharField(
         max_length=4,
+        label='Kód banky',
         validators=[RegexValidator(r'^\d+$', 'Pole musí obsahovat pouze číslice')],
         required=True
     )
     bank_name = forms.CharField(
         max_length=50,
+        label='Název banky',
         required=True
     )
     iban = forms.CharField(
         max_length=34,
+        label='IBAN',
         required=False
     )
     swift_bic = forms.CharField(
         max_length=11,
+        label='SWIFT/BIC',
         required=False
     )
 
@@ -89,53 +95,64 @@ class BankAccountForm(forms.ModelForm):
         exclude = ('user_profile',)
 
 
-class EmergencyContactForm(forms.ModelForm):
-    class EmergencyContactForm(forms.ModelForm):
-        name = forms.CharField(
-            max_length=128,
-            required=True
-        )
-        address = forms.CharField(
-            max_length=128,
-            required=True
-        )
-        descriptive_number = forms.CharField(
-            max_length=10,
-            required=True
-        )
-        postal_code = forms.CharField(
-            max_length=10,
-            required=True
-        )
-        city = forms.CharField(
-            max_length=128,
-            required=True
-        )
-        phone_number = forms.CharField(
-            max_length=15,
-            required=True
-        )
 
-        class Meta:
-            model = EmergencyContact
-            exclude = ('user_profile',)
+class EmergencyContactForm(forms.ModelForm):
+    name = forms.CharField(
+        max_length=128,
+        label='Jméno a příjmení',
+        required=True,
+        widget=forms.TextInput(attrs={'required': 'required'})
+    )
+    address = forms.CharField(
+        max_length=128,
+        label='Adresa',
+        required=True,
+        widget=forms.TextInput(attrs={'required': 'required'})
+    )
+    descriptive_number = forms.CharField(
+        max_length=10,
+        label='Popisné a orientační č.',
+        required=True,
+        widget=forms.TextInput(attrs={'required': 'required'})
+    )
+    postal_code = forms.CharField(
+        max_length=10,
+        label='PSČ',
+        validators=[RegexValidator(r'^\d+$', 'Pole musí obsahovat pouze číslice')],
+        required=True,
+        widget=forms.TextInput(attrs={'required': 'required'})
+    )
+    city = forms.CharField(
+        max_length=128,
+        label='Město',
+        required=True,
+        widget=forms.TextInput(attrs={'required': 'required'})
+    )
+    phone_number = forms.CharField(
+        max_length=15,
+        label='Tel. číslo',
+        validators=[RegexValidator(r'^\d+$', 'Pole musí obsahovat pouze číslice')],
+        required=True,
+        widget=forms.TextInput(attrs={'required': 'required'})
+    )
 
     class Meta:
         model = EmergencyContact
         exclude = ('user_profile',)
+
+
 
 class BaseEmergencyContactFormSet(BaseInlineFormSet):
     def clean(self):
         super().clean()
         total_forms = 0
         for form in self.forms:
-            if form.cleaned_data and not form.cleaned_data.get('DELETE', False):
-                # Check if any field is filled
-                filled = any(value for key, value in form.cleaned_data.items() if key != 'DELETE' and value)
-                if filled:
-                    total_forms += 1
+            if not form.cleaned_data.get('DELETE', False):
+                if not form.is_valid():
+                    raise forms.ValidationError("Prosím opravte chyby ve formuláři.")
+                total_forms += 1
         if total_forms > 2:
-            raise forms.ValidationError("You can only have up to two emergency contacts.")
+            raise forms.ValidationError("Můžete mít pouze dvě kontaktní osoby.")
 
 EmergencyContactFormSet = inlineformset_factory(
     UserProfile,
@@ -149,33 +166,36 @@ EmergencyContactFormSet = inlineformset_factory(
 
 
 class EmployeeInformationForm(forms.ModelForm):
-    permament_postal_code = forms.CharField(
-        max_length=5,
-        validators=[RegexValidator(r'^\d+$', 'Pole musí obsahovat pouze číslice')],
-        required=True
-    )
-    phone_number = forms.CharField(
-        max_length=15,
-        validators=[RegexValidator(r'^\d+$', 'Pole musí obsahovat pouze číslice')],
-        required=True
-    )
     permament_address = forms.CharField(
         max_length=128,
+        label='Adresa',
         required=True
     )
     permament_descriptive_number = forms.CharField(
         max_length=10,
+        label='Číslo popisné',
+        required=True
+    )
+    permament_postal_code = forms.CharField(
+        max_length=5,
+        label='PSČ',
+        validators=[RegexValidator(r'^\d+$', 'Pole musí obsahovat pouze číslice')],
         required=True
     )
     city = forms.CharField(
         max_length=128,
+        label='Město',
+        required=True
+    )
+    phone_number = forms.CharField(
+        max_length=15,
+        label='Telefonní číslo',
+        validators=[RegexValidator(r'^\d+$', 'Pole musí obsahovat pouze číslice')],
         required=True
     )
 
-
     class Meta:
         model = EmployeeInformation
-        # exclude = ('user_profile',)
         fields = [
             'permament_address',
             'permament_descriptive_number',
