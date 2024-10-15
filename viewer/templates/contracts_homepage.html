@@ -3,22 +3,23 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Název</th>
-            <th>Číslo projektu</th>
-            <th>Deadline</th>
-            <th>Počet dní do ukončení</th>
+            <th class="text-center align-middle">Číslo projektu</th>
+            <th class="text-center align-middle">Název projektu</th>
+            <th class="text-center align-middle">Deadline</th>
+            <th class="text-center align-middle">Zbývá dní</th>
+            <th class="text-center align-middle">Akce</th>
         </tr>
     </thead>
     <tbody class="table-group-divider">
     {% if limit %}
         {% for contract in contracts|slice:":5" %}
         <tr class="{% if contract.delta <= 0 %}table-danger{% elif contract.delta <= 7 %}table-warning{% endif %}">
-            <td>{{ contract.contract_name }}</td>
             <td align="center">{{ contract.id }}</td>
+            <td>{{ contract.contract_name }}</td>
             <td>{{ contract.deadline }}</td>
             <td align="center">{{ contract.delta }}</td>
             <td>
-                <a href="{% url 'contract_detail' contract.id %}" class="btn btn-custom">Detail projektu</a>
+                <a href="{% url 'contract_detail' contract.id %}" class="btn btn-custom">Detail</a>
             </td>
         </tr>
         {% empty %}

@@ -23,6 +23,7 @@
                     <th class="text-center align-middle">Uživatel</th>
                     <th class="text-center align-middle">Pozice</th>
                     <th class="text-center align-middle">Počet podprojektů</th>
+                    <th class="text-center align-middle">Akce</th>
                 </tr>
             </thead>
             <tbody>
@@ -44,12 +45,8 @@
                     </td>
                     <td align="center">{{ contract.subcontracts.count }}</td>
                     <td>
-                        <a href="{% url 'contract_detail' contract.id %}" class="btn btn-custom">Detail projektu</a>
-                    </td>
-                    <td>
+                        <a href="{% url 'contract_detail' contract.id %}" class="btn btn-custom">Detail</a>
                         <a href="{% url 'contract_update' contract.pk %}" class="btn btn-custom">Upravit</a>
-                    </td>
-                    <td>
                         <a href="{% url 'contract_delete' contract.pk %}" class="btn btn-custom">Smazat</a>
                     </td>
                 </tr>

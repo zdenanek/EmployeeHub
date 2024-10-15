@@ -8,22 +8,21 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Název projektu</th>
-            <th>Název podprojektu</th>
-            <th>Číslo podprojektu</th>
-            <th>Deadline</th>
-            <th>Počet dní do ukončení</th>
+            <th class="text-center align-middle">Číslo podprojektu</th>
+            <th class="text-center align-middle">Název podprojektu</th>
+            <th class="text-center align-middle">Deadline</th>
+            <th class="text-center align-middle">Zbývá dní</th>
+            <th class="text-center align-middle">Akce</th>
         </tr>
     </thead>
     <tbody class="table-group-divider">
         {% for subcontract in subcontracts %}
         <tr class="{% if contract.delta <= 0 %}table-danger{% elif contract.delta <= 7 %}table-warning{% endif %}">
-            <td>{{ subcontract.contract.contract_name }}</td>
-            <td>{{ subcontract.subcontract_name }}</td>
-            <td>{{ subcontract.contract.pk}} - {{ subcontract.subcontract_number }}</td>
+            <td align="center">{{ subcontract.contract.pk}} - {{ subcontract.subcontract_number }}</td>
+            <td>{{ subcontract.subcontract_name }} - {{ subcontract.contract.contract_name }}</td>
             <td>{{ subcontract.contract.deadline }}</td>
-            <td>{{ subcontract.contract.delta }}</td>
-            <td><a href="{% url 'subcontract_detail' contract_pk=subcontract.contract.pk subcontract_number=subcontract.subcontract_number %}" class="btn btn-custom">Detail podprojektu</a></td>
+            <td align="center">{{ subcontract.contract.delta }}</td>
+            <td align="center"><a href="{% url 'subcontract_detail' contract_pk=subcontract.contract.pk subcontract_number=subcontract.subcontract_number %}" class="btn btn-custom">Detail</a></td>
         </tr>
         {% empty %}
             Žádné podprojekty nenalezeny.

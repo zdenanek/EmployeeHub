@@ -12,23 +12,23 @@
     <thead>
 
         <tr>
-            <th>Název projektu</th>
-            <th>Číslo projektu</th>
-            <th>Datum vytvoření</th>
-            <th>Deadline</th>
-            <th>Zbývá dní</th>
-            <th>Status</th>
-            <th>Uživatel</th>
-            <th>Pozice</th>
-            <th>Počet podprojektů</th>
-            <th>Detail projektu</th>
+            <th class="text-center align-middle">Číslo projektu</th>
+            <th class="text-center align-middle">Název projektu</th>
+            <th class="text-center align-middle">Datum vytvoření</th>
+            <th class="text-center align-middle">Deadline</th>
+            <th class="text-center align-middle">Zbývá dní</th>
+            <th class="text-center align-middle">Status</th>
+            <th class="text-center align-middle">Uživatel</th>
+            <th class="text-center align-middle">Pozice</th>
+            <th class="text-center align-middle">Počet podprojektů</th>
+            <th class="text-center align-middle">Akce</th>
         </tr>
     </thead>
     <tbody>
         {% for contract in contracts %}
         <tr class="{% if contract.delta <= 0 %}table-danger{% elif contract.delta <= 7 %}table-warning{% endif %}">
-            <td>{{ contract.contract_name }}</td>
             <td align="center">{{ contract.id }}</td>
+            <td>{{ contract.contract_name }}</td>
             <td>{{ contract.created|date:"Y M d" }}</td>
             <td>{{ contract.deadline|date:"Y M d" }}</td>
             <td align="center">{{ contract.delta }}</td>
@@ -43,12 +43,8 @@
             </td>
             <td align="center">{{ contract.subcontracts.count }}</td>
             <td>
-                <a href="{% url 'contract_detail' contract.id %}" class="btn btn-custom">Detail projektu</a>
-            </td>
-            <td>
+                <a href="{% url 'contract_detail' contract.id %}" class="btn btn-custom">Detail</a>
                 <a href="{% url 'contract_update' contract.pk %}" class="btn btn-custom">Upravit</a>
-            </td>
-            <td>
                 <a href="{% url 'contract_delete' contract.pk %}" class="btn btn-custom">Smazat</a>
             </td>
         </tr>
