@@ -11,8 +11,7 @@
     <table class="table table-striped table-bordered">
         <thead>
             <tr>
-                <th>Číslo podprojektu</th>
-                <th>Název projektu</th>
+                <th >Číslo podprojektu</th>
                 <th>Název podprojektu</th>
                 <th>Počet dnů do ukončení</th>
             </tr>
@@ -20,9 +19,8 @@
         <tbody>
             {% for subcontract in subcontracts %}
             <tr>
-                <td>{{ subcontract.contract}} - {{ subcontract.subcontract_number }}</td>
-                <td>{{ subcontract.contract.contract_name }}</td>
-                <td>{{ subcontract.subcontract_name }}</td>
+                <td>{{ subcontract.contract.pk }} - {{ subcontract.subcontract_number }}</td>
+                <td>{{ subcontract.contract.contract_name }} - {{ subcontract.subcontract_name }}</td>
                 <td>{{ subcontract.contract.delta }}</td>
                 <td><a href="{% url 'subcontract_detail' contract_pk=subcontract.contract.pk subcontract_number=subcontract.subcontract_number %}" class="btn btn-custom">Detail podprojektu</a></td>
             </tr>
