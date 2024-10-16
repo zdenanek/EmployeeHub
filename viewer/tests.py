@@ -52,7 +52,7 @@ class MySeleniumTests(LiveServerTestCase):
 
     def test_login(self):
         # Access the live server URL
-        self.selenium.get(f'{self.live_server_url}/accounts/login/')
+        self.selenium.get(f'{self.live_server_url}/registration/login/')
         time.sleep(2)
         # Find the username and password input fields and fill them
         username_input = self.selenium.find_element(By.NAME, "username")
@@ -61,8 +61,8 @@ class MySeleniumTests(LiveServerTestCase):
         password_input.send_keys('admin')
         time.sleep(2)
         # Submit the form
-        self.selenium.find_element(By.XPATH, '//input[@type="submit"]').click()
+        self.selenium.find_element(By.XPATH, '//button[@type="submit"]').click()
         time.sleep(2)
 
         # Test that we successfully logged in (check for a successful redirect or message)
-        self.assertIn("User logged in: admin - Logout", self.selenium.page_source)
+        self.assertIn("Vítejte, admin!", self.selenium.page_source)
