@@ -27,6 +27,18 @@ class ContractForm(ModelForm):
 
 
 class CustomerForm(ModelForm):
+    phone_number = forms.CharField(
+        max_length=15,
+        label='Tel. číslo',
+        validators=[RegexValidator(r'^\d+$', 'Pole musí obsahovat pouze číslice')],
+        initial="123456789",
+        required=True,
+        widget=forms.TextInput(attrs={'required': 'required'})
+    )
+    email_address = forms.EmailField(
+        max_length=128,
+        required=True
+    )
     class Meta:
         model = Customer
         fields = "__all__"
@@ -244,6 +256,7 @@ class SecurityAnswerForm(forms.Form):
     )
 
 
+    # Validation password conditions on beckend
 class SetNewPasswordForm(forms.Form):
     new_password = forms.CharField(
         widget=forms.PasswordInput,
@@ -256,39 +269,26 @@ class SetNewPasswordForm(forms.Form):
         required=True
     )
 
-    # Validation password conditions on beckend
-    class SetNewPasswordForm(forms.Form):
-        new_password = forms.CharField(
-            widget=forms.PasswordInput,
-            label='Nové heslo',
-            required=True
-        )
-        new_password_confirm = forms.CharField(
-            widget=forms.PasswordInput,
-            label='Potvrzení nového hesla',
-            required=True
-        )
+    # Spojená metoda clean pro veškerou validaci
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get('new_password')
+        new_password_confirm = cleaned_data.get('new_password_confirm')
 
-        # Spojená metoda clean pro veškerou validaci
-        def clean(self):
-            cleaned_data = super().clean()
-            new_password = cleaned_data.get('new_password')
-            new_password_confirm = cleaned_data.get('new_password_confirm')
+        # Validace nového hesla - délka, velká písmena, malá písmena, číslice
+        if new_password:
+            if len(new_password) < 8:
+                self.add_error('new_password', 'Heslo musí mít alespoň 8 znaků.')
+            if not any(char.isupper() for char in new_password):
+                self.add_error('new_password', 'Heslo musí obsahovat alespoň jedno velké písmeno.')
+            if not any(char.islower() for char in new_password):
+                self.add_error('new_password', 'Heslo musí obsahovat alespoň jedno malé písmeno.')
+            if not any(char.isdigit() for char in new_password):
+                self.add_error('new_password', 'Heslo musí obsahovat alespoň jednu číslici.')
 
-            # Validace nového hesla - délka, velká písmena, malá písmena, číslice
-            if new_password:
-                if len(new_password) < 8:
-                    self.add_error('new_password', 'Heslo musí mít alespoň 8 znaků.')
-                if not any(char.isupper() for char in new_password):
-                    self.add_error('new_password', 'Heslo musí obsahovat alespoň jedno velké písmeno.')
-                if not any(char.islower() for char in new_password):
-                    self.add_error('new_password', 'Heslo musí obsahovat alespoň jedno malé písmeno.')
-                if not any(char.isdigit() for char in new_password):
-                    self.add_error('new_password', 'Heslo musí obsahovat alespoň jednu číslici.')
+        # Validace shody hesel
+        if new_password and new_password_confirm and new_password != new_password_confirm:
+            self.add_error('new_password_confirm', 'Hesla se neshodují')
 
-            # Validace shody hesel
-            if new_password and new_password_confirm and new_password != new_password_confirm:
-                self.add_error('new_password_confirm', 'Hesla se neshodují')
-
-            return cleaned_data
+        return cleaned_data
 

@@ -42,7 +42,7 @@ urlpatterns = [
     path('navbar_contracts_all/', ContractAllListView.as_view(), name='navbar_contracts_all'),
 
 # path for authentication
-    path('sign-up/', SignUpView.as_view(), name='signup'),
+#     path('sign-up/', SignUpView.as_view(), name='signup'),
     path('registration/login/', LoginView.as_view(), name='login'),
     path('accounts/login/', LoginView.as_view(), name='login2'),
     path('logout/', LogoutView.as_view(), name='logout'),
