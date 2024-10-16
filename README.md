@@ -10,17 +10,35 @@ Tato aplikace je ideálním řešením pro menší moderní firmy, které chtěj
 ## Mockup
 - [x] GIT
 - [x] vytvoření wireframe
-- [ ] design UI prvků
+- [x] design UI prvků
 - [x] uživatelské scénáře
-- [ ] prezentace mockupu
+- [x] prezentace mockupu
 ## Základ
 - [x] HTML kostra
 - [x] klíčové fce (registrace, přilášení, vyhledávání, přiřazování objednávek...)
-- [ ] testování
+- [x] testování
 ## Plná verze
-- [ ] pokročilé funkce
-- [ ] optimalizace výkonu
-- [ ] responzivní design
-- [ ] dokumentace 
-- [ ] finální testování
-- [ ] 
+- [x] pokročilé funkce
+- [x] optimalizace výkonu
+- [x] responzivní design
+- [x] finální testování
+
+# Instalace
+## Krok 1 - Vytvoření a aktivace virtuálního prostředí
+    python -m venv venv
+    venv\Scripts\activate
+
+## Krok 2 - Instalace závislostí
+    pip install -r requirements.txt
+
+## Krok 3 - Vytvoření migrací
+    python manage.py makemigrations
+
+## Krok 4 - Aplikace migrací
+    python manage.py migrate
+
+## Krok 5 - Vytvoření superuživatele
+    python manage.py createsuperuser
+
+## Krok 6 - Spuštění vývojového serveru
+    python manage.py runserver
