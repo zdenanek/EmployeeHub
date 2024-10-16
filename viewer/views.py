@@ -263,6 +263,23 @@ class SubContractAllListView(PermissionRequiredMixin, LoginRequiredMixin, ListVi
     context_object_name = 'subcontracts'
     permission_required = 'viewer.view_subcontract'
 
+    def get_queryset(self):
+        queryset = SubContract.objects.all()
+        query = self.request.GET.get("query")
+        if query:
+            queryset = queryset.filter(
+                Q(subcontract_name__icontains=query) |
+                Q(contract__contract_name__icontains=query)
+            )
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search_form"] = SearchForm(self.request.GET or None)
+        context["search_url"] = "navbar_subcontracts"
+        context["show_search"] = True
+        return context
+
 
 class SubContractView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     model = SubContract
