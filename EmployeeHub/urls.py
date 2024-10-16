@@ -66,10 +66,7 @@ urlpatterns = [
     path('subcontracts/', show_subcontracts, name='navbar_show_subcontracts'),
     path('subcontract/<int:contract_pk>/<int:subcontract_number>/', SubContractDetailView.as_view(),
          name='subcontract_detail'),
-    # path('subcontract/<subcontract_id>/', subcontract_detail, name='detail_subcontract'), # tohle si myslim nepotrebujeme
-    # path('subcontract/<int:subcontract_id>/', subcontract_detail, name='detail_subcontract'), # tohle si myslim nepotrenujeme
     path('subcontract/create/<param>', SubContractCreateView.as_view(), name='subcontract_create'),
-    # path("subcontract/<int:pk>/update/", SubContractUpdateView.as_view(), name="subcontract_update"),
     path("subcontract/<int:contract_pk>/<int:subcontract_number>/update/", SubContractUpdateView.as_view(), name="subcontract_update"),
     path('subcontract/delete/<pk>', SubContractDeleteView.as_view(), name='subcontract_delete'),
 

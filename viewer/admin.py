@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.contrib.auth.models import Permission
+
 from .models import Position, UserProfile, EmployeeInformation, BankAccount, EmergencyContact, Contract, Customer, \
     Groups, SubContract, Comment, Event, SecurityQuestion
 
@@ -33,4 +35,5 @@ admin.site.register(SubContract)
 admin.site.register(Comment)
 admin.site.register(Event)
 admin.site.register(SecurityQuestion)
+admin.site.register(Permission)
 
