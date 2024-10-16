@@ -19,7 +19,7 @@
             <td>{{ contract.deadline }}</td>
             <td align="center">{{ contract.delta }}</td>
             <td>
-                <a href="{% url 'contract_detail' contract.id %}" class="btn btn-custom">Detail</a>
+                <a href="{% url 'contract_detail' contract.id %}" class="btn btn-custom btn">Detail</a>
             </td>
         </tr>
         {% empty %}
@@ -27,13 +27,13 @@
         {% endfor %}
     {% else %}
         {% for contract in contracts %}
-        <tr class="{% if contract.delta <= 0 %}table-danger{% elif contract.delta <= 7 %}table-warning{% endif %}">
+        <tr class="{% if contract.delta <= 7 %}table-danger{% elif contract.delta <= 14 %}table-warning{% endif %}">
             <td>{{ contract.contract_name }}</td>
             <td align="center">{{ contract.id }}</td>
             <td>{{ contract.deadline }}</td>
             <td align="center">{{ contract.delta }}</td>
             <td>
-                <a href="{% url 'contract_detail' contract.id %}" class="btn btn-custom">Detail projektu</a>
+                <a href="{% url 'contract_detail' contract.id %}" class="btn btn-custom btn">Detail projektu</a>
             </td>
         </tr>
         {% empty %}
