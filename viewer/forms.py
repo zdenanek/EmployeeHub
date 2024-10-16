@@ -257,29 +257,38 @@ class SetNewPasswordForm(forms.Form):
     )
 
     # Validation password conditions on beckend
-    def clean_new_password(self):
-        password = self.cleaned_data.get('new_password')
+    class SetNewPasswordForm(forms.Form):
+        new_password = forms.CharField(
+            widget=forms.PasswordInput,
+            label='Nové heslo',
+            required=True
+        )
+        new_password_confirm = forms.CharField(
+            widget=forms.PasswordInput,
+            label='Potvrzení nového hesla',
+            required=True
+        )
 
+        # Spojená metoda clean pro veškerou validaci
+        def clean(self):
+            cleaned_data = super().clean()
+            new_password = cleaned_data.get('new_password')
+            new_password_confirm = cleaned_data.get('new_password_confirm')
 
-        if len(password) < 8:
-            raise ValidationError('Heslo musí mít alespoň 8 znaků.')
-        if not any(char.isupper() for char in password):
-            raise ValidationError('Heslo musí obsahovat alespoň jedno velké písmeno.')
-        if not any(char.islower() for char in password):
-            raise ValidationError('Heslo musí obsahovat alespoň jedno malé písmeno.')
-        if not any(char.isdigit() for char in password):
-            raise ValidationError('Heslo musí obsahovat alespoň jednu číslici.')
+            # Validace nového hesla - délka, velká písmena, malá písmena, číslice
+            if new_password:
+                if len(new_password) < 8:
+                    self.add_error('new_password', 'Heslo musí mít alespoň 8 znaků.')
+                if not any(char.isupper() for char in new_password):
+                    self.add_error('new_password', 'Heslo musí obsahovat alespoň jedno velké písmeno.')
+                if not any(char.islower() for char in new_password):
+                    self.add_error('new_password', 'Heslo musí obsahovat alespoň jedno malé písmeno.')
+                if not any(char.isdigit() for char in new_password):
+                    self.add_error('new_password', 'Heslo musí obsahovat alespoň jednu číslici.')
 
-        return password
+            # Validace shody hesel
+            if new_password and new_password_confirm and new_password != new_password_confirm:
+                self.add_error('new_password_confirm', 'Hesla se neshodují')
 
+            return cleaned_data
 
-    # validation password match on beckend
-    def clean(self):
-        cleaned_data = super().clean()
-        new_password = cleaned_data.get('new_password')
-        new_password_confirm = cleaned_data.get('new_password_confirm')
-
-        if new_password and new_password_confirm and new_password != new_password_confirm:
-            self.add_error('new_password_confirm', 'Hesla se neshodují')
-
-        return cleaned_data

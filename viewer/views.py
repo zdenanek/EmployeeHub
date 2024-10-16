@@ -1,16 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max, Q
-from django.shortcuts import render, get_object_or_404
 from django.forms import inlineformset_factory
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, FormView, DetailView
 
-from .models import Contract, Customer, SubContract, Comment
-from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, CommentForm, SearchForm, \
-    SecurityQuestionForm, SecurityAnswerForm, SetNewPasswordForm
+from .forms import SecurityQuestionForm, SecurityAnswerForm, SetNewPasswordForm
 from .models import Contract, Customer, Position, SubContract, Event, Comment, UserProfile, BankAccount, \
     EmployeeInformation, EmergencyContact
 from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, CommentForm, \
@@ -20,7 +17,8 @@ from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, Comm
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 User = get_user_model()
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+
 
 @login_required
 def contract_detail(request, contract_id):
@@ -57,6 +55,7 @@ def subcontract_detail(request, subcontract_id):
 class HomepageView(LoginRequiredMixin, TemplateView):
     template_name = 'homepage.html'
 
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['comments'] = Comment.objects.all()
@@ -82,23 +81,26 @@ class HomepageView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class ContractCreateView(LoginRequiredMixin, CreateView):
+class ContractCreateView(PermissionRequiredMixin,LoginRequiredMixin, CreateView):
     template_name = 'form.html'
     form_class = ContractForm
     success_url = reverse_lazy('navbar_contracts_all')
+    permission_required = 'viewer.add_contract'
 
 
-class ContractUpdateView(LoginRequiredMixin, UpdateView):
+class ContractUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
     template_name = "form.html"
     model = Contract
     form_class = ContractForm
     success_url = reverse_lazy("navbar_contracts_all")
+    permission_required = 'viewer.change_contract'
 
 
-class ContractDeleteView(LoginRequiredMixin, DeleteView):
+class ContractDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
     template_name = "delete_confirmation.html"
     model = Contract
     success_url = reverse_lazy('navbar_contracts_all')
+    permission_required = 'viewer.delete_contract'
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -113,28 +115,32 @@ class ContractDeleteView(LoginRequiredMixin, DeleteView):
         return context
 
 
-class CustomerView(LoginRequiredMixin, ListView):
+class CustomerView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     model = Customer
     template_name = 'customers.html'
+    permission_required = 'viewer.view_customer'
 
 
-class CustomerCreateView(LoginRequiredMixin, CreateView):
+class CustomerCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     template_name = 'form.html'
     form_class = CustomerForm
     success_url = reverse_lazy('navbar_customers')
+    permission_required = 'viewer.add_customer'
 
 
-class CustomerUpdateView(LoginRequiredMixin, UpdateView):
+class CustomerUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
     template_name = 'form.html'
     model = Customer
     form_class = CustomerForm
     success_url = reverse_lazy('navbar_customers')
+    permission_required = 'viewer.change_customer'
 
 
-class CustomerDeleteView(LoginRequiredMixin, DeleteView):
+class CustomerDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
     template_name = 'delete_confirmation.html'
     model = Customer
     success_url = reverse_lazy('navbar_customers')
+    permission_required = 'viewer.delete_customer'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -142,10 +148,12 @@ class CustomerDeleteView(LoginRequiredMixin, DeleteView):
         return context
 
 
-class UserListView(LoginRequiredMixin, ListView):
+class UserListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     model = User
     template_name = 'employees.html'
     context_object_name = "employees"
+    permission_required = 'viewer.view_user'
+
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -166,10 +174,11 @@ class UserListView(LoginRequiredMixin, ListView):
         return context
 
 
-class CustomerListView(LoginRequiredMixin, ListView):
+class CustomerListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     model = Customer
     template_name = 'navbar_customers.html'
     context_object_name = "customers"
+    permission_required = 'viewer.view_customer'
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -189,10 +198,11 @@ class CustomerListView(LoginRequiredMixin, ListView):
         return context
 
 
-class ContractListView(LoginRequiredMixin, ListView):
+class ContractListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     model = Contract
     template_name = 'navbar_contracts.html'
     context_object_name = "contracts"
+    permission_required = 'viewer.view_contract'
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
@@ -210,10 +220,11 @@ class ContractListView(LoginRequiredMixin, ListView):
         context["show_search"] = True
         return context
 
-class ContractAllListView(LoginRequiredMixin, ListView):
+class ContractAllListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     model = Contract
     template_name = 'navbar_contracts_all.html'
     context_object_name = "contracts"
+    permission_required = 'viewer.view_contract'
 
     def get_queryset(self):
         queryset = Contract.objects.all()
@@ -243,23 +254,26 @@ class SubmittableLoginView(LoginView):
 
 
 class SubmittablePasswordChangeView(LoginRequiredMixin, PasswordChangeView):
-  template_name = 'form.html'
-  success_url = reverse_lazy('homepage')
+    template_name = 'form.html'
+    success_url = reverse_lazy('homepage')
 
-class SubContractAllListView(LoginRequiredMixin, ListView):
+class SubContractAllListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     model = SubContract
     template_name = 'navbar_subcontracts.html'
     context_object_name = 'subcontracts'
+    permission_required = 'viewer.view_subcontract'
 
 
-class SubContractView(LoginRequiredMixin, ListView):
+class SubContractView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     model = SubContract
     template_name = 'subcontracts_homepage.html'
+    permission_required = 'viewer.view_subcontract'
 
 
-class SubContractCreateView(LoginRequiredMixin, FormView):
+class SubContractCreateView(PermissionRequiredMixin, LoginRequiredMixin, FormView):
     template_name = 'form.html'
     form_class = SubContractForm
+    permission_required = 'viewer.add_subcontract'
 
     def form_valid(self, form):
         new_sub_contract = form.save(commit=False)
@@ -273,10 +287,11 @@ class SubContractCreateView(LoginRequiredMixin, FormView):
         return reverse_lazy('contract_detail', kwargs={'pk': self.kwargs['param']})
 
 
-class SubContractUpdateView(LoginRequiredMixin, UpdateView):
+class SubContractUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
     template_name = "form.html"
     model = SubContract
     form_class = SubContractForm
+    permission_required = 'viewer.change_subcontract'
 
     def get_object(self):
         contract_pk = self.kwargs.get("contract_pk")
@@ -287,9 +302,10 @@ class SubContractUpdateView(LoginRequiredMixin, UpdateView):
         return reverse_lazy('contract_detail', kwargs={'pk': self.kwargs['contract_pk']})
 
 
-class SubContractDeleteView(LoginRequiredMixin, DeleteView):
+class SubContractDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
     template_name = "delete_confirmation.html"
     model = SubContract
+    permission_required = 'viewer.delete_subcontract'
 
     def get_success_url(self):
         contract_id = self.object.contract.id
@@ -301,9 +317,10 @@ class SubContractDeleteView(LoginRequiredMixin, DeleteView):
         return context
 
 
-class CommentCreateView(LoginRequiredMixin, CreateView):
+class CommentCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     template_name = "form.html"
     form_class = CommentForm
+    permission_required = 'viewer.add_comment'
 
     def form_valid(self, form):
         new_comment = form.save(commit=False)
@@ -317,9 +334,10 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
         return reverse_lazy('subcontract_detail', kwargs={'contract_pk': contract_id, "subcontract_number": subcontract.subcontract_number })
 
 
-class CommentListView(LoginRequiredMixin, ListView):
+class CommentListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     model = Comment
     template_name = "comments_homepage.html"
+    permission_required = 'viewer.view_comment'
 
 
 
@@ -417,14 +435,17 @@ def update_event(request, event_id):
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
 
-class ContractView(LoginRequiredMixin, DetailView):
+class ContractView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
     model = Contract
     template_name = "detail_contract.html"
+    permission_required = 'viewer.view_contract'
 
 
-class SubContractDetailView(LoginRequiredMixin, DetailView):
+class SubContractDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
     template_name = "detail_subcontract.html"
     model = SubContract
+    permission_required = 'viewer.view_subcontract'
+
 
     def get_object(self):
         contract_pk = self.kwargs.get("contract_pk")
