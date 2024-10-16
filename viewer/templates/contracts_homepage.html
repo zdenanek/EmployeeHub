@@ -13,7 +13,7 @@
     <tbody class="table-group-divider">
     {% if limit %}
         {% for contract in contracts|slice:":5" %}
-        <tr class="{% if contract.delta <= 0 %}table-danger{% elif contract.delta <= 7 %}table-warning{% endif %}">
+        <tr class="{% if contract.delta <= 7 %}table-danger{% elif contract.delta <= 14 %}table-warning{% endif %}">
             <td align="center">{{ contract.id }}</td>
             <td>{{ contract.contract_name }}</td>
             <td>{{ contract.deadline }}</td>

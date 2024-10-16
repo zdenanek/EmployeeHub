@@ -25,8 +25,8 @@
                 <td>{{ customer.first_name }} {{ customer.last_name }}</td>
                 <td>{{ customer.created }}</td>
                 <td>
-                    <a href="{% url 'customer_update' customer.pk %}" class="btn btn-custom">Upravit</a>
-                    <a href="{% url 'customer_delete' customer.pk %}" class="btn btn-custom">Smazat</a>
+                    <a href="{% url 'customer_update' customer.pk %}" class="btn btn-custom btn-sm">Upravit</a>
+                    <a href="{% url 'customer_delete' customer.pk %}" class="btn btn-custom btn-sm">Smazat</a>
                 </td>
             </tr>
             {% endfor %}

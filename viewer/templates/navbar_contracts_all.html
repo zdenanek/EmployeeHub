@@ -28,7 +28,7 @@
             </thead>
             <tbody>
                 {% for contract in contracts %}
-                <tr>
+                <tr class="{% if contract.delta <= 7 %}table-danger{% elif contract.delta <= 14 %}table-warning{% endif %}">
                     <td align="center">{{ contract.id }}</td>
                     <td>{{ contract.contract_name }}</td>
                     <td>{{ contract.created|date:"Y M d" }}</td>
@@ -45,9 +45,9 @@
                     </td>
                     <td align="center">{{ contract.subcontracts.count }}</td>
                     <td>
-                        <a href="{% url 'contract_detail' contract.id %}" class="btn btn-custom">Detail</a>
-                        <a href="{% url 'contract_update' contract.pk %}" class="btn btn-custom">Upravit</a>
-                        <a href="{% url 'contract_delete' contract.pk %}" class="btn btn-custom">Smazat</a>
+                        <a href="{% url 'contract_detail' contract.id %}" class="btn btn-custom btn-sm">Detail</a>
+                        <a href="{% url 'contract_update' contract.pk %}" class="btn btn-custom btn-sm">Upravit</a>
+                        <a href="{% url 'contract_delete' contract.pk %}" class="btn btn-custom btn-sm">Smazat</a>
                     </td>
                 </tr>
                 {% empty %}

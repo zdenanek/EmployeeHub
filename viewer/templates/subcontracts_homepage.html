@@ -17,7 +17,7 @@
     </thead>
     <tbody class="table-group-divider">
         {% for subcontract in subcontracts %}
-        <tr class="{% if contract.delta <= 0 %}table-danger{% elif contract.delta <= 7 %}table-warning{% endif %}">
+        <tr class="{% if subcontract.delta <= 7 %}table-danger{% elif subcontract.delta <= 14 %}table-warning{% endif %}">
             <td align="center">{{ subcontract.contract.pk}} - {{ subcontract.subcontract_number }}</td>
             <td>{{ subcontract.subcontract_name }} - {{ subcontract.contract.contract_name }}</td>
             <td>{{ subcontract.contract.deadline }}</td>
