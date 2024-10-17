@@ -99,7 +99,6 @@ class ContractUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView
 class ContractDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
     template_name = "delete_confirmation.html"
     model = Contract
-    success_url = reverse_lazy('navbar_contracts_all')
     permission_required = 'viewer.delete_contract'
 
     def post(self, request, *args, **kwargs):
@@ -108,6 +107,17 @@ class ContractDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteView
             messages.warning(request, "You can't delete this contract because it has active subcontracts.")
             return redirect('navbar_contracts_all')
         return super().post(request, *args, **kwargs)
+
+    def get_success_url(self):
+        # Získání refereru z POST dat
+        referer = self.request.POST.get('referer', None)
+
+        # Pokud referer existuje, přesměruj na něj
+        if referer:
+            return referer
+        # Pokud referer neexistuje, použij výchozí URL (například seznam kontraktů)
+        return reverse_lazy('navbar_contracts_all')
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -139,8 +149,17 @@ class CustomerUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView
 class CustomerDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
     template_name = 'delete_confirmation.html'
     model = Customer
-    success_url = reverse_lazy('navbar_customers')
     permission_required = 'viewer.delete_customer'
+
+    def get_success_url(self):
+        # Získání refereru z POST dat
+        referer = self.request.POST.get('referer', None)
+
+        # Pokud referer existuje, přesměruj na něj
+        if referer:
+            return referer
+        # Pokud referer neexistuje, použij výchozí URL (například seznam zákazníků)
+        return reverse_lazy('navbar_customers')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -325,6 +344,13 @@ class SubContractDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteV
     permission_required = 'viewer.delete_subcontract'
 
     def get_success_url(self):
+        # Získání refereru z POST dat
+        referer = self.request.POST.get('referer', None)
+
+        # Pokud referer existuje, přesměruj na něj
+        if referer:
+            return referer
+        # Pokud referer neexistuje, použij výchozí URL (například detail kontraktu)
         contract_id = self.object.contract.id
         return reverse_lazy('contract_detail', kwargs={'pk': contract_id})
 

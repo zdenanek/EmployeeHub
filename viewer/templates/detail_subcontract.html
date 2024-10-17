@@ -17,22 +17,24 @@
 
 
     <h4>Komentáře</h4>
-    <td><a href="{% url 'comment_add' subcontract.pk %}" class="btn btn-custom mt-3 mb-4"> Přidat komentář </a></td>
+    <div>
+        <a href="{% url 'comment_add' subcontract.pk %}" class="btn btn-custom mt-3 mb-4"> Přidat komentář </a>
+    </div>
 
-    <table class="table table-bordered table-striped">
+    <table class="table table-bordered table-striped table-hover">
         <thead>
-            <tr>
-                <th class="text-center align-middle">Poř. číslo</th>
-                <th class="text-center align-middle">Komentář</th>
-                <th class="text-center align-middle">Datum zadání</th>
+            <tr class="text-center">
+                <th>Poř. číslo</th>
+                <th>Komentář</th>
+                <th>Datum zadání</th>
             </tr>
         </thead>
         <tbody>
             {% for comment in subcontract.comment_set.all %}
-            <tr>
-                <td align="center">{{ forloop.counter }}</td>
+            <tr class="text-center">
+                <td>{{ forloop.counter }}</td>
                 <td>{{ comment.text }}</td>
-                <td>{{ comment.created }}</td>
+                <td>{{ comment.created | date:"d.m.Y" }}</td>
             </tr>
             {% endfor %}
         </tbody>

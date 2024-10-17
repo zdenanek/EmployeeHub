@@ -148,7 +148,7 @@
                     <br>
                 </div>
             {% else %}
-                {% if user_profile.emergency_contacts.exists %}
+                {% if user_profile and user_profile.emergency_contacts.exists %}
                     {% for contact in user_profile.emergency_contacts.all %}
                         <p><strong>Jméno:</strong> {{ contact.name }}</p>
                         <p><strong>Adresa:</strong> {{ contact.address }}</p>
