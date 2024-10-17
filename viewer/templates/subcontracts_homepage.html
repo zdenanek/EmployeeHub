@@ -7,22 +7,22 @@
 
 <table class="table">
     <thead>
-        <tr>
-            <th class="text-center align-middle">Číslo podprojektu</th>
-            <th class="text-center align-middle">Název podprojektu</th>
-            <th class="text-center align-middle">Deadline</th>
-            <th class="text-center align-middle">Zbývá dní</th>
-            <th class="text-center align-middle">Akce</th>
+        <tr text-center>
+            <th>Číslo podprojektu</th>
+            <th>Název podprojektu - podprojektu</th>
+            <th>Deadline</th>
+            <th>Zbývá dní</th>
+            <th>Akce</th>
         </tr>
     </thead>
     <tbody class="table-group-divider">
         {% for subcontract in subcontracts %}
-        <tr class="{% if subcontract.delta <= 7 %}table-danger{% elif subcontract.delta <= 14 %}table-warning{% endif %}">
-            <td align="center">{{ subcontract.contract.pk}} - {{ subcontract.subcontract_number }}</td>
-            <td>{{ subcontract.subcontract_name }} - {{ subcontract.contract.contract_name }}</td>
-            <td>{{ subcontract.contract.deadline }}</td>
-            <td align="center">{{ subcontract.contract.delta }}</td>
-            <td align="center"><a href="{% url 'subcontract_detail' contract_pk=subcontract.contract.pk subcontract_number=subcontract.subcontract_number %}" class="btn btn-custom">Detail</a></td>
+        <tr class="text-center {% if subcontract.delta <= 7 %}table-danger{% elif subcontract.delta <= 14 %}table-warning{% endif %}">
+            <td>{{ subcontract.contract.pk}} - {{ subcontract.subcontract_number }}</td>
+            <td>{{ subcontract.contract.contract_name }} - {{ subcontract.subcontract_name }}</td>
+            <td>{{ subcontract.contract.deadline|date:"d.m.Y" }}</td>
+            <td>{{ subcontract.contract.delta }}</td>
+            <td><a href="{% url 'subcontract_detail' contract_pk=subcontract.contract.pk subcontract_number=subcontract.subcontract_number %}" class="btn btn-custom">Detail</a></td>
         </tr>
         {% empty %}
             Žádné podprojekty nenalezeny.
