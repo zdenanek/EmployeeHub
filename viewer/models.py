@@ -1,24 +1,11 @@
 from datetime import datetime, timedelta,date
-
 from django.contrib.auth.hashers import make_password, check_password
 from django.db.models import CharField, Model, ForeignKey, DateTimeField, DO_NOTHING, ManyToManyField, IntegerField, \
     EmailField, UniqueConstraint, CASCADE, PROTECT
-
 from django.contrib.auth import get_user_model
-from django.forms import Form, PasswordInput
-
 User = get_user_model()
 
-
 from django.contrib.auth.models import User, Group
-
-
-class Groups(Model):
-    groups_name = CharField(max_length=64)
-    created = DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Skupiny: {self.groups_name}"
 
 
 class Customer(Model):
@@ -42,8 +29,10 @@ class Contract(Model):
     status = CharField(max_length=64, choices=status_choices, default=status_choices[0])
     deadline = DateTimeField(default=datetime.now() + timedelta(days=30))
 
+
     def delta(self):
         return (self.deadline - self.created).days
+
 
     def __str__(self):
         return f"Zakázka: {self.contract_name}"
@@ -58,13 +47,16 @@ class SubContract(Model):
     status_choices = [("0","V procesu"), ("1","Dokončeno"), ("2","Zrušeno")]
     status = CharField(max_length=64, choices=status_choices, default=status_choices[0])
 
+
     class Meta:
         constraints = [
             UniqueConstraint(fields=["contract", "subcontract_number"], name="unique_subcontract_per_contract")
         ]
 
+
     def delta(self):
         return (self.contract.deadline - self.created).days
+
 
     def save(self, *args, **kwargs):
         pass

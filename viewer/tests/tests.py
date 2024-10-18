@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import Contract, User, Customer
+from viewer.models import Contract, User, Customer
 
 # Tento test ověřuje, že model Contract se správně inicializuje s požadovanými hodnotami při jeho vytváření.
 class ContractModelTest(TestCase):

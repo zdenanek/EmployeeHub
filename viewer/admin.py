@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.models import Permission
 
 from .models import Position, UserProfile, EmployeeInformation, BankAccount, EmergencyContact, Contract, Customer, \
-    Groups, SubContract, Comment, Event, SecurityQuestion
+    SubContract, Comment, Event, SecurityQuestion
 
 
 class EmergencyContactInline(admin.TabularInline):
@@ -21,6 +21,7 @@ class EmployeeInformationInline(admin.StackedInline):
     can_delete = False
     verbose_name_plural = 'Employee Information'
 
+
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ['user', 'position', 'phone_number']
@@ -30,10 +31,8 @@ class UserProfileAdmin(admin.ModelAdmin):
 admin.site.register(Position)
 admin.site.register(Customer)
 admin.site.register(Contract)
-admin.site.register(Groups)
 admin.site.register(SubContract)
 admin.site.register(Comment)
 admin.site.register(Event)
 admin.site.register(SecurityQuestion)
 admin.site.register(Permission)
-
