@@ -13,23 +13,20 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.conf import settings
-from django.conf.urls.static import static
+
 from django.contrib import admin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
 
 
-from viewer.models import Customer, Contract, Groups, SubContract, Comment, Event
+
 from viewer.views import HomepageView, UserListView, CustomerListView, ContractListView, \
-    ContractAllListView, SignUpView, contract_detail, ContractCreateView, ContractUpdateView, ContractDeleteView, \
+    ContractAllListView,  ContractCreateView, ContractUpdateView, ContractDeleteView, \
     CustomerCreateView, CustomerUpdateView, CustomerDeleteView, SubContractCreateView, \
     SubmittablePasswordChangeView, show_subcontracts, SubContractUpdateView, SubContractDeleteView, CommentCreateView, \
-    subcontract_detail, events_feed, calendar_view, update_event, create_event, ContractView, SubContractDetailView, \
-    SubmittablePasswordChangeView, show_subcontracts, SubContractUpdateView, SubContractDeleteView, CommentCreateView, \
-    subcontract_detail, events_feed, calendar_view, update_event, create_event, get_groups, delete_event, \
+    events_feed, calendar_view, update_event, create_event, get_groups, delete_event, \
     employee_profile, change_security_question_view, password_reset_step_1, password_reset_step_2, \
-    password_reset_step_3, SubContractAllListView
+    password_reset_step_3, SubContractAllListView,  ContractView, SubContractDetailView
 
 urlpatterns = [
     path('admin/', admin.site.urls),

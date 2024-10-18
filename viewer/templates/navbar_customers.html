@@ -15,7 +15,9 @@
         <thead>
         <tr class="text-center">
             <th>Název zákazníka</th>
-            <th>Datum objednání projektu</th>
+            <th>Datum první spolupráce</th>
+            <th>Telefonní číslo</th>
+            <th>Email</th>
             <th>Akce</th>
         </tr>
         </thead>
@@ -24,6 +26,8 @@
             <tr class="text-center">
                 <td>{{ customer.first_name }} {{ customer.last_name }}</td>
                 <td>{{ customer.created|date:"d.m.Y" }}</td>
+                <td>{{ customer.phone_number }}</td>
+                <td>{{ customer.email_address }}</td>
                 <td>
                     <a href="{% url 'customer_update' customer.pk %}" class="btn btn-custom btn-sm">Upravit</a>
                     <a href="{% url 'customer_delete' customer.pk %}" class="btn btn-custom btn-sm">Smazat</a>

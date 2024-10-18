@@ -42,3 +42,9 @@ Tato aplikace je ideálním řešením pro menší moderní firmy, které chtěj
 
 ## Krok 6 - Spuštění vývojového serveru
     python manage.py runserver
+
+## Krok 7 - spuštění testů
+    pip install selenium
+    python manage.py test/ python manage.py test viewer
+
+
