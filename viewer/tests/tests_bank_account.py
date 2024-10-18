@@ -33,3 +33,39 @@ class BankAccountStrMethodTest(TestCase):
         self.assertEqual(str(self.bankaccount),"Raifka, 123455 - 12345544321/1221")
 
 
+# Unit TESTS pro CRUD operace v modelu bank acount
+class BankAccountCRUDTest(TestCase):
+    """
+    Testujeme operace CRUD v modelu subcontract zda fungji spravne.
+    """
+    def setUp(self):
+        # Vytváříme user a userprofile.
+        self.user = User.objects.create(username="testuser")
+        self.user_profile = UserProfile.objects.create(user=self.user)
+
+        # Vytvoreni banky
+        self.bankacount = BankAccount.objects.create(
+            user_profile=self.user_profile,
+            bank_name="Raifka",
+            account_prefix="123455",
+            account_number="12345544321",
+            bank_code="1221"
+        )
+
+
+    def test_create_bankaccount(self):
+        """
+        Testujeme vytvoreni banovniho uctu.
+        """
+        new_user = User.objects.create(username="newuser")
+        new_user_profile = UserProfile.objects.create(user=new_user)
+        new_bankaccount = BankAccount.objects.create(
+            user_profile=new_user_profile,
+            bank_name="Polka",
+            account_prefix="11111",
+            account_number="2222",
+            bank_code="1221"
+        )
+        self.assertEqual(BankAccount.objects.count(), 2)
+        self.assertEqual(new_bankaccount.bank_name, "Polka")
+
