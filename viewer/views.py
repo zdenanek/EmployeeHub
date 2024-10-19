@@ -1,78 +1,47 @@
+from datetime import datetime, date
+from django.contrib.auth.models import Group
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.db.models import Max, Q
 from django.forms import inlineformset_factory
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, FormView, DetailView
 
-from .forms import SecurityQuestionForm, SecurityAnswerForm, SetNewPasswordForm
-from .models import Contract, Customer, Position, SubContract, Event, Comment, UserProfile, BankAccount, \
+from .models import Contract, Customer, SubContract, Event, Comment, UserProfile, BankAccount, \
     EmployeeInformation, EmergencyContact
-from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, CommentForm, \
-    SearchForm, EmployeeInformationForm, BankAccountForm, EmergencyContactFormSet, BaseEmergencyContactFormSet, \
+from .forms import SecurityQuestionForm, SecurityAnswerForm, SetNewPasswordForm, SignUpForm, ContractForm, CustomerForm, SubContractForm, CommentForm, \
+    SearchForm, EmployeeInformationForm, BankAccountForm, BaseEmergencyContactFormSet, \
     EmergencyContactForm
 
-from django.contrib.auth.models import User
-from django.contrib.auth import get_user_model
+import json
+
 User = get_user_model()
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-
-
-@login_required
-def contract_detail(request, contract_id):
-    contract = get_object_or_404(Contract, id=contract_id)
-    return render(request, 'detail_contract.html', {'contract': contract})
-
-@login_required
-def show_subcontracts(request):
-    query = request.GET.get("query", "")
-    subcontracts = SubContract.objects.filter(user=request.user)
-    if query:
-        subcontracts = subcontracts.filter(
-            Q(subcontract_name__icontains=query)
-        )
-    sorted_subcontracts = sorted(subcontracts, key=lambda subcontract: subcontract.delta())
-    search_form = SearchForm(initial={'query': query})
-    search_url = 'navbar_show_subcontracts'
-    show_search = True
-
-    return render(request, 'subcontract.html', {
-        'subcontracts': sorted_subcontracts,
-        'search_form': search_form,
-        'search_url': search_url,
-        'show_search': show_search,
-    })
-
-@login_required
-def subcontract_detail(request, subcontract_id):
-    subcontract = get_object_or_404(SubContract, pk=subcontract_id)
-    contract = subcontract.contract
-    return render(request, 'detail_subcontract.html', {'subcontract': subcontract, 'contract': contract})
 
 
 class HomepageView(LoginRequiredMixin, TemplateView):
     template_name = 'homepage.html'
 
-
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['comments'] = Comment.objects.all()
-        context['users'] = User.objects.all()
-
-        # context['subcontracts'] = SubContract.objects.filter(user=self.request.user)
         contracts = Contract.objects.filter(user=self.request.user)
         subcontracts = SubContract.objects.filter(user=self.request.user)
         sorted_contracts = sorted(contracts, key=lambda contract: contract.delta())
-        sorted_subcontracts = sorted(subcontracts, key=lambda subcontract: subcontract.delta())
-
+        sorted_subcontracts = sorted(subcontracts, key=lambda subcontract: subcontract.delta)
         limited_subcontracts = sorted_subcontracts[:5]
+        today = date.today()
 
+        context = super().get_context_data(**kwargs)
+        context['comments'] = Comment.objects.all().order_by('-created')[:5]
+        context['users'] = User.objects.all()
         context['contracts'] = sorted_contracts
         context['subcontracts'] = limited_subcontracts
 
-        today = date.today()
         context['events'] = Event.objects.filter(
             Q(start_time__date=today) |
             Q(end_time__date=today) |
@@ -81,11 +50,22 @@ class HomepageView(LoginRequiredMixin, TemplateView):
         return context
 
 
+@login_required
+def contract_detail(request, contract_id):
+    contract = get_object_or_404(Contract, id=contract_id)
+    return render(request, 'detail_contract.html', {'contract': contract})
+
 class ContractCreateView(PermissionRequiredMixin,LoginRequiredMixin, CreateView):
     template_name = 'form.html'
     form_class = ContractForm
     success_url = reverse_lazy('navbar_contracts_all')
     permission_required = 'viewer.add_contract'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if Customer.objects.count() == 0:
+            Customer.objects.create(first_name="John", last_name="Doe")
+        return kwargs
 
 
 class ContractUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
@@ -123,6 +103,186 @@ class ContractDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteView
         context = super().get_context_data(**kwargs)
         context['request'] = self.request
         return context
+
+
+class ContractListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+    model = Contract
+    template_name = 'navbar_contracts.html'
+    context_object_name = "contracts"
+    permission_required = 'viewer.view_contract'
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            queryset = Contract.objects.filter(user=self.request.user)
+            query = self.request.GET.get("query")
+            if query:
+                queryset = queryset.filter(contract_name__icontains=query)
+            return sorted(queryset, key=lambda contract: contract.delta())
+        return Contract.objects.none()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search_form"] = SearchForm()
+        context["search_url"] = "navbar_contracts"
+        context["show_search"] = True
+        return context
+
+class ContractAllListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+    model = Contract
+    template_name = 'navbar_contracts_all.html'
+    context_object_name = "contracts"
+    permission_required = 'viewer.view_contract'
+
+    def get_queryset(self):
+        queryset = Contract.objects.all()
+        query = self.request.GET.get("query")
+        if query:
+            queryset = queryset.filter(contract_name__icontains=query)
+        return sorted(queryset, key=lambda contract: contract.delta())
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search_form"] = SearchForm(self.request.GET or None)
+        context["search_url"] = "navbar_contracts_all"
+        context["show_search"] = True
+        return context
+
+
+class SignUpView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
+    template_name = 'form.html'
+    form_class = SignUpForm
+    success_url = reverse_lazy('homepage')
+    permission_required = "viewer.view_userprofile"
+    
+from django.contrib.auth.views import LoginView, PasswordChangeView
+class ContractView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
+    model = Contract
+    template_name = "detail_contract.html"
+    permission_required = 'viewer.view_contract'
+
+
+@login_required
+def show_subcontracts(request):
+    query = request.GET.get("query", "")
+    subcontracts = SubContract.objects.filter(user=request.user)
+    if query:
+        subcontracts = subcontracts.filter(
+            Q(subcontract_name__icontains=query)
+        )
+    sorted_subcontracts = sorted(subcontracts, key=lambda subcontract: subcontract.contract.delta())
+    search_form = SearchForm(initial={'query': query})
+    search_url = 'navbar_show_subcontracts'
+    show_search = True
+
+    return render(request, 'subcontract.html', {
+        'subcontracts': sorted_subcontracts,
+        'search_form': search_form,
+        'search_url': search_url,
+        'show_search': show_search,
+    })
+
+@login_required
+def subcontract_detail(request, subcontract_id):
+    subcontract = get_object_or_404(SubContract, pk=subcontract_id)
+    contract = subcontract.contract
+    return render(request, 'detail_subcontract.html', {'subcontract': subcontract, 'contract': contract})
+
+
+class SubContractAllListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+    model = SubContract
+    template_name = 'navbar_subcontracts.html'
+    context_object_name = 'subcontracts'
+    permission_required = 'viewer.view_subcontract'
+
+    def get_queryset(self):
+        queryset = SubContract.objects.all()
+        query = self.request.GET.get("query")
+        if query:
+            queryset = queryset.filter(
+                Q(subcontract_name__icontains=query) |
+                Q(contract__contract_name__icontains=query)
+            )
+        sorted_queryset = sorted(queryset, key=lambda subcontract: subcontract.delta)
+        return sorted_queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search_form"] = SearchForm(self.request.GET or None)
+        context["search_url"] = "navbar_subcontracts"
+        context["show_search"] = True
+        return context
+
+
+class SubContractView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+    model = SubContract
+    template_name = 'subcontracts_homepage.html'
+    permission_required = 'viewer.view_subcontract'
+
+
+class SubContractCreateView(PermissionRequiredMixin, LoginRequiredMixin, FormView):
+    template_name = 'form.html'
+    form_class = SubContractForm
+    permission_required = 'viewer.add_subcontract'
+
+    def form_valid(self, form):
+        new_sub_contract = form.save(commit=False)
+        new_sub_contract.contract = Contract.objects.get(pk=int(self.kwargs["param"]))
+        max_subcontract_number = SubContract.objects.filter(contract=new_sub_contract.contract).aggregate(Max('subcontract_number'))['subcontract_number__max']
+        new_sub_contract.subcontract_number = (max_subcontract_number or 0) + 1
+        new_sub_contract.save()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('contract_detail', kwargs={'pk': self.kwargs['param']})
+
+
+class SubContractUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
+    template_name = "form.html"
+    model = SubContract
+    form_class = SubContractForm
+    permission_required = 'viewer.change_subcontract'
+
+    def get_object(self):
+        contract_pk = self.kwargs.get("contract_pk")
+        subcontract_number = self.kwargs.get("subcontract_number")
+        return SubContract.objects.get(contract__pk=contract_pk, subcontract_number=subcontract_number)
+
+    def get_success_url(self):
+        return reverse_lazy('contract_detail', kwargs={'pk': self.kwargs['contract_pk']})
+
+
+class SubContractDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
+    template_name = "delete_confirmation.html"
+    model = SubContract
+    permission_required = 'viewer.delete_subcontract'
+
+    def get_success_url(self):
+        # Získání refereru z POST dat
+        referer = self.request.POST.get('referer', None)
+
+        # Pokud referer existuje, přesměruj na něj
+        if referer:
+            return referer
+        # Pokud referer neexistuje, použij výchozí URL (například detail kontraktu)
+        contract_id = self.object.contract.id
+        return reverse_lazy('contract_detail', kwargs={'pk': contract_id})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['request'] = self.request
+        return context
+
+
+class SubContractDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
+    template_name = "detail_subcontract.html"
+    model = SubContract
+    permission_required = 'viewer.view_subcontract'
+
+
+    def get_object(self):
+        contract_pk = self.kwargs.get("contract_pk")
+        subcontract_number = self.kwargs.get("subcontract_number")
+        return SubContract.objects.get(contract__pk=contract_pk, subcontract_number=subcontract_number)
 
 
 class CustomerView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
@@ -217,56 +377,10 @@ class CustomerListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
         return context
 
 
-class ContractListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
-    model = Contract
-    template_name = 'navbar_contracts.html'
-    context_object_name = "contracts"
-    permission_required = 'viewer.view_contract'
-
-    def get_queryset(self):
-        if self.request.user.is_authenticated:
-            queryset = Contract.objects.filter(user=self.request.user)
-            query = self.request.GET.get("query")
-            if query:
-                queryset = queryset.filter(contract_name__icontains=query)
-            return sorted(queryset, key=lambda contract: contract.delta())
-        return Contract.objects.none()
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["search_form"] = SearchForm()
-        context["search_url"] = "navbar_contracts"
-        context["show_search"] = True
-        return context
-
-class ContractAllListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
-    model = Contract
-    template_name = 'navbar_contracts_all.html'
-    context_object_name = "contracts"
-    permission_required = 'viewer.view_contract'
-
-    def get_queryset(self):
-        queryset = Contract.objects.all()
-        query = self.request.GET.get("query")
-        if query:
-            queryset = queryset.filter(contract_name__icontains=query)
-        return sorted(queryset, key=lambda contract: contract.delta())
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["search_form"] = SearchForm(self.request.GET or None)
-        context["search_url"] = "navbar_contracts_all"
-        context["show_search"] = True
-        return context
-
-
-class SignUpView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
+class SignUpView(LoginRequiredMixin, CreateView):
     template_name = 'form.html'
     form_class = SignUpForm
     success_url = reverse_lazy('homepage')
-    permission_required = "viewer.view_userprofile"
-    
-from django.contrib.auth.views import LoginView, PasswordChangeView
 
 
 class SubmittableLoginView(LoginView):
@@ -276,90 +390,6 @@ class SubmittableLoginView(LoginView):
 class SubmittablePasswordChangeView(LoginRequiredMixin, PasswordChangeView):
     template_name = 'form.html'
     success_url = reverse_lazy('homepage')
-
-class SubContractAllListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
-    model = SubContract
-    template_name = 'navbar_subcontracts.html'
-    context_object_name = 'subcontracts'
-    permission_required = 'viewer.view_subcontract'
-
-    def get_queryset(self):
-        queryset = SubContract.objects.all()
-        query = self.request.GET.get("query")
-        if query:
-            queryset = queryset.filter(
-                Q(subcontract_name__icontains=query) |
-                Q(contract__contract_name__icontains=query)
-            )
-        return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["search_form"] = SearchForm(self.request.GET or None)
-        context["search_url"] = "navbar_subcontracts"
-        context["show_search"] = True
-        return context
-
-
-class SubContractView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
-    model = SubContract
-    template_name = 'subcontracts_homepage.html'
-    permission_required = 'viewer.view_subcontract'
-
-
-class SubContractCreateView(PermissionRequiredMixin, LoginRequiredMixin, FormView):
-    template_name = 'form.html'
-    form_class = SubContractForm
-    permission_required = 'viewer.add_subcontract'
-
-    def form_valid(self, form):
-        new_sub_contract = form.save(commit=False)
-        new_sub_contract.contract = Contract.objects.get(pk=int(self.kwargs["param"]))
-        max_subcontract_number = SubContract.objects.filter(contract=new_sub_contract.contract).aggregate(Max('subcontract_number'))['subcontract_number__max']
-        new_sub_contract.subcontract_number = (max_subcontract_number or 0) + 1
-        new_sub_contract.save()
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        return reverse_lazy('contract_detail', kwargs={'pk': self.kwargs['param']})
-
-
-class SubContractUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
-    template_name = "form.html"
-    model = SubContract
-    form_class = SubContractForm
-    permission_required = 'viewer.change_subcontract'
-
-    def get_object(self):
-        contract_pk = self.kwargs.get("contract_pk")
-        subcontract_number = self.kwargs.get("subcontract_number")
-        return SubContract.objects.get(contract__pk=contract_pk, subcontract_number=subcontract_number)
-
-    def get_success_url(self):
-        return reverse_lazy('contract_detail', kwargs={'pk': self.kwargs['contract_pk']})
-
-
-class SubContractDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
-    template_name = "delete_confirmation.html"
-    model = SubContract
-    permission_required = 'viewer.delete_subcontract'
-
-    def get_success_url(self):
-        # Získání refereru z POST dat
-        referer = self.request.POST.get('referer', None)
-
-        # Pokud referer existuje, přesměruj na něj
-        if referer:
-            return referer
-        # Pokud referer neexistuje, použij výchozí URL (například detail kontraktu)
-        contract_id = self.object.contract.id
-        return reverse_lazy('contract_detail', kwargs={'pk': contract_id})
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['request'] = self.request
-        return context
-
 
 class CommentCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     template_name = "form.html"
@@ -382,14 +412,11 @@ class CommentListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     model = Comment
     template_name = "comments_homepage.html"
     permission_required = 'viewer.view_comment'
+    context_object_name = 'comments'
 
-
-
-from django.http import JsonResponse
-from .models import Event # Předpokládejme, že máš model pro události
-import json
-from datetime import datetime, date
-from django.contrib.auth.models import Group
+    def get_queryset(self):
+        queryset = Comment.objects.all().order_by('-created')[:5]
+        return queryset
 
 
 @login_required
@@ -477,24 +504,6 @@ def update_event(request, event_id):
         except Event.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Event not found'})
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
-
-
-class ContractView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
-    model = Contract
-    template_name = "detail_contract.html"
-    permission_required = 'viewer.view_contract'
-
-
-class SubContractDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
-    template_name = "detail_subcontract.html"
-    model = SubContract
-    permission_required = 'viewer.view_subcontract'
-
-
-    def get_object(self):
-        contract_pk = self.kwargs.get("contract_pk")
-        subcontract_number = self.kwargs.get("subcontract_number")
-        return SubContract.objects.get(contract__pk=contract_pk, subcontract_number=subcontract_number)
 
 
 @login_required

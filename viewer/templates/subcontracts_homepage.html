@@ -9,7 +9,7 @@
     <thead>
         <tr text-center>
             <th>Číslo podprojektu</th>
-            <th>Název podprojektu - podprojektu</th>
+            <th>Název projektu - podprojektu</th>
             <th>Deadline</th>
             <th>Zbývá dní</th>
             <th>Akce</th>
@@ -17,7 +17,10 @@
     </thead>
     <tbody class="table-group-divider">
         {% for subcontract in subcontracts %}
-        <tr class="text-center {% if subcontract.delta <= 7 %}table-danger{% elif subcontract.delta <= 14 %}table-warning{% endif %}">
+        <tr class="text-center
+            {% if subcontract.contract.delta <= 7 %}table-danger
+            {% elif subcontract.contract.delta <= 14 %}
+            table-warning{% endif %}">
             <td>{{ subcontract.contract.pk}} - {{ subcontract.subcontract_number }}</td>
             <td>{{ subcontract.contract.contract_name }} - {{ subcontract.subcontract_name }}</td>
             <td>{{ subcontract.contract.deadline|date:"d.m.Y" }}</td>

@@ -3,6 +3,9 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.db.models import CharField, Model, ForeignKey, DateTimeField, DO_NOTHING, ManyToManyField, IntegerField, \
     EmailField, UniqueConstraint, CASCADE, PROTECT
 from django.contrib.auth import get_user_model
+from django.forms import Form, PasswordInput
+from django.utils import timezone
+
 User = get_user_model()
 
 from django.contrib.auth.models import User, Group
@@ -17,7 +20,7 @@ class Customer(Model):
 
 
     def __str__(self):
-        return f"Název zákazníka: {self.first_name} {self.last_name}"
+        return f"Zákazník: {self.first_name} {self.last_name}"
 
 
 class Contract(Model):
@@ -27,7 +30,7 @@ class Contract(Model):
     customer = ForeignKey(Customer, on_delete=DO_NOTHING, default=1)
     status_choices = [("0","V procesu"), ("1","Dokončeno"), ("2","Zrušeno")]
     status = CharField(max_length=64, choices=status_choices, default=status_choices[0])
-    deadline = DateTimeField(default=datetime.now() + timedelta(days=30))
+    deadline = DateTimeField(default=timezone.now() + timedelta(days=30))
 
 
     def delta(self):
@@ -54,8 +57,12 @@ class SubContract(Model):
         ]
 
 
+    @property
     def delta(self):
-        return (self.contract.deadline - self.created).days
+        if self.contract:
+            delta_days = (self.contract.deadline - self.created).days
+            return max(delta_days, 0)
+        return None
 
 
     def save(self, *args, **kwargs):
