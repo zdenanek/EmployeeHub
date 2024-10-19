@@ -12,7 +12,7 @@
 
     <h2 class="mt-4">Detail projektu č. {{ contract.id }}</h2>
     <p class="mt-4"><strong>Název:</strong> {{ contract.contract_name }}</p>
-    <p><strong>Datum vytvoření:</strong> {{ contract.created }}</p>
+    <p><strong>Datum vytvoření:</strong> {{ contract.created|date:"d.m.Y"  }}</p>
     <p><strong>Status:</strong> {{ contract.get_status_display }}</p>
     <p><strong>Uživatel:</strong> {{ contract.user.first_name }} {{ contract.user.last_name }}</p>
 

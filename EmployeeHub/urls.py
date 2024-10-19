@@ -29,7 +29,7 @@ from viewer.views import HomepageView, UserListView, CustomerListView, ContractL
     SubmittablePasswordChangeView, show_subcontracts, SubContractUpdateView, SubContractDeleteView, CommentCreateView, \
     subcontract_detail, events_feed, calendar_view, update_event, create_event, get_groups, delete_event, \
     employee_profile, change_security_question_view, password_reset_step_1, password_reset_step_2, \
-    password_reset_step_3, SubContractAllListView
+    password_reset_step_3, SubContractAllListView, CommentListView
 
 urlpatterns = [
     path('admin/', admin.site.urls),

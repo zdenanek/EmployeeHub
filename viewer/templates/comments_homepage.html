@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 {% load static %}
-
-
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
@@ -21,8 +19,7 @@
             </tr>
         </thead>
         <tbody class="table-group-divider">
-        {% if limit %}
-            {% for comment in comments|slice:":5" %}
+            {% for comment in comments %}
             <tr>
                 <td class="text-center">{{ comment.subcontract.contract.pk }} - {{ comment.subcontract.subcontract_number }}</td>
                 <td>{{ comment.subcontract.contract.contract_name }} - {{ comment.subcontract.subcontract_name }}</td>
@@ -30,16 +27,6 @@
                 <td><a href="{% url 'subcontract_detail' contract_pk=comment.subcontract.contract.pk subcontract_number=comment.subcontract.subcontract_number %}" class="btn btn-custom">Detail</a></td>
             </tr>
             {% endfor %}
-        {% else %}
-            {% for comment in comments %}
-            <tr>
-                <td class="text-center">{{ comment.subcontract.contract.pk }} - {{ comment.subcontract.subcontract_number }}</td>
-                <td>{{ comment.subcontract.contract.contract_name }} - {{ comment.subcontract.subcontract_name }}</td>
-                <td>{{ comment.text }}</td>
-                <td><a href="{% url 'subcontract_detail' contract_pk=comment.subcontract.contract.pk subcontract_number=comment.subcontract.subcontract_number %}" class="btn btn-custom">Detail podprojektu</a></td>
-            </tr>
-            {% endfor %}
-        {% endif %}
         </tbody>
     </table>
 </body>

@@ -33,7 +33,7 @@ def show_subcontracts(request):
         subcontracts = subcontracts.filter(
             Q(subcontract_name__icontains=query)
         )
-    sorted_subcontracts = sorted(subcontracts, key=lambda subcontract: subcontract.delta())
+    sorted_subcontracts = sorted(subcontracts, key=lambda subcontract: subcontract.contract.delta())
     search_form = SearchForm(initial={'query': query})
     search_url = 'navbar_show_subcontracts'
     show_search = True
@@ -58,14 +58,14 @@ class HomepageView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['comments'] = Comment.objects.all()
+        context['comments'] = Comment.objects.all().order_by('-created')[:5]
         context['users'] = User.objects.all()
 
         # context['subcontracts'] = SubContract.objects.filter(user=self.request.user)
         contracts = Contract.objects.filter(user=self.request.user)
         subcontracts = SubContract.objects.filter(user=self.request.user)
         sorted_contracts = sorted(contracts, key=lambda contract: contract.delta())
-        sorted_subcontracts = sorted(subcontracts, key=lambda subcontract: subcontract.delta())
+        sorted_subcontracts = sorted(subcontracts, key=lambda subcontract: subcontract.delta)
 
         limited_subcontracts = sorted_subcontracts[:5]
 
@@ -296,7 +296,8 @@ class SubContractAllListView(PermissionRequiredMixin, LoginRequiredMixin, ListVi
                 Q(subcontract_name__icontains=query) |
                 Q(contract__contract_name__icontains=query)
             )
-        return queryset
+        sorted_queryset = sorted(queryset, key=lambda subcontract: subcontract.delta)
+        return sorted_queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -387,8 +388,11 @@ class CommentListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     model = Comment
     template_name = "comments_homepage.html"
     permission_required = 'viewer.view_comment'
+    context_object_name = 'comments'
 
-
+    def get_queryset(self):
+        queryset = Comment.objects.all().order_by('-created')[:5]
+        return queryset
 
 from django.http import JsonResponse
 from .models import Event # Předpokládejme, že máš model pro události
