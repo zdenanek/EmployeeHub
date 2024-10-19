@@ -9,14 +9,14 @@
 {% block content %}
 <div class="container-fluid mt-4">
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-lg-6">
             <div class="card text-center">
                 <div class="card-body">
                     {% include 'contracts_homepage.html' with contracts=contracts limit=5 %}
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-lg-6">
             <div class="card text-center">
                 <div class="card-body">
                     {% include 'events_homepage.html' %}
@@ -25,14 +25,14 @@
         </div>
     </div>
     <div class="row mt-4">
-        <div class="col-md-6">
+        <div class="col-lg-6">
             <div class="card text-center">
                 <div class="card-body">
                     {% include 'subcontracts_homepage.html' with subcontracts=subcontracts %}
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-lg-6">
             <div class="card text-center">
                 <div class="card-body">
                     {% include 'comments_homepage.html' %}
