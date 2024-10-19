@@ -38,7 +38,7 @@ class SubcontractStrMethodTest(TestCase):
 
 
 # Unit TESTS pro CRUD operace v modelu podrojekty
-class SubcontractCRUDTest(TestCase):
+class SubcontractCrudTest(TestCase):
     """
     Testujeme operace CRUD v modelu subcontract zda fungji spravne.
     """

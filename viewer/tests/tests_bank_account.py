@@ -34,7 +34,7 @@ class BankAccountStrMethodTest(TestCase):
 
 
 # Unit TESTS pro CRUD operace v modelu bank acount
-class BankAccountCRUDTest(TestCase):
+class BankAccountCrudTest(TestCase):
     """
     Testujeme operace CRUD v modelu subcontract zda fungji spravne.
     """
@@ -44,7 +44,7 @@ class BankAccountCRUDTest(TestCase):
         self.user_profile = UserProfile.objects.create(user=self.user)
 
         # Vytvoreni banky
-        self.bankacount = BankAccount.objects.create(
+        self.bankaccount = BankAccount.objects.create(
             user_profile=self.user_profile,
             bank_name="Raifka",
             account_prefix="123455",
@@ -69,3 +69,38 @@ class BankAccountCRUDTest(TestCase):
         self.assertEqual(BankAccount.objects.count(), 2)
         self.assertEqual(new_bankaccount.bank_name, "Polka")
 
+    def test_read_bankaccount(self):
+        """
+        Testovani cteni vsech polozek uctu.
+        """
+        bankaccount = BankAccount.objects.get(pk=self.bankaccount.pk)
+        self.assertEqual(bankaccount.bank_name,"Raifka")
+        self.assertEqual(bankaccount.account_prefix, "123455")
+        self.assertEqual(bankaccount.account_number, "12345544321")
+        self.assertEqual(bankaccount.bank_code, "1221")
+
+
+    def test_update_bankacount(self):
+        """
+        Testovani upravy uctu.
+        """
+        self.bankaccount.bank_name = "Raifka Test"
+        self.bankaccount.account_prefix = "000111"
+        self.bankaccount.account_number = "11111"
+        self.bankaccount.bank_code = "3333"
+        self.bankaccount.save()
+        updated_bankaccount = BankAccount.objects.get(pk=self.bankaccount.pk)
+        self.assertEqual(updated_bankaccount.bank_name, "Raifka Test")
+        self.assertEqual(updated_bankaccount.account_number, "11111")
+        self.assertEqual(updated_bankaccount.account_prefix, "000111")
+        self.assertEqual(updated_bankaccount.bank_code, "3333")
+
+
+    def test_delete_bankaccount(self):
+        """
+        Testovani mazani uctu.
+        """
+        bankaccount_id = self.bankaccount.pk
+        self.bankaccount.delete()
+        with self.assertRaises(BankAccount.DoesNotExist):
+            BankAccount.objects.get(pk=bankaccount_id)
