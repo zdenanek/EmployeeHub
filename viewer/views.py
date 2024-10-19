@@ -260,10 +260,11 @@ class ContractAllListView(PermissionRequiredMixin, LoginRequiredMixin, ListView)
         return context
 
 
-class SignUpView(LoginRequiredMixin, CreateView):
+class SignUpView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     template_name = 'form.html'
     form_class = SignUpForm
     success_url = reverse_lazy('homepage')
+    permission_required = "viewer.view_userprofile"
     
 from django.contrib.auth.views import LoginView, PasswordChangeView
 
