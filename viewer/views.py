@@ -1,29 +1,30 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User, Group
+from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.views import LoginView, PasswordChangeView
+
 from django.db.models import Max, Q
-from django.forms import inlineformset_factory
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, FormView, DetailView
+from .models import *
+from .forms import *
 
-from .forms import SecurityQuestionForm, SecurityAnswerForm, SetNewPasswordForm
-from .models import Contract, Customer, Position, SubContract, Event, Comment, UserProfile, BankAccount, \
-    EmployeeInformation, EmergencyContact
-from .forms import SignUpForm, ContractForm, CustomerForm, SubContractForm, CommentForm, \
-    SearchForm, EmployeeInformationForm, BankAccountForm, EmergencyContactFormSet, BaseEmergencyContactFormSet, \
-    EmergencyContactForm
+from django.http import JsonResponse
+import json
+from datetime import datetime, date
 
-from django.contrib.auth.models import User
-from django.contrib.auth import get_user_model
+
 User = get_user_model()
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-
 
 @login_required
 def contract_detail(request, contract_id):
     contract = get_object_or_404(Contract, id=contract_id)
     return render(request, 'detail_contract.html', {'contract': contract})
+
 
 @login_required
 def show_subcontracts(request):
@@ -44,6 +45,7 @@ def show_subcontracts(request):
         'search_url': search_url,
         'show_search': show_search,
     })
+
 
 @login_required
 def subcontract_detail(request, subcontract_id):
@@ -81,7 +83,7 @@ class HomepageView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class ContractCreateView(PermissionRequiredMixin,LoginRequiredMixin, CreateView):
+class ContractCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     template_name = 'form.html'
     form_class = ContractForm
     success_url = reverse_lazy('navbar_contracts_all')
@@ -239,6 +241,7 @@ class ContractListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
         context["show_search"] = True
         return context
 
+
 class ContractAllListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     model = Contract
     template_name = 'navbar_contracts_all.html'
@@ -266,7 +269,7 @@ class SignUpView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('homepage')
     permission_required = "viewer.view_userprofile"
     
-from django.contrib.auth.views import LoginView, PasswordChangeView
+
 
 
 class SubmittableLoginView(LoginView):
@@ -276,6 +279,7 @@ class SubmittableLoginView(LoginView):
 class SubmittablePasswordChangeView(LoginRequiredMixin, PasswordChangeView):
     template_name = 'form.html'
     success_url = reverse_lazy('homepage')
+
 
 class SubContractAllListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     model = SubContract
@@ -375,7 +379,7 @@ class CommentCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView)
     def get_success_url(self):
         subcontract = SubContract.objects.get(pk=int(self.kwargs["pk"]))
         contract_id = subcontract.contract.pk
-        return reverse_lazy('subcontract_detail', kwargs={'contract_pk': contract_id, "subcontract_number": subcontract.subcontract_number })
+        return reverse_lazy('subcontract_detail', kwargs={'contract_pk': contract_id, "subcontract_number": subcontract.subcontract_number})
 
 
 class CommentListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
@@ -385,11 +389,7 @@ class CommentListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
 
 
 
-from django.http import JsonResponse
-from .models import Event # Předpokládejme, že máš model pro události
-import json
-from datetime import datetime, date
-from django.contrib.auth.models import Group
+
 
 
 @login_required
@@ -605,6 +605,7 @@ def employee_profile(request):
     }
     return render(request, 'employee_profile.html', context)
 
+
 @login_required
 def change_security_question_view(request):
     user_profile = request.user.userprofile
@@ -674,5 +675,3 @@ def password_reset_step_3(request):
     else:
         form = SetNewPasswordForm()
     return render(request, 'password_reset_step_3.html', {'form': form})
-
-
