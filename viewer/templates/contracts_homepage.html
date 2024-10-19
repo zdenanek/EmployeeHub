@@ -32,7 +32,7 @@
         <tr class="{% if contract.delta <= 7 %}table-danger{% elif contract.delta <= 14 %}table-warning{% endif %}">
             <td class="text-center">{{ contract.id }}</td>
             <td>{{ contract.contract_name }}</td>
-            <td>{{ contract.deadline }}</td>
+            <td>{{ contract.deadline|date:"d.m.Y" }}</td>
             <td class="text-center">{{ contract.delta }}</td>
             <td>
                 <a href="{% url 'contract_detail' contract.id %}" class="btn btn-custom">Detail projektu</a>

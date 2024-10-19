@@ -87,6 +87,12 @@ class ContractCreateView(PermissionRequiredMixin,LoginRequiredMixin, CreateView)
     success_url = reverse_lazy('navbar_contracts_all')
     permission_required = 'viewer.add_contract'
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if Customer.objects.count() == 0:
+            Customer.objects.create(first_name="John", last_name="Doe")
+        return kwargs
+
 
 class ContractUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
     template_name = "form.html"
