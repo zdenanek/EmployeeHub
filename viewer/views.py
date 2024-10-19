@@ -60,9 +60,17 @@ def subcontract_detail(request, subcontract_id):
 
 
 class HomepageView(LoginRequiredMixin, TemplateView):
+    """
+    View pro homepage, uživatel musí být přihlášen.
+    Zobrazuje projekty, podprojekty, události a komentáře ve vztahu k právě přihlášenému uživateli.
+    Zobrazuje se jen 5 nejaktuálnějších položek a pouze události aktuálního dne.
+    """
     template_name = 'homepage.html'
 
     def get_context_data(self, **kwargs):
+        """
+        Načte kontextová data, která se zobrazí na domovské stránce.
+        """
         contracts = Contract.objects.filter(user=self.request.user)
         subcontracts = SubContract.objects.filter(user=self.request.user)
         sorted_contracts = sorted(contracts, key=lambda contract: contract.delta())
@@ -86,16 +94,26 @@ class HomepageView(LoginRequiredMixin, TemplateView):
 
 @login_required
 def contract_detail(request, contract_id):
+    """
+    Zobrazí detailní zobrazení konkrétní zakázky.
+    """
     contract = get_object_or_404(Contract, id=contract_id)
     return render(request, 'detail_contract.html', {'contract': contract})
 
 class ContractCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
+    """
+    Zobrazení pro vytvoření nové zakázky.
+    K tomuto zobrazení mají přístup pouze uživatelé s oprávněním `add_contract`.
+    """
     template_name = 'form.html'
     form_class = ContractForm
     success_url = reverse_lazy('navbar_contracts_all')
     permission_required = 'viewer.add_contract'
 
     def get_form_kwargs(self):
+        """
+        Zajišťuje vytvoření výchozího zákazníka, pokud ještě žádný neexistuje.
+        """
         kwargs = super().get_form_kwargs()
         if Customer.objects.count() == 0:
             Customer.objects.create(first_name="John", last_name="Doe")
@@ -103,6 +121,10 @@ class ContractCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView
 
 
 class ContractUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
+    """
+    Zobrazení pro aktualizaci existující smlouvy.
+    K tomuto zobrazení mají přístup pouze uživatelé s oprávněním `change_contract`.
+    """
     template_name = "form.html"
     model = Contract
     form_class = ContractForm
@@ -111,11 +133,20 @@ class ContractUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView
 
 
 class ContractDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
+    """
+    Zobrazení pro vymazání zakázky.
+    Přístup mají pouze uživatelé s oprávněním 'delete_contract'.
+    """
     template_name = "delete_confirmation.html"
     model = Contract
     permission_required = 'viewer.delete_contract'
 
     def post(self, request, *args, **kwargs):
+        """
+        Úprava, která předchází smazání zakázky, která má podzakázky.
+        Args: request: objekt HTTP request
+        Vrací: Přesměruje zpět na stránku všech zakázek, nebo zobraz varovnou zprávu.
+        """
         self.object = self.get_object()
         if self.object.subcontracts.exists():
             messages.warning(request, "You can't delete this contract because it has active subcontracts.")
@@ -123,29 +154,44 @@ class ContractDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteView
         return super().post(request, *args, **kwargs)
 
     def get_success_url(self):
-        # Získání refereru z POST dat
+        """
+        Určuje adresu přesměrování po úspěšném vymazání, jinak se vrátí zpět dle výchozího nastavení.
+        """
         referer = self.request.POST.get('referer', None)
-
-        # Pokud referer existuje, přesměruj na něj
         if referer:
             return referer
-        # Pokud referer neexistuje, použij výchozí URL (například seznam kontraktů)
         return reverse_lazy('navbar_contracts_all')
 
 
     def get_context_data(self, **kwargs):
+        """
+        Předá šabloně další kontext a do něj předá aktuální požadavek (request).
+        """
         context = super().get_context_data(**kwargs)
         context['request'] = self.request
         return context
 
 
 class ContractListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+    """
+    Zobrazení seznamu zakázek přidružených k aktuálně ověřenému uživateli.
+    Přístup mají pouze uživatelé s oprávněním 'view_contract'.
+    Obsahuje funkci vyhledávání, která umožňuje filtrovat smlouvy podle názvu.
+    """
     model = Contract
     template_name = 'navbar_contracts.html'
     context_object_name = "contracts"
     permission_required = 'viewer.view_contract'
 
     def get_queryset(self):
+        """
+        Vrací filtrovanou sadu dotazů na zakázky pro ověřeného uživatele.
+        Pokud je uživatel ověřen, vyfiltruje smlouvy spojené s aktuálním uživatelem.
+        Uživatel může také vyhledávat smlouvy podle názvu pomocí parametru GET 'query'.
+        Smlouvy jsou seřazeny pomocí metody `delta()`.
+        Vrací:
+            QuerySet: Vyfiltrovaný a setříděný seznam smluv pro aktuálního uživatele.
+        """
         if self.request.user.is_authenticated:
             queryset = Contract.objects.filter(user=self.request.user)
             query = self.request.GET.get("query")
@@ -155,6 +201,15 @@ class ContractListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
         return Contract.objects.none()
 
     def get_context_data(self, **kwargs):
+        """
+        Předá do šablony další kontext.
+        Do kontextu přidá vyhledávací formulář a vyhledávací adresu URL, které se používají pro filtrování zakázek.
+        Obsahuje také příznak 'show_search', který označuje, že se má zobrazit funkce vyhledávání.
+        Args:
+            **kwargs: Další kontextové údaje.
+        Vrací:
+            dict: Kontextová data, která se předají šabloně.
+        """
         context = super().get_context_data(**kwargs)
         context["search_form"] = SearchForm()
         context["search_url"] = "navbar_contracts"
@@ -163,12 +218,24 @@ class ContractListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
 
 
 class ContractAllListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+    """
+    Zobrazení seznamu všech smluv bez ohledu na uživatele.
+    K tomuto zobrazení mají přístup pouze uživatelé s oprávněním 'view_contract'.
+    Obsahuje funkci vyhledávání, která umožňuje filtrovat smlouvy podle názvu.
+    """
     model = Contract
     template_name = 'navbar_contracts_all.html'
     context_object_name = "contracts"
     permission_required = 'viewer.view_contract'
 
     def get_queryset(self):
+        """
+        Vrátí množinu všech zakázek, volitelně filtrovanou podle vyhledávacího dotazu.
+        Pokud je zadán parametr GET 'query', filtruje zakázky podle názvu.
+        Zakázky jsou seřazeny pomocí metody `delta()`.
+        Vrací:
+            QuerySet: filtrovaný a setříděný seznam všech zakázek.
+        """
         queryset = Contract.objects.all()
         query = self.request.GET.get("query")
         if query:
@@ -176,6 +243,9 @@ class ContractAllListView(PermissionRequiredMixin, LoginRequiredMixin, ListView)
         return sorted(queryset, key=lambda contract: contract.delta())
 
     def get_context_data(self, **kwargs):
+        """
+        Předá do šablony další kontext pro vyhledávání.
+        """
         context = super().get_context_data(**kwargs)
         context["search_form"] = SearchForm(self.request.GET or None)
         context["search_url"] = "navbar_contracts_all"
@@ -184,12 +254,22 @@ class ContractAllListView(PermissionRequiredMixin, LoginRequiredMixin, ListView)
 
 
 class SignUpView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
+    """
+    Zobrazení pro zpracování registrace uživatelů a vytváření účtů.
+    Zobrazí formulář pro přihlášení uživatelů k účtu.
+    Přístup mají pouze uživatelé s oprávněním `view_userprofile`.
+    Po úspěšném přihlášení jsou uživatelé přesměrováni na domovskou stránku.
+    """
     template_name = 'form.html'
     form_class = SignUpForm
     success_url = reverse_lazy('homepage')
     permission_required = "viewer.view_userprofile"
     
 class ContractView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
+    """
+    Zobrazení podrobností konkrétní zakázky.
+    Přístup je omezen na přihlášené uživatele s oprávněním 'view_contract'.
+    """
     model = Contract
     template_name = "detail_contract.html"
     permission_required = 'viewer.view_contract'
@@ -198,6 +278,12 @@ class ContractView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
 
 @login_required
 def show_subcontracts(request):
+    """
+    Tato funkce se stará o zobrazení podzakázek, které patří přihlášenému uživateli.
+    Podporuje filtrování na základě vyhledávacího dotazu zadaného uživatelem.
+    Podzakázky jsou seřazeny na základě metody delta() související zakázky.
+    Zobrazení používá formulář pro vyhledávání a zobrazuje výsledky v šabloně.
+    """
     query = request.GET.get("query", "")
     subcontracts = SubContract.objects.filter(user=request.user)
     if query:
@@ -218,13 +304,28 @@ def show_subcontracts(request):
 
 @login_required
 def subcontract_detail(request, subcontract_id):
+    """
+    Tato funkce vyhledá na základě zadaného subcontract_id podzakázku a její mateřskou zakázku.
+    Pokud podzakázka neexistuje, zobrazí se chyba 404.
+    """
     subcontract = get_object_or_404(SubContract, pk=subcontract_id)
     contract = subcontract.contract
     return render(request, 'detail_subcontract.html', {'subcontract': subcontract, 'contract': contract})
 
 
-
 class SubContractAllListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+    """
+    Toto zobrazení načte a zobrazí seznam všech subdodávek.
+    Podporuje filtrování podle názvu subdodávky, nebo mateřské zakázky.
+    Výsledky jsou seřazeny podle vlastní metody (delta).
+    Uživatelé musí být ověřeni a mít potřebné oprávnění 'view_subcontract'.
+    Metody:
+        get_queryset():
+            Získá podzakázky a použije filtrování na základě vyhledávacího dotazu.
+            Výsledek je seřazen pomocí metody delta subkontraktů.
+        get_context_data(**kwargs):
+            Přidá do šablony další kontext, včetně vyhledávacího formuláře.
+    """
     model = SubContract
     template_name = 'navbar_subcontracts.html'
     context_object_name = 'subcontracts'
@@ -250,12 +351,27 @@ class SubContractAllListView(PermissionRequiredMixin, LoginRequiredMixin, ListVi
 
 
 class SubContractView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+    """
+    Zobrazí seznam podzakázek. Uživatel musí být ověřen a mít oprávnění 'view_subcontract'
+    """
     model = SubContract
     template_name = 'subcontracts_homepage.html'
     permission_required = 'viewer.view_subcontract'
 
 
 class SubContractCreateView(PermissionRequiredMixin, LoginRequiredMixin, FormView):
+    """
+    Vytvoří nové podzakázky v rámci konkrétní zakázky.
+    Uživatel musí být ověřen a mít oprávnění 'add_subcontract'.
+    Využívá šablonu 'form.html'.
+    Metody:
+        form_valid(form):
+            Obsluhuje uložení platného formuláře podzakázky, přiřadí novou podzakázku ke správné zakázce,
+            přiřadí příslušné číslo podzakázky na základě dalších existujících podzakázek.
+        get_success_url():
+            Určuje adresu URL, na kterou se má přesměrovat po úspěšném vytvoření podzakázky a vrací adresu
+            stránku s podrobnostmi pro přidruženou zakázku.
+    """
     template_name = 'form.html'
     form_class = SubContractForm
     permission_required = 'viewer.add_subcontract'
@@ -273,33 +389,46 @@ class SubContractCreateView(PermissionRequiredMixin, LoginRequiredMixin, FormVie
 
 
 class SubContractUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
+    """
+    Aktualizace podzakzky. Uživatel musí být přihlášen a mít oprávnění měnit údaje podzakázky.
+    """
     template_name = "form.html"
     model = SubContract
     form_class = SubContractForm
     permission_required = 'viewer.change_subcontract'
 
     def get_object(self):
+        """
+        Vyhledá objekt podzakázky na základě primárního klíče zakázky a čísla subdodávky uvedeného v adrese URL.
+        """
         contract_pk = self.kwargs.get("contract_pk")
         subcontract_number = self.kwargs.get("subcontract_number")
         return SubContract.objects.get(contract__pk=contract_pk, subcontract_number=subcontract_number)
 
     def get_success_url(self):
+        """
+        Definuje adresu URL, kam přesměrovat po úspěšné aktualizaci. Pracuje s id zakázky a vlastním číslem podzakázky.
+        """
         return reverse_lazy('contract_detail', kwargs={'pk': self.kwargs['contract_pk']})
 
 
 class SubContractDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
+    """
+    Odstranění podzakázky. Uživatel musí být přihlášen a mít oprávnění k mazání údajů o podzakázce.
+   """
     template_name = "delete_confirmation.html"
     model = SubContract
     permission_required = 'viewer.delete_subcontract'
 
     def get_success_url(self):
-        # Získání refereru z POST dat
+        """
+        Určuje adresu URL pro přesměrování po úspěšném odstranění podzakázky.
+        Pokud je v údajích POST uveden referer, přesměruje se na tuto adresu URL;
+        v opačném případě se přesměruje na stránku s detailem smlouvy.
+        """
         referer = self.request.POST.get('referer', None)
-
-        # Pokud referer existuje, přesměruj na něj
         if referer:
             return referer
-        # Pokud referer neexistuje, použij výchozí URL (například detail kontraktu)
         contract_id = self.object.contract.id
         return reverse_lazy('contract_detail', kwargs={'pk': contract_id})
 
@@ -310,24 +439,36 @@ class SubContractDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteV
 
 
 class SubContractDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
+    """
+    Zobrazení podrobností podzakázky. Uživatel bude přihlášen a bude mít oprávnění k zobrazení podrobností podzakázky.
+    """
     template_name = "detail_subcontract.html"
     model = SubContract
     permission_required = 'viewer.view_subcontract'
 
 
     def get_object(self):
+        """
+        Vyhledá objekt podzakázky na základě primárního klíče zakázky a čísla podzakázky uvedeného v adrese URL.
+        """
         contract_pk = self.kwargs.get("contract_pk")
         subcontract_number = self.kwargs.get("subcontract_number")
         return SubContract.objects.get(contract__pk=contract_pk, subcontract_number=subcontract_number)
 
 
 class CustomerView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+    """
+    Zobrazení seznamu zákazníků. Uživatel bude přihlášen a má oprávnění k zobrazení údajů o zákaznících.
+    """
     model = Customer
     template_name = 'customers.html'
     permission_required = 'viewer.view_customer'
 
 
 class CustomerCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
+    """
+    Vytvoření nového zákazníka. Uživatel bude přihlášen a bude mít oprávnění přidávat zákazníky.
+    """
     template_name = 'form.html'
     form_class = CustomerForm
     success_url = reverse_lazy('navbar_customers')
@@ -335,6 +476,9 @@ class CustomerCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView
 
 
 class CustomerUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
+    """
+    Aktualizace stávajícího zákazníka. Uživatel bude přihlášen a bude mít oprávnění měnit údaje o zákazníkovi.
+    """
     template_name = 'form.html'
     model = Customer
     form_class = CustomerForm
@@ -343,18 +487,22 @@ class CustomerUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView
 
 
 class CustomerDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
+    """
+    Odstranění zákazníka. Uživatel bude přihlášen a bude mít oprávnění mazat zákazníky.
+    """
     template_name = 'delete_confirmation.html'
     model = Customer
     permission_required = 'viewer.delete_customer'
 
     def get_success_url(self):
-        # Získání refereru z POST dat
+        """
+        Určuje adresu URL, na kterou se má přesměrovat po úspěšném odstranění zákazníka.
+        Pokud je v údajích POST uveden referer, přesměruje se na tuto adresu URL;
+        v opačném případě se přesměruje na stránku se seznamem zákazníků.
+        """
         referer = self.request.POST.get('referer', None)
-
-        # Pokud referer existuje, přesměruj na něj
         if referer:
             return referer
-        # Pokud referer neexistuje, použij výchozí URL (například seznam zákazníků)
         return reverse_lazy('navbar_customers')
 
     def get_context_data(self, **kwargs):
@@ -371,6 +519,9 @@ class UserListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
 
 
     def get_queryset(self):
+        """
+        Na základě vyhledávacího dotazu získává fltrovaný seznam uživatelů.
+        """
         queryset = super().get_queryset()
         query = self.request.GET.get("query")
         if query:
@@ -382,6 +533,9 @@ class UserListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
         return queryset
 
     def get_context_data(self, **kwargs):
+        """
+        Přidá do šablony vyhledávací formulář a další kontext.
+        """
         context = super().get_context_data(**kwargs)
         context["search_form"] = SearchForm()
         context["search_url"] = "employees"
@@ -390,12 +544,18 @@ class UserListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
 
 
 class CustomerListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+    """
+    Zobrazení seznamu zákazníků. Uživatel bude přihlášen a bude mít oprávnění k zobrazení údajů o zákaznících.
+    """
     model = Customer
     template_name = 'navbar_customers.html'
     context_object_name = "customers"
     permission_required = 'viewer.view_customer'
 
     def get_queryset(self):
+        """
+        Získá filtrovaný seznam zákazníků na základě vyhledávacího dotazu.
+        """
         queryset = super().get_queryset()
         query = self.request.GET.get("query")
         if query:
@@ -406,6 +566,9 @@ class CustomerListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
         return queryset
 
     def get_context_data(self, **kwargs):
+        """
+        Přidává do šablony vyhledávací formulář a související kontext.
+        """
         context = super().get_context_data(**kwargs)
         context["search_form"] = SearchForm()
         context["search_url"] = "navbar_customers"
