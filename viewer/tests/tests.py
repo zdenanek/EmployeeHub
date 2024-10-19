@@ -1,5 +1,10 @@
-from django.test import TestCase
+from django.test import TestCase, LiveServerTestCase
 from viewer.models import Contract, User, Customer
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from django.contrib.auth.models import User
+import time
+
 
 # Tento test ověřuje, že model Contract se správně inicializuje s požadovanými hodnotami při jeho vytváření.
 class ContractModelTest(TestCase):
@@ -24,13 +29,6 @@ class ContractModelTest(TestCase):
         self.assertEqual(contract.status, "0")  # V procesu
 
 
-from django.test import LiveServerTestCase
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from django.contrib.auth.models import User
-import time
-
-
 class MySeleniumTests(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
@@ -44,6 +42,7 @@ class MySeleniumTests(LiveServerTestCase):
             password='admin',
             email='admin@example.com'
         )
+
 
     @classmethod
     def tearDownClass(cls):

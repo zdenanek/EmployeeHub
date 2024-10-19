@@ -1,54 +1,80 @@
-import re
-
 from django.contrib.auth.forms import UserCreationForm
-from django.core.exceptions import ValidationError
-from django.db.models import CharField
-from django.forms import ModelForm, Form, CharField, inlineformset_factory, BaseInlineFormSet
+from django.forms import ModelForm, inlineformset_factory, BaseInlineFormSet
 from django import forms
 from django.core.validators import RegexValidator
 from .models import UserProfile, BankAccount, EmployeeInformation, EmergencyContact, SecurityQuestion
-
 from viewer.models import Contract, Customer, SubContract, Comment
 
 
 class SignUpForm(UserCreationForm):
+    """
+    Formulář pro registraci nového uživatele.
+
+    Tento formulář rozšiřuje UserCreationForm a zahrnuje
+    pole pro uživatelské jméno, jméno, příjmení a e-mail.
+    Nově registrovaní uživatelé budou nastaveni jako neaktivní
+    (is_active = False), dokud nebude jejich účet aktivován.
+    """
+
     class Meta(UserCreationForm.Meta):
+        # Určuje pole, která budou zahrnuta ve formuláři.
         fields = ['username', 'first_name', 'last_name', 'email']
 
     def save(self, commit=True):
-        self.instance.is_active = False
-        return super().save(commit)
+        """
+        Uloží instanci uživatele.
+
+        Před uložením nastaví is_active na False, což znamená,
+        že nově vytvořený uživatel nebude moci přistupovat
+        k aplikaci, dokud nebude účet aktivován.
+
+        :param commit: Pokud je True, provede se uložení do databáze.
+        :return: Uložená instance uživatele.
+        """
+        self.instance.is_active = False  # Uživatel bude neaktivní
+        return super().save(commit)  # Zavolá se metoda save z nadřazené třídy
 
 
 class ContractForm(ModelForm):
+    """
+    Formulář pro vytváření a úpravu projektů (kontraktů).
+    """
     class Meta:
+        # Určuje model, který bude použit pro formulář.
         model = Contract
+        # Zahrnuje všechna pole modelu Contract.
         fields = "__all__"
 
 
 class CustomerForm(ModelForm):
+    """
+    Formulář pro vytváření a úpravu zákazníků.
+    """
     phone_number = forms.CharField(
         max_length=15,
         label='Tel. číslo',
-        validators=[RegexValidator(r'^\d+$', 'Pole musí obsahovat pouze číslice')],
-        initial="123456789",
-        required=True,
-        widget=forms.TextInput(attrs={'required': 'required'})
+        validators=[RegexValidator(r'^\d+$', 'Pole musí obsahovat pouze číslice')],  # Validátor pro číslice.
+        initial="123456789",  # Počáteční hodnota pole
+        required=True,  # Toto pole je povinné.
+        widget=forms.TextInput(attrs={'required': 'required'})  # HTML atribut pro povinnost.
     )
     email_address = forms.EmailField(
         max_length=128,
         required=True
     )
+
     class Meta:
         model = Customer
         fields = "__all__"
 
 
 class SubContractForm(ModelForm):
+    """
+    Formulář pro vytváření a úpravu podprojektů.
+    """
     class Meta:
         model = SubContract
         fields = ['subcontract_name', 'user', 'status']
-        # fields = '__all__'
 
 
 class SubContractFormUpdate(ModelForm):
@@ -64,7 +90,11 @@ class CommentForm(ModelForm):
 
 
 class SearchForm(forms.Form):
-    query = forms.CharField(label="Search", max_length=256)
+    # Pole pro vyhledávací dotaz s maximální délkou 256 znaků.
+    query = forms.CharField(
+        label="Search",  # Označení pole pro uživatelské rozhraní.
+        max_length=256
+    )
 
 
 class BankAccountForm(forms.ModelForm):
@@ -149,31 +179,38 @@ class EmergencyContactForm(forms.ModelForm):
     )
 
     class Meta:
-        model = EmergencyContact
-        exclude = ('user_profile',)
-
+        model = EmergencyContact   # Určuje model, se kterým je formulář spojen.
+        exclude = ('user_profile',)  # Vylučuje pole 'user_profile' z formuláře, aby se zabránilo jeho úpravě uživateli.
 
 
 class BaseEmergencyContactFormSet(BaseInlineFormSet):
+    """
+       Formulářový set zajišťuje max. 2 kontaktní osoby, kontroluje platnost a vyvolává vyjímku při nevalidních datech.
+    """
     def clean(self):
         super().clean()
         total_forms = 0
         for form in self.forms:
+            # Zkontroluje, zda byl formulář označen k odstranění
             if not form.cleaned_data.get('DELETE', False):
+                # Kontroluje, zda je formulář platný
                 if not form.is_valid():
                     raise forms.ValidationError("Prosím opravte chyby ve formuláři.")
                 total_forms += 1
+        # Kontroluje maximální počet kontaktních osob
         if total_forms > 2:
             raise forms.ValidationError("Můžete mít pouze dvě kontaktní osoby.")
 
+
+# Definice inline formulářového setu pro EmergencyContact
 EmergencyContactFormSet = inlineformset_factory(
     UserProfile,
     EmergencyContact,
     form=EmergencyContactForm,
     formset=BaseEmergencyContactFormSet,
-    extra=2,
-    max_num=2,
-    can_delete=True,
+    extra=2,  # Počet prázdných formulářů, které se zobrazí
+    max_num=2,  # Maximální počet formulářů, které lze přidat
+    can_delete=True,  # Umožňuje uživatelům odstraňovat kontaktní osoby
 )
 
 
@@ -218,14 +255,26 @@ class EmployeeInformationForm(forms.ModelForm):
 
 
 class SecurityQuestionForm(forms.ModelForm):
+    """
+    Formulář pro nastavení bezpečnostní otázky a odpovědi uživatelského profilu.
+
+    Tento formulář umožňuje uživatelům vybrat bezpečnostní otázku a
+    zadat odpověď, která bude uložena jako šifrovaný text. Odpověď je
+    zpracována pomocí speciální metody pro nastavení bezpečnostní odpovědi.
+
+    Políčka formuláře:
+    - security_question: Výběr z dostupných bezpečnostních otázek.
+    - security_answer: Odpověď na bezpečnostní otázku, která je
+      zobrazena jako heslo pro zajištění soukromí uživatele.
+    """
     security_question = forms.ModelChoiceField(
         queryset=SecurityQuestion.objects.all(),
         label='Bezpečnostní otázka',
         required=True,
-        empty_label=None
+        empty_label=None  # Zabraňuje prázdnému výběru otázky
     )
     security_answer = forms.CharField(
-        widget=forms.PasswordInput,
+        widget=forms.PasswordInput,  # Zobrazit jako heslo
         label='Odpověď',
         required=True
     )
@@ -235,6 +284,11 @@ class SecurityQuestionForm(forms.ModelForm):
         fields = ['security_question', 'security_answer']
 
     def save(self, commit=True):
+        """
+        Uloží instanci uživatelského profilu s bezpečnostní otázkou a odpovědí.
+
+        Nastaví šifrovanou odpověď pomocí metody `set_security_answer` a poté uloží profil, pokud je `commit` nastaven na True.
+        """
         user_profile = super().save(commit=False)
         user_profile.set_security_answer(self.cleaned_data['security_answer'])
         if commit:
@@ -243,6 +297,9 @@ class SecurityQuestionForm(forms.ModelForm):
 
 
 class SecurityAnswerForm(forms.Form):
+    """
+    Formulář pro zadání odpovědi na bezpečnostní otázku. Odpověď je šifrována pro ochranu soukromí uživatele.
+    """
     security_question = forms.ModelChoiceField(
         queryset=SecurityQuestion.objects.all(),
         label='Bezpečnostní otázka',
@@ -255,8 +312,7 @@ class SecurityAnswerForm(forms.Form):
         required=True
     )
 
-
-    # Validation password conditions on beckend
+# Validace podmínek pro nové heslo na backendu, včetně potvrzení nového hesla.
 class SetNewPasswordForm(forms.Form):
     new_password = forms.CharField(
         widget=forms.PasswordInput,
@@ -291,4 +347,3 @@ class SetNewPasswordForm(forms.Form):
             self.add_error('new_password_confirm', 'Hesla se neshodují')
 
         return cleaned_data
-

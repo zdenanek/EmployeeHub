@@ -1,14 +1,16 @@
-from datetime import datetime, timedelta,date
+from datetime import datetime, timedelta, date
 from django.contrib.auth.hashers import make_password, check_password
-from django.db.models import CharField, Model, ForeignKey, DateTimeField, DO_NOTHING, ManyToManyField, IntegerField, \
+from django.db.models import CharField, Model, ForeignKey, DateTimeField, DO_NOTHING, IntegerField, \
     EmailField, UniqueConstraint, CASCADE, PROTECT
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
+from django.db import models
+
+
 from django.forms import Form, PasswordInput
 from django.utils import timezone
 
 User = get_user_model()
-
-from django.contrib.auth.models import User, Group
 
 
 class Customer(Model):
@@ -28,7 +30,7 @@ class Contract(Model):
     created = DateTimeField(auto_now_add=True)
     user = ForeignKey(User, on_delete=DO_NOTHING, default=1)
     customer = ForeignKey(Customer, on_delete=DO_NOTHING, default=1)
-    status_choices = [("0","V procesu"), ("1","Dokončeno"), ("2","Zrušeno")]
+    status_choices = [("0", "V procesu"), ("1", "Dokončeno"), ("2", "Zrušeno")]
     status = CharField(max_length=64, choices=status_choices, default=status_choices[0])
     deadline = DateTimeField(default=timezone.now() + timedelta(days=30))
 
@@ -47,7 +49,7 @@ class SubContract(Model):
     user = ForeignKey(User, on_delete=DO_NOTHING, default=1)
     contract = ForeignKey(Contract, related_name='subcontracts', on_delete=PROTECT)
     subcontract_number = IntegerField(null=True, blank=True, default=1)
-    status_choices = [("0","V procesu"), ("1","Dokončeno"), ("2","Zrušeno")]
+    status_choices = [("0", "V procesu"), ("1", "Dokončeno"), ("2", "Zrušeno")]
     status = CharField(max_length=64, choices=status_choices, default=status_choices[0])
 
 
@@ -82,10 +84,7 @@ class SubContract(Model):
         return f"Podprojekt: {self.subcontract_name} {self.contract.pk}-{self.subcontract_number}"
 
 
-from django.db import models
-
-
-class Position(models.Model):
+class Position(Model):
     name = models.CharField(max_length=50)
 
     def __str__(self):
@@ -93,7 +92,7 @@ class Position(models.Model):
 
 
 class SecurityQuestion(Model):
-    question_text = models.CharField(max_length=255)
+    question_text = CharField(max_length=255)
 
     def __str__(self):
         return f"{self.question_text}"
@@ -165,7 +164,6 @@ class EmergencyContact(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.phone_number}"
-
 
 
 class EmployeeInformation(models.Model):
