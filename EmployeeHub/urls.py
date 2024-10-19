@@ -27,7 +27,6 @@ from viewer.views import HomepageView, UserListView, CustomerListView, ContractL
     events_feed, calendar_view, update_event, create_event, get_groups, delete_event, \
     employee_profile, change_security_question_view, password_reset_step_1, password_reset_step_2, \
     password_reset_step_3, SubContractAllListView,  ContractView, SubContractDetailView
-    password_reset_step_3, SubContractAllListView, CommentListView
 
 urlpatterns = [
     path('admin/', admin.site.urls),

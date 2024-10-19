@@ -1,19 +1,10 @@
-from datetime import datetime, date
-from django.contrib.auth.models import Group
 from django.contrib import messages
-from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.views import LoginView, PasswordChangeView
-from django.contrib.auth.models import User, Group
-from django.contrib.auth import get_user_model
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.contrib.auth.views import LoginView, PasswordChangeView
 
 from django.db.models import Max, Q
-from django.forms import inlineformset_factory
-from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
@@ -27,7 +18,6 @@ from .forms import SecurityQuestionForm, SecurityAnswerForm, SetNewPasswordForm,
     SearchForm, EmployeeInformationForm, BankAccountForm, BaseEmergencyContactFormSet, \
     EmergencyContactForm
 from django.http import JsonResponse
-import json
 from datetime import datetime, date
 
 import json
@@ -99,7 +89,6 @@ def contract_detail(request, contract_id):
     contract = get_object_or_404(Contract, id=contract_id)
     return render(request, 'detail_contract.html', {'contract': contract})
 
-class ContractCreateView(PermissionRequiredMixin,LoginRequiredMixin, CreateView):
 class ContractCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     template_name = 'form.html'
     form_class = ContractForm
@@ -200,7 +189,6 @@ class SignUpView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('homepage')
     permission_required = "viewer.view_userprofile"
     
-from django.contrib.auth.views import LoginView, PasswordChangeView
 class ContractView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
     model = Contract
     template_name = "detail_contract.html"
@@ -423,12 +411,6 @@ class CustomerListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
         context["search_url"] = "navbar_customers"
         context["show_search"] = True
         return context
-
-
-class SignUpView(LoginRequiredMixin, CreateView):
-    template_name = 'form.html'
-    form_class = SignUpForm
-    success_url = reverse_lazy('homepage')
 
 
 class SubmittableLoginView(LoginView):
