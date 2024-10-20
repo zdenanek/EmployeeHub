@@ -48,3 +48,5 @@ Tato aplikace je ideálním řešením pro menší moderní firmy, které chtěj
     python manage.py test/ python manage.py test viewer
 
 
+![ER Diagram](ER_diagram_SDA_final_project.png)
+
