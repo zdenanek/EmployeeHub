@@ -171,7 +171,7 @@ class UserListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     model = User
     template_name = 'employees.html'
     context_object_name = "employees"
-    permission_required = 'viewer.view_user'
+    permission_required = 'auth.view_user'
 
 
     def get_queryset(self):

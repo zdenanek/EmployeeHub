@@ -5,16 +5,16 @@ document.getElementById('password-reset-form').addEventListener('submit', functi
 
     // Password validation
     if (password.length < 8) {
-        errorMessage += '<strong>Zadané heslo je příliš krátké.</strong><br>';
+        errorMessage += '<strong>Heslo musí mít alespoň 8 znaků.</strong><br>';
     }
     if (!/[A-Z]/.test(password)) {
-        errorMessage += '<strong>Zadané heslo neobsahuje velké písmeno.</strong><br>';
+        errorMessage += '<strong>Heslo musí obsahovat alespoň jedno velké písmeno.</strong><br>';
     }
     if (!/[a-z]/.test(password)) {
-        errorMessage += '<strong>Zadané heslo neobsahuje malé písmeno.</strong><br>';
+        errorMessage += '<strong>Heslo musí obsahovat alespoň jedno malé písmeno.</strong><br>';
     }
     if (!/[0-9]/.test(password)) {
-        errorMessage += '<strong>Heslo neobsahuje žádnou číslici.</strong><br>';
+        errorMessage += '<strong>Heslo musí obsahovat alespoň jednu číslici.</strong><br>';
     }
     if (password !== passwordConfirm) {
         errorMessage += '<strong>Hesla se neshodují.</strong><br>';

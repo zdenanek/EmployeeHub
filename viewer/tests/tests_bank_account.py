@@ -36,7 +36,7 @@ class BankAccountStrMethodTest(TestCase):
 # Unit TESTS pro CRUD operace v modelu bank acount
 class BankAccountCrudTest(TestCase):
     """
-    Testujeme operace CRUD v modelu subcontract zda fungji spravne.
+    Testujeme operace CRUD v modelu bankaccount.
     """
     def setUp(self):
         # Vytváříme user a userprofile.

@@ -288,7 +288,7 @@ class SetNewPasswordForm(forms.Form):
 
         # Validace shody hesel
         if new_password and new_password_confirm and new_password != new_password_confirm:
-            self.add_error('new_password_confirm', 'Hesla se neshodují')
+            self.add_error('new_password_confirm', 'Hesla se neshodují.')
 
         return cleaned_data
 

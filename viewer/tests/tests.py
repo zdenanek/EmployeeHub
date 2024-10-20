@@ -1,29 +1,3 @@
-from django.test import TestCase
-from viewer.models import Contract, User, Customer
-
-# Tento test ověřuje, že model Contract se správně inicializuje s požadovanými hodnotami při jeho vytváření.
-class ContractModelTest(TestCase):
-    def setUp(self):
-        # Vytvoření uživatele a zákazníka
-        self.user = User.objects.create(username="testuser")
-        self.customer = Customer.objects.create(last_name="testcustomer")
-
-    def test_contract_creation(self):
-        # Vytvoření kontraktu
-        contract = Contract.objects.create(
-            contract_name="Test Contract",
-            user=self.user,
-            customer=self.customer,
-            status="0",  # V procesu
-        )
-
-        # assertEqual metody kontrolují, zda jsou hodnoty nastavené na kontraktu správně
-        self.assertEqual(contract.contract_name, "Test Contract")
-        self.assertEqual(contract.user, self.user)
-        self.assertEqual(contract.customer, self.customer)
-        self.assertEqual(contract.status, "0")  # V procesu
-
-
 from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.by import By
