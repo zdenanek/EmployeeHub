@@ -577,19 +577,31 @@ class CustomerListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
 
 
 class SubmittableLoginView(LoginView):
+    """
+    Vlastní zobrazení přihlášení.
+    """
     template_name = 'login.html'
 
 
 class SubmittablePasswordChangeView(LoginRequiredMixin, PasswordChangeView):
+    """
+    Zobrazení změny hesla s požadavkem na přihlášení a přesměrováním na domovskou stránku v případě úspěchu.
+    """
     template_name = 'form.html'
     success_url = reverse_lazy('homepage')
 
 class CommentCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
+    """
+    Zobrazení pro vytvoření komentáře k podzakázce, které vyžaduje přihlášení a oprávnění.
+    """
     template_name = "form.html"
     form_class = CommentForm
     permission_required = 'viewer.add_comment'
 
     def form_valid(self, form):
+        """
+        Přiřadí komentář podzakázce před uložením.
+        """
         new_comment = form.save(commit=False)
         new_comment.subcontract = SubContract.objects.get(pk=int(self.kwargs["pk"]))
         new_comment.save()
@@ -602,6 +614,9 @@ class CommentCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView)
 
 
 class CommentListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+    """
+    Zobrazení posledních pěti komentářů, řazených sestupně od nejnovějšího, za přihlášením a oprávněním.
+    """
     model = Comment
     template_name = "comments_homepage.html"
     permission_required = 'viewer.view_comment'
@@ -612,15 +627,19 @@ class CommentListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
         return queryset
 
 
-
-
 @login_required
 def calendar_view(request):
+    """
+    Vykresluje kalendář pro přihlášené uživatele.
+    """
     return render(request, 'calendar.html')
 
 
 @login_required
 def events_feed(request):
+    """
+    Vrací odpověď JSON se všemi událostmi naformátovanými pro zobrazení kalendáře.
+    """
     events = Event.objects.all()
     events_data = [
         {
@@ -639,6 +658,9 @@ def events_feed(request):
 @login_required
 @csrf_exempt
 def create_event(request):
+    """
+    Vytvoří novou událost na základě POSTnutých dat JSON a vrátí úspěch nebo chybu.
+    """
     if request.method == 'POST':
         data = json.loads(request.body)
         title = data.get('title')
@@ -662,6 +684,9 @@ def create_event(request):
 
 @login_required
 def get_groups(request):
+    """
+    Vrátí odpověď JSON se všemi dostupnými skupinami včetně jejich názvů.
+    """
     groups = Group.objects.all()
     groups_data = [{'name': group.name} for group in groups]
     return JsonResponse(groups_data, safe=False)
@@ -669,6 +694,9 @@ def get_groups(request):
 
 @login_required
 def delete_event(request, event_id):
+    """
+    Odstraní událost, pokud existuje, na základě jejího event_id a vrátí úspěšnou nebo chybovou odpověď.
+    """
     if request.method == 'DELETE':
         try:
             event = Event.objects.get(pk=event_id)
@@ -682,6 +710,9 @@ def delete_event(request, event_id):
 @login_required
 @csrf_exempt
 def update_event(request, event_id):
+    """
+    Aktualizuje podrobnosti existující události na základě dat požadavku PUT a vrátí úspěšnou nebo chybovou odpověď.
+    """
     if request.method == 'PUT':
         data = json.loads(request.body)
         try:
@@ -703,6 +734,33 @@ def update_event(request, event_id):
 
 @login_required
 def employee_profile(request):
+    """
+    Zobrazuje a spravuje stránku profilu zaměstnance a umožňuje uživatelům zobrazovat a upravovat
+        informace o zaměstnanci, údaje o bankovním účtu a kontakty pro případ nouze.
+    Funkce podporuje požadavky GET i POST:
+    - GET: Získává informace o profilu uživatele a zobrazuje formuláře pro úpravy sekcí,
+            jako jsou informace o zaměstnanci, údaje o bankovním účtu nebo kontakty pro případ nouze,
+            na základě parametru „edit“ předaného v adrese URL požadavku.
+    - POST: Zpracuje odeslané formuláře na základě upravované sekce:
+        - Informace o zaměstnanci: Aktualizuje nebo vytváří údaje specifické pro zaměstnance.
+        - Bankovní účet: Aktualizuje nebo vytváří údaje o bankovním účtu spojeném s uživatelem.
+        - Kontakty pro případ nouze: Aktualizuje, vytváří nebo odstraňuje záznamy nouzových kontaktů.
+    Formuláře se vykreslují dynamicky na základě sekce, kterou chce uživatel upravit.
+    Kontext:
+        - user: Přihlášený uživatel.
+        - user_profile: Profil uživatele, včetně souvisejících informací o zaměstnancích, bankovním účtu
+                        a nouzových kontaktech.
+        - employee_information_form: Formulář pro úpravu údajů specifických pro zaměstnance
+                        (pouze pokud uživatel upravuje tuto sekci).
+        - bank_account_form (formulář bankovního účtu): Formulář pro úpravu údajů o bankovním účtu
+                        (pouze pokud uživatel upravuje tuto sekci).
+        - emergency_contact_formset (sada nouzových kontaktů): Formuláře pro správu nouzových kontaktů
+                        (pouze pokud uživatel upravuje tuto sekci).
+        - employee_information (informace o zaměstnanci): Zobrazené informace o zaměstnanci
+                        (v režimu pouze pro čtení, pokud je uživatel neupravuje).
+        - bank_account: Zobrazené informace o bankovním účtu (v režimu pouze pro čtení, pokud se neupravuje).
+    V závislosti na odeslaném formuláři potvrdí a uloží změny, poté uživatele přesměruje zpět na stránku profilu.
+    """
     user = request.user
     user_profile, created = UserProfile.objects.get_or_create(user=user)
 
