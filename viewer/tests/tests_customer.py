@@ -17,7 +17,7 @@ class CustomerStrMethodTest(TestCase):
         """
         Ověříme zda metoda __str__ vrací 'Název zákazníka: Test Test1'.
         """
-        self.assertEqual(str(self.customer), "Název zákazníka: Test Test1")
+        self.assertEqual(str(self.customer), "Zákazník: Test Test1")
 
 
 class CustomerCrudTest(TestCase):

@@ -2,7 +2,7 @@
 
 <table class="table">
     <thead>
-        <tr>
+        <tr class="text-center">
             <th>Událost</th>
             <th>Čas</th>
             <th>Datum</th>
@@ -11,7 +11,7 @@
     </thead>
     <tbody class="table-group-divider">
         {% for event in events %}
-            <tr>
+            <tr class="text-center">
                 <td>{{ event.title }}</td>
                 <td>{{ event.start_time|date:"H:i" }} - {{ event.end_time|date:"H:i" }}</td>
 
