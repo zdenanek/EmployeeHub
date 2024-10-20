@@ -1,27 +1,29 @@
+import logging
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.views import LoginView, PasswordChangeView
-
 from django.db.models import Max, Q
+from django.forms import inlineformset_factory
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, FormView, DetailView
+from urllib3 import request
+
 from .models import *
 from .forms import *
-
 from .models import Contract, Customer, SubContract, Event, Comment, UserProfile, BankAccount, \
     EmployeeInformation, EmergencyContact
 from .forms import SecurityQuestionForm, SecurityAnswerForm, SetNewPasswordForm, SignUpForm, ContractForm, CustomerForm, SubContractForm, CommentForm, \
     SearchForm, EmployeeInformationForm, BankAccountForm, BaseEmergencyContactFormSet, \
     EmergencyContactForm
-from django.http import JsonResponse
 from datetime import datetime, date
-
 import json
 
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
@@ -378,10 +380,10 @@ class SubContractCreateView(PermissionRequiredMixin, LoginRequiredMixin, FormVie
 
     def form_valid(self, form):
         new_sub_contract = form.save(commit=False)
-        new_sub_contract.contract = Contract.objects.get(pk=int(self.kwargs["param"]))
-        max_subcontract_number = SubContract.objects.filter(contract=new_sub_contract.contract).aggregate(Max('subcontract_number'))['subcontract_number__max']
-        new_sub_contract.subcontract_number = (max_subcontract_number or 0) + 1
+        new_sub_contract.contract = get_object_or_404(Contract, pk=int(self.kwargs["param"]))
+        new_sub_contract.subcontract_number = SubContract.get_next_subcontract_number(new_sub_contract.contract)
         new_sub_contract.save()
+        messages.success(self.request, 'Podzakázka byla úspěšně vytvořena.')
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -735,38 +737,26 @@ def update_event(request, event_id):
 @login_required
 def employee_profile(request):
     """
-    Zobrazuje a spravuje stránku profilu zaměstnance a umožňuje uživatelům zobrazovat a upravovat
-        informace o zaměstnanci, údaje o bankovním účtu a kontakty pro případ nouze.
-    Funkce podporuje požadavky GET i POST:
-    - GET: Získává informace o profilu uživatele a zobrazuje formuláře pro úpravy sekcí,
-            jako jsou informace o zaměstnanci, údaje o bankovním účtu nebo kontakty pro případ nouze,
-            na základě parametru „edit“ předaného v adrese URL požadavku.
-    - POST: Zpracuje odeslané formuláře na základě upravované sekce:
-        - Informace o zaměstnanci: Aktualizuje nebo vytváří údaje specifické pro zaměstnance.
-        - Bankovní účet: Aktualizuje nebo vytváří údaje o bankovním účtu spojeném s uživatelem.
-        - Kontakty pro případ nouze: Aktualizuje, vytváří nebo odstraňuje záznamy nouzových kontaktů.
-    Formuláře se vykreslují dynamicky na základě sekce, kterou chce uživatel upravit.
-    Kontext:
-        - user: Přihlášený uživatel.
-        - user_profile: Profil uživatele, včetně souvisejících informací o zaměstnancích, bankovním účtu
-                        a nouzových kontaktech.
-        - employee_information_form: Formulář pro úpravu údajů specifických pro zaměstnance
-                        (pouze pokud uživatel upravuje tuto sekci).
-        - bank_account_form (formulář bankovního účtu): Formulář pro úpravu údajů o bankovním účtu
-                        (pouze pokud uživatel upravuje tuto sekci).
-        - emergency_contact_formset (sada nouzových kontaktů): Formuláře pro správu nouzových kontaktů
-                        (pouze pokud uživatel upravuje tuto sekci).
-        - employee_information (informace o zaměstnanci): Zobrazené informace o zaměstnanci
-                        (v režimu pouze pro čtení, pokud je uživatel neupravuje).
-        - bank_account: Zobrazené informace o bankovním účtu (v režimu pouze pro čtení, pokud se neupravuje).
-    V závislosti na odeslaném formuláři potvrdí a uloží změny, poté uživatele přesměruje zpět na stránku profilu.
+    Zobrazuje a spravuje stránku profilu zaměstnance a umožňuje uživatelům zobrazovat a upravovat informace
+        o zaměstnanci, údaje o bankovním účtu a kontakty pro případ nouze.
+    Zpracovává požadavky GET i POST s vylepšeným zpracováním chyb:
+        - GET: Získává a zobrazuje informace o profilu uživatele s editačními formuláři pro různé sekce.
+        - POST: Zpracovává odeslání formulářů pro informace o zaměstnancích, bankovním účtu nebo nouzových kontaktech.
+    Vylepšené zpracování chyb zahrnuje protokolování výjimek a upozornění uživatele na problémy a přesměrování zpět
+        na stránku profilu, pokud se vyskytnou chyby.
     """
     user = request.user
-    user_profile, created = UserProfile.objects.get_or_create(user=user)
+
+    try:
+        user_profile, created = UserProfile.objects.get_or_create(user=user)
+    except Exception as e:
+        logger.error(f"Error fetching/creating UserProfile for user {user.id}: {e}")
+        messages.error(request, 'An error occurred while fetching your profile. Please try again later.')
+        return redirect('home')
 
     edit_section = request.GET.get('edit')
 
-    # Initialize variables
+    # Initialize forms as None
     bank_account_form = None
     employee_information_form = None
     emergency_contact_formset = None
@@ -774,33 +764,46 @@ def employee_profile(request):
     # Handle POST requests
     if request.method == 'POST':
         if 'employee_information_submit' in request.POST:
-            # Process Employee Information form
             try:
                 employee_information = user_profile.employeeinformation
             except EmployeeInformation.DoesNotExist:
                 employee_information = None
-
             employee_information_form = EmployeeInformationForm(request.POST, instance=employee_information)
+
             if employee_information_form.is_valid():
-                employee_information = employee_information_form.save(commit=False)
-                employee_information.user_profile = user_profile
-                employee_information.save()
-                return redirect('employee_profile')
+                try:
+                    employee_information = employee_information_form.save(commit=False)
+                    employee_information.user_profile = user_profile
+                    employee_information.save()
+                    messages.success(request, 'Employee information updated successfully.')
+                    return redirect('employee_profile')
+                except Exception as e:
+                    logger.error(f"Error saving EmployeeInformation for user {user.id}: {e}")
+                    messages.error(request, 'An error occurred while saving employee information.')
+            else:
+                messages.error(request, 'Please correct the errors below.')
+
         elif 'bank_account_submit' in request.POST:
-            # Process Bank Account form
             try:
                 bank_account = user_profile.bankaccount
             except BankAccount.DoesNotExist:
                 bank_account = None
-
             bank_account_form = BankAccountForm(request.POST, instance=bank_account)
+
             if bank_account_form.is_valid():
-                bank_account = bank_account_form.save(commit=False)
-                bank_account.user_profile = user_profile
-                bank_account.save()
-                return redirect('employee_profile')
+                try:
+                    bank_account = bank_account_form.save(commit=False)
+                    bank_account.user_profile = user_profile
+                    bank_account.save()
+                    messages.success(request, 'Bank account information updated successfully.')
+                    return redirect('employee_profile')
+                except Exception as e:
+                    logger.error(f"Error saving BankAccount for user {user.id}: {e}")
+                    messages.error(request, 'An error occurred while saving bank account details.')
+            else:
+                messages.error(request, 'Please correct the errors below.')
+
         elif 'emergency_contact_submit' in request.POST:
-            # Process Emergency Contact formset
             EmergencyContactFormSetAdjusted = inlineformset_factory(
                 UserProfile,
                 EmergencyContact,
@@ -811,28 +814,35 @@ def employee_profile(request):
                 can_delete=True,
             )
             emergency_contact_formset = EmergencyContactFormSetAdjusted(request.POST, instance=user_profile)
-            if emergency_contact_formset.is_valid():
-                emergency_contact_formset.save()
-                return redirect('employee_profile')
 
+            if emergency_contact_formset.is_valid():
+                try:
+                    emergency_contact_formset.save()
+                    messages.success(request, 'Emergency contacts updated successfully.')
+                    return redirect('employee_profile')
+                except Exception as e:
+                    logger.error(f"Error saving EmergencyContact for user {user.id}: {e}")
+                    messages.error(request, 'An error occurred while updating emergency contacts.')
+            else:
+                messages.error(request, 'Please correct the errors below.')
+
+    # Handle GET requests
     else:
-        # Handle GET requests
         if edit_section == 'information':
-            # Initialize Employee Information form
             try:
                 employee_information = user_profile.employeeinformation
             except EmployeeInformation.DoesNotExist:
                 employee_information = None
             employee_information_form = EmployeeInformationForm(instance=employee_information)
+
         elif edit_section == 'account':
-            # Initialize Bank Account form
             try:
                 bank_account = user_profile.bankaccount
             except BankAccount.DoesNotExist:
                 bank_account = None
             bank_account_form = BankAccountForm(instance=bank_account)
+
         elif edit_section == 'emergency_contacts':
-            # Initialize Emergency Contact formset
             EmergencyContactFormSetAdjusted = inlineformset_factory(
                 UserProfile,
                 EmergencyContact,
@@ -843,9 +853,8 @@ def employee_profile(request):
                 can_delete=True,
             )
             emergency_contact_formset = EmergencyContactFormSetAdjusted(instance=user_profile)
-        # Else, do nothing special for GET request
 
-    # Retrieve data to display in read-only mode
+    # Retrieve data for display in read-only mode
     try:
         employee_information = user_profile.employeeinformation
     except EmployeeInformation.DoesNotExist:
@@ -865,8 +874,8 @@ def employee_profile(request):
         'employee_information': employee_information,
         'bank_account': bank_account,
     }
-    return render(request, 'employee_profile.html', context)
 
+    return render(request, 'employee_profile.html', context)
 
 @login_required
 def change_security_question_view(request):

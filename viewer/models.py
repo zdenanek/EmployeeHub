@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, date
 from django.contrib.auth.hashers import make_password, check_password
 from django.db.models import CharField, Model, ForeignKey, DateTimeField, DO_NOTHING, IntegerField, \
-    EmailField, UniqueConstraint, CASCADE, PROTECT
+    EmailField, UniqueConstraint, CASCADE, PROTECT, Max
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db import models
@@ -52,12 +52,10 @@ class SubContract(Model):
     status_choices = [("0", "V procesu"), ("1", "Dokončeno"), ("2", "Zrušeno")]
     status = CharField(max_length=64, choices=status_choices, default=status_choices[0])
 
-
     class Meta:
         constraints = [
             UniqueConstraint(fields=["contract", "subcontract_number"], name="unique_subcontract_per_contract")
         ]
-
 
     @property
     def delta(self):
@@ -66,19 +64,10 @@ class SubContract(Model):
             return max(delta_days, 0)
         return None
 
-
-    def save(self, *args, **kwargs):
-        pass
-        '''
-        if self.subcontract_number is None:
-            last_subcontract = SubContract.objects.filter(contract=self.contract).order_by("subcontract_number").last()
-            if last_subcontract:
-                self.subcontract_number = last_subcontract.subcontract_number + 1
-            else:
-                self.subcontract_number = 1
-        '''
-        super().save(*args, **kwargs)
-
+    @classmethod
+    def get_next_subcontract_number(cls, contract):
+        max_number = cls.objects.filter(contract=contract).aggregate(Max('subcontract_number'))['subcontract_number__max']
+        return (max_number or 0) + 1
 
     def __str__(self):
         return f"Podprojekt: {self.subcontract_name} {self.contract.pk}-{self.subcontract_number}"
