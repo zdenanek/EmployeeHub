@@ -20,7 +20,7 @@ from django.urls import path
 
 
 
-from viewer.views import HomepageView, UserListView, CustomerListView, ContractListView, \
+from viewer.views import HomepageView, UserListView, CustomerView, ContractListView, \
     ContractAllListView,  ContractCreateView, ContractUpdateView, ContractDeleteView, \
     CustomerCreateView, CustomerUpdateView, CustomerDeleteView, SubContractCreateView, \
     SubmittablePasswordChangeView, show_subcontracts, SubContractUpdateView, SubContractDeleteView, CommentCreateView, \
@@ -41,7 +41,6 @@ urlpatterns = [
 # path for authentication
 #     path('sign-up/', SignUpView.as_view(), name='signup'),
     path('registration/login/', LoginView.as_view(), name='login'),
-    path('accounts/login/', LoginView.as_view(), name='login2'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('password-change/', SubmittablePasswordChangeView.as_view(),name='password_change'),
 
@@ -53,7 +52,7 @@ urlpatterns = [
     path('contract/delete/<pk>', ContractDeleteView.as_view(), name='contract_delete'),
 
 # path fot customers
-    path('customers/', CustomerListView.as_view(), name='navbar_customers'),
+    path('customers/', CustomerView.as_view(), name='navbar_customers'),
     path('customer/create/', CustomerCreateView.as_view(), name='customer_create'),
     path('customer/update/<pk>', CustomerUpdateView.as_view(), name='customer_update'),
     path('customer/delete/<pk>', CustomerDeleteView.as_view(), name='customer_delete'),

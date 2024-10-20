@@ -14,6 +14,7 @@
             <tr class="text-center">
                 <th>Číslo podprojektu</th>
                 <th>Název projektu - Název podprojektu</th>
+                <th>Uživatel</th>
                 <th>Zbývá dní</th>
                 <th>Akce</th>
             </tr>
@@ -26,6 +27,7 @@
                 {% endif %}">
                 <td>{{ subcontract.contract.pk}} - {{ subcontract.subcontract_number }}</td>
                 <td>{{ subcontract.contract.contract_name }} - {{ subcontract.subcontract_name }}</td>
+                <td>{{ subcontract.user.first_name }} {{ subcontract.user.last_name }}</td>
                 <td>{{ subcontract.contract.delta }}</td>
                 <td>
                     <a href="{% url 'subcontract_detail' contract_pk=subcontract.contract.pk subcontract_number=subcontract.subcontract_number %}" class="btn btn-custom btn-sm">Detail</a>

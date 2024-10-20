@@ -36,7 +36,8 @@ class Contract(Model):
 
 
     def delta(self):
-        return (self.deadline - self.created).days
+        current_date = timezone.now()
+        return (self.deadline - current_date).days
 
 
     def __str__(self):

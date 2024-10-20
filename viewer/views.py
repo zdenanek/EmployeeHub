@@ -5,60 +5,26 @@ from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.db.models import Max, Q
-from django.forms import inlineformset_factory
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, FormView, DetailView
-from urllib3 import request
+
 
 from .models import *
 from .forms import *
 from .models import Contract, Customer, SubContract, Event, Comment, UserProfile, BankAccount, \
     EmployeeInformation, EmergencyContact
-from .forms import SecurityQuestionForm, SecurityAnswerForm, SetNewPasswordForm, SignUpForm, ContractForm, CustomerForm, SubContractForm, CommentForm, \
-    SearchForm, EmployeeInformationForm, BankAccountForm, BaseEmergencyContactFormSet, \
-    EmergencyContactForm
+from .forms import SecurityQuestionForm, SecurityAnswerForm, SetNewPasswordForm, SignUpForm, ContractForm, \
+    CustomerForm, SubContractForm, CommentForm, SearchForm, EmployeeInformationForm, BankAccountForm, \
+    BaseEmergencyContactFormSet, EmergencyContactForm
 from datetime import datetime, date
 import json
 
 logger = logging.getLogger(__name__)
 
 User = get_user_model()
-
-@login_required
-def contract_detail(request, contract_id):
-    contract = get_object_or_404(Contract, id=contract_id)
-    return render(request, 'detail_contract.html', {'contract': contract})
-
-
-@login_required
-def show_subcontracts(request):
-    query = request.GET.get("query", "")
-    subcontracts = SubContract.objects.filter(user=request.user)
-    if query:
-        subcontracts = subcontracts.filter(
-            Q(subcontract_name__icontains=query)
-        )
-    sorted_subcontracts = sorted(subcontracts, key=lambda subcontract: subcontract.delta())
-    search_form = SearchForm(initial={'query': query})
-    search_url = 'navbar_show_subcontracts'
-    show_search = True
-
-    return render(request, 'subcontract.html', {
-        'subcontracts': sorted_subcontracts,
-        'search_form': search_form,
-        'search_url': search_url,
-        'show_search': show_search,
-    })
-
-
-@login_required
-def subcontract_detail(request, subcontract_id):
-    subcontract = get_object_or_404(SubContract, pk=subcontract_id)
-    contract = subcontract.contract
-    return render(request, 'detail_subcontract.html', {'subcontract': subcontract, 'contract': contract})
 
 
 class HomepageView(LoginRequiredMixin, TemplateView):
@@ -94,13 +60,15 @@ class HomepageView(LoginRequiredMixin, TemplateView):
         return context
 
 
-@login_required
-def contract_detail(request, contract_id):
+class ContractView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
     """
-    Zobrazí detailní zobrazení konkrétní zakázky.
+    Zobrazení podrobností konkrétní zakázky.
+    Přístup je omezen na přihlášené uživatele s oprávněním 'view_contract'.
     """
-    contract = get_object_or_404(Contract, id=contract_id)
-    return render(request, 'detail_contract.html', {'contract': contract})
+    model = Contract
+    template_name = "detail_contract.html"
+    permission_required = 'viewer.view_contract'
+
 
 class ContractCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     """
@@ -163,7 +131,6 @@ class ContractDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteView
         if referer:
             return referer
         return reverse_lazy('navbar_contracts_all')
-
 
     def get_context_data(self, **kwargs):
         """
@@ -255,64 +222,13 @@ class ContractAllListView(PermissionRequiredMixin, LoginRequiredMixin, ListView)
         return context
 
 
-class SignUpView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
-    """
-    Zobrazení pro zpracování registrace uživatelů a vytváření účtů.
-    Zobrazí formulář pro přihlášení uživatelů k účtu.
-    Přístup mají pouze uživatelé s oprávněním `view_userprofile`.
-    Po úspěšném přihlášení jsou uživatelé přesměrováni na domovskou stránku.
-    """
-    template_name = 'form.html'
-    form_class = SignUpForm
-    success_url = reverse_lazy('homepage')
-    permission_required = "viewer.view_userprofile"
-    
-class ContractView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
-    """
-    Zobrazení podrobností konkrétní zakázky.
-    Přístup je omezen na přihlášené uživatele s oprávněním 'view_contract'.
-    """
-    model = Contract
-    template_name = "detail_contract.html"
-    permission_required = 'viewer.view_contract'
-
-
-
 @login_required
-def show_subcontracts(request):
+def contract_detail(request, contract_id):
     """
-    Tato funkce se stará o zobrazení podzakázek, které patří přihlášenému uživateli.
-    Podporuje filtrování na základě vyhledávacího dotazu zadaného uživatelem.
-    Podzakázky jsou seřazeny na základě metody delta() související zakázky.
-    Zobrazení používá formulář pro vyhledávání a zobrazuje výsledky v šabloně.
+    Zobrazí detailní zobrazení konkrétní zakázky.
     """
-    query = request.GET.get("query", "")
-    subcontracts = SubContract.objects.filter(user=request.user)
-    if query:
-        subcontracts = subcontracts.filter(
-            Q(subcontract_name__icontains=query)
-        )
-    sorted_subcontracts = sorted(subcontracts, key=lambda subcontract: subcontract.contract.delta())
-    search_form = SearchForm(initial={'query': query})
-    search_url = 'navbar_show_subcontracts'
-    show_search = True
-
-    return render(request, 'subcontract.html', {
-        'subcontracts': sorted_subcontracts,
-        'search_form': search_form,
-        'search_url': search_url,
-        'show_search': show_search,
-    })
-
-@login_required
-def subcontract_detail(request, subcontract_id):
-    """
-    Tato funkce vyhledá na základě zadaného subcontract_id podzakázku a její mateřskou zakázku.
-    Pokud podzakázka neexistuje, zobrazí se chyba 404.
-    """
-    subcontract = get_object_or_404(SubContract, pk=subcontract_id)
-    contract = subcontract.contract
-    return render(request, 'detail_subcontract.html', {'subcontract': subcontract, 'contract': contract})
+    contract = get_object_or_404(Contract, id=contract_id)
+    return render(request, 'detail_contract.html', {'contract': contract})
 
 
 class SubContractAllListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
@@ -448,7 +364,6 @@ class SubContractDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailV
     model = SubContract
     permission_required = 'viewer.view_subcontract'
 
-
     def get_object(self):
         """
         Vyhledá objekt podzakázky na základě primárního klíče zakázky a čísla podzakázky uvedeného v adrese URL.
@@ -458,13 +373,75 @@ class SubContractDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailV
         return SubContract.objects.get(contract__pk=contract_pk, subcontract_number=subcontract_number)
 
 
+@login_required
+def show_subcontracts(request):
+    """
+    Tato funkce se stará o zobrazení podzakázek, které patří přihlášenému uživateli.
+    Podporuje filtrování na základě vyhledávacího dotazu zadaného uživatelem.
+    Podzakázky jsou seřazeny na základě metody delta() související zakázky.
+    Zobrazení používá formulář pro vyhledávání a zobrazuje výsledky v šabloně.
+    """
+    query = request.GET.get("query", "")
+    subcontracts = SubContract.objects.filter(user=request.user)
+    if query:
+        subcontracts = subcontracts.filter(
+            Q(subcontract_name__icontains=query)
+        )
+    sorted_subcontracts = sorted(subcontracts, key=lambda subcontract: subcontract.contract.delta())
+    search_form = SearchForm(initial={'query': query})
+    search_url = 'navbar_show_subcontracts'
+    show_search = True
+
+    return render(request, 'subcontract.html', {
+        'subcontracts': sorted_subcontracts,
+        'search_form': search_form,
+        'search_url': search_url,
+        'show_search': show_search,
+    })
+
+
+@login_required
+def subcontract_detail(request, subcontract_id):
+    """
+    Tato funkce vyhledá na základě zadaného subcontract_id podzakázku a její mateřskou zakázku.
+    Pokud podzakázka neexistuje, zobrazí se chyba 404.
+    """
+    subcontract = get_object_or_404(SubContract, pk=subcontract_id)
+    contract = subcontract.contract
+    return render(request, 'detail_subcontract.html', {'subcontract': subcontract, 'contract': contract})
+
+
 class CustomerView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     """
-    Zobrazení seznamu zákazníků. Uživatel bude přihlášen a má oprávnění k zobrazení údajů o zákaznících.
+    Zobrazení seznamu zákazníků. Uživatel bude přihlášen a bude mít oprávnění k zobrazení údajů o zákaznících.
     """
     model = Customer
-    template_name = 'customers.html'
+    template_name = 'navbar_customers.html'
+    context_object_name = "customers"
     permission_required = 'viewer.view_customer'
+
+    def get_queryset(self):
+        """
+        Získá filtrovaný seznam zákazníků na základě vyhledávacího dotazu.
+        """
+        queryset = super().get_queryset()
+        query = self.request.GET.get("query")
+        if query:
+            queryset = queryset.filter(
+                Q(first_name__icontains=query) |
+                Q(last_name__icontains=query)
+            )
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        """
+        Přidává do šablony vyhledávací formulář a související kontext.
+        """
+        context = super().get_context_data(**kwargs)
+        context["search_form"] = SearchForm()
+        context["search_url"] = "navbar_customers"
+        context["show_search"] = True
+        return context
 
 
 class CustomerCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
@@ -519,7 +496,6 @@ class UserListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     context_object_name = "employees"
     permission_required = 'auth.view_user'
 
-
     def get_queryset(self):
         """
         Na základě vyhledávacího dotazu získává fltrovaný seznam uživatelů.
@@ -545,52 +521,19 @@ class UserListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
         return context
 
 
-class CustomerListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+class CommentListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     """
-    Zobrazení seznamu zákazníků. Uživatel bude přihlášen a bude mít oprávnění k zobrazení údajů o zákaznících.
+    Zobrazení posledních pěti komentářů, řazených sestupně od nejnovějšího, za přihlášením a oprávněním.
     """
-    model = Customer
-    template_name = 'navbar_customers.html'
-    context_object_name = "customers"
-    permission_required = 'viewer.view_customer'
+    model = Comment
+    template_name = "comments_homepage.html"
+    permission_required = 'viewer.view_comment'
+    context_object_name = 'comments'
 
     def get_queryset(self):
-        """
-        Získá filtrovaný seznam zákazníků na základě vyhledávacího dotazu.
-        """
-        queryset = super().get_queryset()
-        query = self.request.GET.get("query")
-        if query:
-            queryset = queryset.filter(
-                Q(first_name__icontains=query) |
-                Q(last_name__icontains=query)
-            )
+        queryset = Comment.objects.all().order_by('-created')[:5]
         return queryset
 
-    def get_context_data(self, **kwargs):
-        """
-        Přidává do šablony vyhledávací formulář a související kontext.
-        """
-        context = super().get_context_data(**kwargs)
-        context["search_form"] = SearchForm()
-        context["search_url"] = "navbar_customers"
-        context["show_search"] = True
-        return context
-
-
-class SubmittableLoginView(LoginView):
-    """
-    Vlastní zobrazení přihlášení.
-    """
-    template_name = 'login.html'
-
-
-class SubmittablePasswordChangeView(LoginRequiredMixin, PasswordChangeView):
-    """
-    Zobrazení změny hesla s požadavkem na přihlášení a přesměrováním na domovskou stránku v případě úspěchu.
-    """
-    template_name = 'form.html'
-    success_url = reverse_lazy('homepage')
 
 class CommentCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     """
@@ -613,20 +556,6 @@ class CommentCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView)
         subcontract = SubContract.objects.get(pk=int(self.kwargs["pk"]))
         contract_id = subcontract.contract.pk
         return reverse_lazy('subcontract_detail', kwargs={'contract_pk': contract_id, "subcontract_number": subcontract.subcontract_number})
-
-
-class CommentListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
-    """
-    Zobrazení posledních pěti komentářů, řazených sestupně od nejnovějšího, za přihlášením a oprávněním.
-    """
-    model = Comment
-    template_name = "comments_homepage.html"
-    permission_required = 'viewer.view_comment'
-    context_object_name = 'comments'
-
-    def get_queryset(self):
-        queryset = Comment.objects.all().order_by('-created')[:5]
-        return queryset
 
 
 @login_required
@@ -695,21 +624,6 @@ def get_groups(request):
 
 
 @login_required
-def delete_event(request, event_id):
-    """
-    Odstraní událost, pokud existuje, na základě jejího event_id a vrátí úspěšnou nebo chybovou odpověď.
-    """
-    if request.method == 'DELETE':
-        try:
-            event = Event.objects.get(pk=event_id)
-            event.delete()
-            return JsonResponse({'status': 'success'})
-        except Event.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': 'Event not found'})
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
-
-
-@login_required
 @csrf_exempt
 def update_event(request, event_id):
     """
@@ -728,6 +642,21 @@ def update_event(request, event_id):
                 if group:
                     event.group = group
             event.save()
+            return JsonResponse({'status': 'success'})
+        except Event.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Event not found'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+
+@login_required
+def delete_event(request, event_id):
+    """
+    Odstraní událost, pokud existuje, na základě jejího event_id a vrátí úspěšnou nebo chybovou odpověď.
+    """
+    if request.method == 'DELETE':
+        try:
+            event = Event.objects.get(pk=event_id)
+            event.delete()
             return JsonResponse({'status': 'success'})
         except Event.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Event not found'})
@@ -756,12 +685,12 @@ def employee_profile(request):
 
     edit_section = request.GET.get('edit')
 
-    # Initialize forms as None
+    # Inicializovat formuláře jako None
     bank_account_form = None
     employee_information_form = None
     emergency_contact_formset = None
 
-    # Handle POST requests
+    # Zpracování požadavků POST
     if request.method == 'POST':
         if 'employee_information_submit' in request.POST:
             try:
@@ -826,7 +755,7 @@ def employee_profile(request):
             else:
                 messages.error(request, 'Opravte prosím níže uvedené chyby.')
 
-    # Handle GET requests
+    # Zpracování požadavků GET
     else:
         if edit_section == 'information':
             try:
@@ -854,7 +783,7 @@ def employee_profile(request):
             )
             emergency_contact_formset = EmergencyContactFormSetAdjusted(instance=user_profile)
 
-    # Retrieve data for display in read-only mode
+    # Získání dat pro zobrazení v režimu pouze pro čtení
     try:
         employee_information = user_profile.employeeinformation
     except EmployeeInformation.DoesNotExist:
@@ -876,6 +805,35 @@ def employee_profile(request):
     }
 
     return render(request, 'employee_profile.html', context)
+
+
+class SignUpView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
+    """
+    Zobrazení pro zpracování registrace uživatelů a vytváření účtů.
+    Zobrazí formulář pro přihlášení uživatelů k účtu.
+    Přístup mají pouze uživatelé s oprávněním `view_userprofile`.
+    Po úspěšném přihlášení jsou uživatelé přesměrováni na domovskou stránku.
+    """
+    template_name = 'form.html'
+    form_class = SignUpForm
+    success_url = reverse_lazy('login')
+    permission_required = "viewer.view_userprofile"
+
+
+class SubmittableLoginView(LoginView):
+    """
+    Vlastní zobrazení přihlášení.
+    """
+    template_name = 'login.html'
+
+
+class SubmittablePasswordChangeView(LoginRequiredMixin, PasswordChangeView):
+    """
+    Zobrazení změny hesla s požadavkem na přihlášení a přesměrováním na domovskou stránku v případě úspěchu.
+    """
+    template_name = 'form.html'
+    success_url = reverse_lazy('homepage')
+
 
 @login_required
 def change_security_question_view(request):
