@@ -44,6 +44,10 @@ class ContractForm(ModelForm):
         model = Contract
         # Zahrnuje všechna pole modelu Contract.
         fields = "__all__"
+        # Jednodušší zadávání data s použitím HTML5
+        widgets = {
+            'deadline': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        }
 
 
 class CustomerForm(ModelForm):
