@@ -45,7 +45,7 @@ Tato aplikace je ideálním řešením pro menší moderní firmy, které chtěj
 
 ## Krok 7 - spuštění testů
     pip install selenium
-    python manage.py test/ python manage.py test viewer
+    python manage.py test/ python manage.py test viewer.tests 
 
 
 ![ER Diagram](ER_diagram_SDA_final_project.png)
