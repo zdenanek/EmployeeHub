@@ -775,13 +775,13 @@ def employee_profile(request):
                     employee_information = employee_information_form.save(commit=False)
                     employee_information.user_profile = user_profile
                     employee_information.save()
-                    messages.success(request, 'Employee information updated successfully.')
+                    messages.success(request, 'Informace o zaměstnanci úspěšně upraveny.')
                     return redirect('employee_profile')
                 except Exception as e:
                     logger.error(f"Error saving EmployeeInformation for user {user.id}: {e}")
                     messages.error(request, 'An error occurred while saving employee information.')
             else:
-                messages.error(request, 'Please correct the errors below.')
+                messages.error(request, 'Opravte prosím níže uvedené chyby.')
 
         elif 'bank_account_submit' in request.POST:
             try:
@@ -795,13 +795,13 @@ def employee_profile(request):
                     bank_account = bank_account_form.save(commit=False)
                     bank_account.user_profile = user_profile
                     bank_account.save()
-                    messages.success(request, 'Bank account information updated successfully.')
+                    messages.success(request, 'Bankovní údaje úspěšně upraveny.')
                     return redirect('employee_profile')
                 except Exception as e:
                     logger.error(f"Error saving BankAccount for user {user.id}: {e}")
                     messages.error(request, 'An error occurred while saving bank account details.')
             else:
-                messages.error(request, 'Please correct the errors below.')
+                messages.error(request, 'Opravte prosím níže uvedené chyby.')
 
         elif 'emergency_contact_submit' in request.POST:
             EmergencyContactFormSetAdjusted = inlineformset_factory(
@@ -818,13 +818,13 @@ def employee_profile(request):
             if emergency_contact_formset.is_valid():
                 try:
                     emergency_contact_formset.save()
-                    messages.success(request, 'Emergency contacts updated successfully.')
+                    messages.success(request, 'Kontaktní osoby úspěšně upraveny.')
                     return redirect('employee_profile')
                 except Exception as e:
                     logger.error(f"Error saving EmergencyContact for user {user.id}: {e}")
                     messages.error(request, 'An error occurred while updating emergency contacts.')
             else:
-                messages.error(request, 'Please correct the errors below.')
+                messages.error(request, 'Opravte prosím níže uvedené chyby.')
 
     # Handle GET requests
     else:
